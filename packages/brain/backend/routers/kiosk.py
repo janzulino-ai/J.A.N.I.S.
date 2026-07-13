@@ -6,8 +6,9 @@ from pathlib import Path
 from fastapi import APIRouter, Request
 from fastapi.responses import FileResponse, RedirectResponse
 
-MONOREPO = Path(__file__).resolve().parents[3]
-KIOSK_DIR = MONOREPO / "packages" / "kiosk"
+# routers/ → parents[3] = packages/
+_PACKAGES = Path(__file__).resolve().parents[3]
+KIOSK_DIR = _PACKAGES / "kiosk"
 KIOSK_STATIC = KIOSK_DIR / "static"
 
 
