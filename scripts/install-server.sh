@@ -17,23 +17,12 @@ rsync -az --delete \
   --exclude 'apps/pocket/DerivedData' \
   "$ROOT/" "$REMOTE:$REMOTE_ROOT/"
 
-echo "=== 2/6 sistema + pacchetti (sudo) ==="
-ssh -t "$REMOTE" bash -s <<'REMOTE_SYS' || echo "WARN: pacchetti sistema saltati (sudo)"
-set -euo pipefail
+echo "=== 2/6 sistema (sudo opzionale) ==="
+ssh -tt "$REMOTE" bash -s <<'REMOTE_SYS' || echo "WARN: sudo saltato"
+set +e
 export DEBIAN_FRONTEND=noninteractive
-sudo apt-get update -qq
-sudo apt-get install -y -qq \
-  python3.12-venv python3-pip \
-  chromium-browser chromium \
-  xorg xinit x11-xserver-utils \
-  curl jq 2>/dev/null || \
-sudo apt-get install -y -qq \
-  python3.12-venv python3-pip \
-  chromium \
-  xorg xinit x11-xserver-utils \
-  curl jq
-# linger: janis.service resta attivo senza login
-sudo loginctl enable-linger janis 2>/dev/null || true
+sudo -n apt-get update -qq 2>/dev/null && sudo -n apt-get install -y -qq chromium-browser chromium xorg xinit x11-xserver-utils curl jq
+sudo -n loginctl enable-linger janis 2>/dev/null
 REMOTE_SYS
 
 echo "=== 3/6 venv + .env + data ==="
@@ -91,17 +80,6 @@ REMOTE_OLLAMA
 
 echo "=== 5/6 systemd + kiosk tty ==="
 ssh "$REMOTE" "JANIS_HOME=/home/janis BRAIN_DIR='$BRAIN_DIR' bash '$REMOTE_ROOT/infra/kiosk/setup-janis-tty.sh'"
-
-# xinitrc: prova più path chromium
-ssh "$REMOTE" bash -s <<'REMOTE_X'
-set -euo pipefail
-for bin in /usr/bin/chromium-browser /usr/bin/chromium /snap/bin/chromium; do
-  if [ -x "$bin" ]; then
-    sed -i "1,20s|chromium-browser.*|${bin} --kiosk --noerrdialogs --disable-translate \\\|" "$HOME/.xinitrc" 2>/dev/null || true
-    break
-  fi
-done
-REMOTE_X
 
 echo "=== 6/6 avvio janis ==="
 ssh "$REMOTE" bash -s <<'REMOTE_START'
