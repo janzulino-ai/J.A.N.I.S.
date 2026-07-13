@@ -13,9 +13,13 @@ HUD hud17 sul vecchio `~/projects/JANIS` — ricostruito in `packages/kiosk/`.
 ## Deploy server
 
 ```bash
+# Da Mac (rsync + systemd)
+bash scripts/deploy-server.sh
+
+# Oppure manuale sul server:
 git clone git@github.com:janzulino-ai/JANIS.git ~/projects/J.A.N.I.S.
 cd ~/projects/J.A.N.I.S./packages/brain
-python3 -m venv .venv && . .venv/bin/activate
+python3.12 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
 bash ../../infra/kiosk/setup-janis-tty.sh
 systemctl --user enable --now janis
