@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>J.A.N.I.S. Server HUD</title>
-  <link rel="stylesheet" href="/kiosk-static/server-infographic.css?v=jarvis01">
+  <title>J.A.N.I.S. Kiosk — JARVIS Preview</title>
+  <link rel="stylesheet" href="static/server-infographic.css?v=jarvis01">
 </head>
 <body class="res-fhd">
   <div class="hud-bg-grid"></div>
@@ -31,7 +31,7 @@
       </div>
       <span class="acronym">Just Another Neuralgic Improving Server</span>
       <div class="head-right">
-        <span class="hud-tag">HUD · TTY1</span>
+        <span class="hud-tag">PREVIEW</span>
         <span id="hud-clock" class="hud-clock"></span>
       </div>
     </header>
@@ -45,6 +45,42 @@
     </footer>
   </div>
 
-  <script src="/kiosk-static/server-stage.js?v=jarvis01"></script>
+  <script>
+    const _fetch = window.fetch.bind(window);
+    window.fetch = (url) => {
+      if (url === "/api/host/metrics") {
+        return Promise.resolve({
+          json: () => Promise.resolve({
+            hostname: "janis",
+            platform: "Linux",
+            uptime_sec: 86412,
+            cpu: { usage_pct: 23, temp_c: 58 },
+            memory: { usage_pct: 41 },
+            gpu: { usage_pct: 12 },
+          }),
+        });
+      }
+      if (url === "/api/status") {
+        return Promise.resolve({
+          json: () => Promise.resolve({
+            service: "JANIS",
+            version: "2.0.0",
+            session_messages: 14,
+            connected_clients: ["pocket-iphone"],
+            fleet: {
+              nodes: [
+                { node_id: "mac-node", online: false, info: "SSH offline" },
+                { node_id: "win-vm", online: true, info: "VM HDMI RTX" },
+                { node_id: "pocket", online: true, info: "iPhone 15 Pro Max" },
+              ],
+              nodes_online: 2,
+            },
+          }),
+        });
+      }
+      return _fetch(url);
+    };
+  </script>
+  <script src="static/server-stage.js?v=jarvis01"></script>
 </body>
 </html>
