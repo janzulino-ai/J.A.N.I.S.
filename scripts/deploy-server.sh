@@ -22,9 +22,16 @@ echo "=== venv + dipendenze ==="
 ssh "$REMOTE" "BRAIN_DIR='$BRAIN_DIR' bash -s" <<'REMOTE_VENV'
 set -euo pipefail
 BRAIN="$BRAIN_DIR"
-if [ -f /home/janis/JANICE/.env ] && [ ! -f "$BRAIN/.env" ]; then
-  cp /home/janis/JANICE/.env "$BRAIN/.env"
-  sed -i "s|JANICE|JANIS|g; s|/home/janis/JANICE|$BRAIN|g" "$BRAIN/.env" || true
+if [ -f "$LEGACY/.env" ] || [ -f "$BRAIN/.env" ]; then
+  touch "$BRAIN/.env"
+  [ -f "$LEGACY/.env" ] && [ ! -s "$BRAIN/.env" ] && cp "$LEGACY/.env" "$BRAIN/.env"
+  sed -i \
+    -e "s|JANICE|JANIS|g" \
+    -e "s|/home/janis/JANIS|$BRAIN|g" \
+    -e "s|/home/janis/JANICE|$BRAIN|g" \
+    -e "s|JANIS_PROJECT_DIR=.*|JANIS_PROJECT_DIR=$BRAIN|" \
+    -e "s|JANIS_WORKSPACE=.*|JANIS_WORKSPACE=/home/janis|" \
+    "$BRAIN/.env" 2>/dev/null || true
 fi
 python3.12 -m venv "$BRAIN/.venv" 2>/dev/null || python3 -m venv "$BRAIN/.venv"
 "$BRAIN/.venv/bin/pip" install -q -U pip
