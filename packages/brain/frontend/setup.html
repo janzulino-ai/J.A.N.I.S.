@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup JANIS</title>
+    <link rel="stylesheet" href="/static/janis-shell.css">
+    <style>
+        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #050a12; color: #c8e8ff; }
+        .setup-page { max-width: 480px; padding: 32px; border: 1px solid rgba(0,212,255,0.2); border-radius: 16px; }
+        .setup-page h1 { font-size: 14px; letter-spacing: 4px; color: #00d4ff; }
+        .setup-page ol { line-height: 2; }
+        .setup-page .ok { color: #6bff8a; }
+        .setup-page .fail { color: #ff6b6b; }
+        .setup-page button { margin-top: 16px; padding: 10px 24px; background: rgba(0,212,255,0.2); border: 1px solid #00d4ff; color: #00d4ff; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="setup-page">
+        <h1>JANIS — Setup</h1>
+        <p>Configurazione iniziale dell'assistente.</p>
+        <ol id="steps">
+            <li id="step-env">Verifica .env…</li>
+            <li id="step-ollama">Verifica Ollama…</li>
+            <li id="step-model">Modello LLM…</li>
+            <li id="step-tts">Test voce…</li>
+        </ol>
+        <button type="button" id="go-app">Vai all'app</button>
+        <button type="button" id="test-tts">Test TTS</button>
+    </div>
+    <script>
+        async function run() {
+            const r = await fetch("/api/setup/status");
+            const s = await r.json();
+            document.getElementById("step-env").className = s.env_exists ? "ok" : "fail";
+            document.getElementById("step-env").textContent = s.env_exists ? "✓ File .env presente" : "✗ Copia .env.example → .env";
+            document.getElementById("step-ollama").className = s.ollama_online ? "ok" : "fail";
+            document.getElementById("step-ollama").textContent = s.ollama_online ? "✓ Ollama online" : "✗ Avvia Ollama (ollama serve)";
+            document.getElementById("step-model").textContent = "Modello: " + (s.model_configured ? "configurato" : "default");
+        }
+        run();
+        document.getElementById("go-app").onclick = () => {
+            localStorage.setItem("janis_setup_done", "1");
+            location.href = "/?mode=browser";
+        };
+        document.getElementById("test-tts").onclick = async () => {
+            const res = await fetch("/api/tts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: "Ciao, sono JANIS. Setup completato." }),
+            });
+            if (res.ok) new Audio(URL.createObjectURL(await res.blob())).play();
+            document.getElementById("step-tts").className = "ok";
+            document.getElementById("step-tts").textContent = "✓ Voce testata";
+        };
+    </script>
+</body>
+</html>

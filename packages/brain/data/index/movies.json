@@ -1,0 +1,25 @@
+{
+  "category": "movies",
+  "path": "C:\\Users\\agenz\\Desktop",
+  "scanned_at": "2026-06-20T16:50:02.097752",
+  "count": 1,
+  "total_size_bytes": 8278702,
+  "items": [
+    {
+      "name": "jarvis-30-fps-1600x1600.mp4",
+      "path": "C:\\Users\\agenz\\Desktop\\jarvis-30-fps-1600x1600.mp4",
+      "size": 8278702,
+      "modified": "2026-06-19T16:31:23.716905",
+      "year": null,
+      "extension": ".mp4"
+    }
+  ],
+  "clusters": {
+    "by_year": {
+      "sconosciuto": 1
+    },
+    "extensions": {
+      ".mp4": 1
+    }
+  }
+}

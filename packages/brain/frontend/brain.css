@@ -1,0 +1,66 @@
+html, body.brain-body {
+    margin: 0;
+    padding: 0;
+    background: transparent !important;
+    overflow: hidden;
+}
+
+.brain-body {
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    min-width: 100vw;
+}
+
+.brain-root {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent !important;
+    transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+.brain-root.dormant {
+    opacity: 0.2;
+    filter: grayscale(0.5) brightness(0.6);
+}
+
+.brain-root.active {
+    opacity: 1;
+    filter: none;
+}
+
+.brain-root.speaking .brain-canvas {
+    filter: drop-shadow(0 0 12px rgba(0, 230, 255, 0.9))
+            drop-shadow(0 0 24px rgba(255, 210, 60, 0.45));
+}
+
+/* Solo il grafo — niente cerchio, bordo o sfondo */
+.brain-canvas {
+    display: block;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    width: 128px;
+    height: 128px;
+}
+
+.brain-body.brain-compact .brain-canvas {
+    width: 72px;
+    height: 72px;
+}
+
+.brain-body.brain-desktop-orb .brain-canvas {
+    width: 120px;
+    height: 120px;
+}
+
+/* Safari / browser: pagina minimale, niente bianco pieno */
+@media (display-mode: browser) {
+    html, body.brain-body {
+        background: transparent !important;
+    }
+}

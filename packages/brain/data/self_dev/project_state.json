@@ -1,0 +1,38 @@
+{
+  "active_project": "fleet",
+  "phase": 0,
+  "phase_label": "test",
+  "decisions": {
+    "first_tool": {
+      "answer": "browser",
+      "at": "2026-06-21T14:23:15+00:00",
+      "note": ""
+    }
+  },
+  "open_questions": [
+    {
+      "id": "coordinator",
+      "question": "Quale macchina fa da coordinatore (cervello + memoria)? Mac Mini o Windows?",
+      "options": [
+        "mac-mini",
+        "windows"
+      ]
+    },
+    {
+      "id": "network",
+      "question": "Rete tra i PC: solo LAN di casa o Tailscale?",
+      "options": [
+        "lan",
+        "tailscale"
+      ]
+    },
+    {
+      "id": "power_model",
+      "question": "Modello accensione: entrambi sempre accesi insieme, o Mac Mini always-on?",
+      "options": [
+        "both_together",
+        "mac_always_on"
+      ]
+    }
+  ]
+}

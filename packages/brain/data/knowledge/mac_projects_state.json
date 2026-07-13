@@ -1,0 +1,156 @@
+{
+  "projects": {
+    "/Users/janzu/Documents/CAD-CAM-Enterprise-Plan": {
+      "name": "CAD-CAM-Enterprise-Plan",
+      "path": "/Users/janzu/Documents/CAD-CAM-Enterprise-Plan",
+      "has_git": true,
+      "has_cursor": false,
+      "readme": "",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/CursorVoiceRemote": {
+      "name": "CursorVoiceRemote",
+      "path": "/Users/janzu/Documents/CursorVoiceRemote",
+      "has_git": true,
+      "has_cursor": false,
+      "readme": "README.md",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/J GLASER": {
+      "name": "J GLASER",
+      "path": "/Users/janzu/Documents/J GLASER",
+      "has_git": true,
+      "has_cursor": true,
+      "readme": "README.md",
+      "stack_files": [
+        "package.json"
+      ],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/J TWINAR HUB": {
+      "name": "J TWINAR HUB",
+      "path": "/Users/janzu/Documents/J TWINAR HUB",
+      "has_git": true,
+      "has_cursor": false,
+      "readme": "README.md",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/J TWINAR": {
+      "name": "J TWINAR",
+      "path": "/Users/janzu/Documents/J TWINAR",
+      "has_git": true,
+      "has_cursor": false,
+      "readme": "README.md",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/J-PONG": {
+      "name": "J-PONG",
+      "path": "/Users/janzu/Documents/J-PONG",
+      "has_git": true,
+      "has_cursor": false,
+      "readme": "README.md",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/J-TAX": {
+      "name": "J-TAX",
+      "path": "/Users/janzu/Documents/J-TAX",
+      "has_git": true,
+      "has_cursor": false,
+      "readme": "",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/JANICE": {
+      "name": "JANICE",
+      "path": "/Users/janzu/Documents/JANICE",
+      "has_git": true,
+      "has_cursor": false,
+      "readme": "README.md",
+      "stack_files": [
+        "requirements.txt"
+      ],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/JCRM": {
+      "name": "JCRM",
+      "path": "/Users/janzu/Documents/JCRM",
+      "has_git": true,
+      "has_cursor": true,
+      "readme": "",
+      "stack_files": [
+        "Gemfile"
+      ],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/JCRMHub-Windows": {
+      "name": "JCRMHub-Windows",
+      "path": "/Users/janzu/Documents/JCRMHub-Windows",
+      "has_git": true,
+      "has_cursor": false,
+      "readme": "README.md",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/JCRMHub": {
+      "name": "JCRMHub",
+      "path": "/Users/janzu/Documents/JCRMHub",
+      "has_git": true,
+      "has_cursor": true,
+      "readme": "README.md",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/JCRMReports": {
+      "name": "JCRMReports",
+      "path": "/Users/janzu/Documents/JCRMReports",
+      "has_git": false,
+      "has_cursor": false,
+      "readme": "",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/Obsidian Vault": {
+      "name": "Obsidian Vault",
+      "path": "/Users/janzu/Documents/Obsidian Vault",
+      "has_git": false,
+      "has_cursor": false,
+      "readme": "",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/OpenSCAD": {
+      "name": "OpenSCAD",
+      "path": "/Users/janzu/Documents/OpenSCAD",
+      "has_git": false,
+      "has_cursor": false,
+      "readme": "",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/RedStampSite": {
+      "name": "RedStampSite",
+      "path": "/Users/janzu/Documents/RedStampSite",
+      "has_git": true,
+      "has_cursor": false,
+      "readme": "",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    },
+    "/Users/janzu/Documents/dual-lidar-case": {
+      "name": "dual-lidar-case",
+      "path": "/Users/janzu/Documents/dual-lidar-case",
+      "has_git": true,
+      "has_cursor": false,
+      "readme": "",
+      "stack_files": [],
+      "scanned_at": "2026-06-20T19:11:05.181064"
+    }
+  },
+  "last_scan": "2026-06-20T19:11:05.181064",
+  "last_enriched": "2026-06-20T18:33:03.058052"
+}

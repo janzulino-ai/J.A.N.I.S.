@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>J.A.N.I.S.</title>
+  <link rel="stylesheet" href="/client-static/ide.css?v=ide15">
+</head>
+<body>
+  <div id="janis-ide" class="ide-root">
+    <aside id="sidebar" class="sidebar open">
+      <button id="sidebar-toggle" class="icon-btn" title="Sidebar">☰</button>
+      <nav class="sidebar-nav">
+        <section class="nav-block">
+          <h3>Chat</h3>
+          <ul id="chat-history"></ul>
+        </section>
+        <section class="nav-block">
+          <h3>Progetti</h3>
+          <ul id="project-list"><li>—</li></ul>
+        </section>
+      </nav>
+    </aside>
+    <main id="chat-pane" class="chat-pane">
+      <header class="chat-head">
+        <span class="chat-title">J.A.N.I.S.</span>
+        <select id="model-select"><option>ollama/local</option></select>
+      </header>
+      <div id="chat-messages" class="chat-messages"></div>
+      <footer class="chat-composer">
+        <textarea id="chat-input" rows="2" placeholder="Messaggio…"></textarea>
+        <button id="chat-send">Invia</button>
+      </footer>
+    </main>
+    <aside id="live-panel" class="live-panel">
+      <div class="tab-bar" id="live-tabs">
+        <button data-tab="agents" class="tab active">Agents</button>
+        <button data-tab="tools" class="tab">Tools</button>
+        <button data-tab="fleet" class="tab">Fleet</button>
+        <button data-tab="logs" class="tab">Logs</button>
+      </div>
+      <div id="live-content" class="live-content"></div>
+    </aside>
+  </div>
+  <script src="/client-static/ide.js?v=ide15"></script>
+</body>
+</html>

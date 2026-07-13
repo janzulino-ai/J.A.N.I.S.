@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>ai.janzulino.janice.pocket.refresh</string>
+	</array>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>it</string>
+	<key>CFBundleDisplayName</key>
+	<string>JANICE</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>3.1.0</string>
+	<key>CFBundleVersion</key>
+	<string>9</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>JANIS legge gli eventi in agenda per contesto e promemoria (opt-in).</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>JANIS legge gli eventi in agenda per contesto e promemoria (opt-in).</string>
+	<key>NSCameraUsageDescription</key>
+	<string>JANIS usa la fotocamera per vedere il contesto, QR e snapshot verso il brain.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>JANIS cerca contatti nella rubrica quando glielo chiedi (opt-in).</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>JANIS deve riconoscerti con Face ID o Touch ID prima di interagire.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>JANIS legge i passi da HealthKit per contesto attività (opt-in).</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>JANICE usa il microfono per messaggi vocali e trascrizione WhisperKit on-device.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>JANICE si collega al hub JANIS per chat, sensori e presenza corporea.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>JANIS usa la posizione in background per telemetry e contesto (opt-in).</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>JANIS usa posizione e bussola per contesto spaziale inviato al brain.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>JANIS usa movimento, passi e barometro per capire cosa stai facendo.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>location</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string></string>
+		<key>UIImageName</key>
+		<string></string>
+		<key>UILaunchScreenBackgroundColor</key>
+		<string>#010308</string>
+	</dict>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+</dict>
+</plist>

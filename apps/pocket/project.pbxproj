@@ -1,0 +1,378 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* JANICEPocketApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* JANICEPocketApp.swift */; };
+		A10000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* ContentView.swift */; };
+		A10000000000000000000003 /* JournalEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* JournalEntry.swift */; };
+		A10000000000000000000004 /* AudioRecorderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* AudioRecorderService.swift */; };
+		A10000000000000000000005 /* AudioStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* AudioStorageService.swift */; };
+		A10000000000000000000006 /* AudioPlaybackService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* AudioPlaybackService.swift */; };
+		A10000000000000000000007 /* TranscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* TranscriptionService.swift */; };
+		A10000000000000000000008 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* KeychainService.swift */; };
+		A10000000000000000000009 /* ArchiveStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* ArchiveStore.swift */; };
+		A1000000000000000000000A /* EInkTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000A /* EInkTheme.swift */; };
+		A1000000000000000000000B /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000B /* SplashView.swift */; };
+		A1000000000000000000000C /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000C /* MainTabView.swift */; };
+		A1000000000000000000000D /* RecordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000D /* RecordView.swift */; };
+		A1000000000000000000000E /* ChatEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000E /* ChatEntryView.swift */; };
+		A1000000000000000000000F /* ArchiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000F /* ArchiveView.swift */; };
+		A10000000000000000000010 /* EntryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* EntryDetailView.swift */; };
+		A10000000000000000000011 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* SettingsView.swift */; };
+		A10000000000000000000014 /* JaniceAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* JaniceAPIClient.swift */; };
+		A10000000000000000000015 /* BrainLiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* BrainLiveView.swift */; };
+		A10000000000000000000012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B10000000000000000000001 /* JANICEPocketApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JANICEPocketApp.swift; sourceTree = "<group>"; };
+		B10000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B10000000000000000000003 /* JournalEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalEntry.swift; sourceTree = "<group>"; };
+		B10000000000000000000004 /* AudioRecorderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorderService.swift; sourceTree = "<group>"; };
+		B10000000000000000000005 /* AudioStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStorageService.swift; sourceTree = "<group>"; };
+		B10000000000000000000006 /* AudioPlaybackService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlaybackService.swift; sourceTree = "<group>"; };
+		B10000000000000000000007 /* TranscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionService.swift; sourceTree = "<group>"; };
+		B10000000000000000000008 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		B10000000000000000000009 /* ArchiveStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveStore.swift; sourceTree = "<group>"; };
+		B1000000000000000000000A /* EInkTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EInkTheme.swift; sourceTree = "<group>"; };
+		B1000000000000000000000B /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000C /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000D /* RecordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000E /* ChatEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEntryView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000F /* ArchiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveView.swift; sourceTree = "<group>"; };
+		B10000000000000000000010 /* EntryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryDetailView.swift; sourceTree = "<group>"; };
+		B10000000000000000000011 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B10000000000000000000012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10000000000000000000015 /* BrainLiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrainLiveView.swift; sourceTree = "<group>"; };
+		B10000000000000000000014 /* JaniceAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JaniceAPIClient.swift; sourceTree = "<group>"; };
+		B10000000000000000000013 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C10000000000000000000001 /* JANICEPocket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JANICEPocket.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D10000000000000000000003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E10000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				E10000000000000000000002 /* JANICEPocket */,
+				E10000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E10000000000000000000002 /* JANICEPocket */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000001 /* JANICEPocketApp.swift */,
+				B10000000000000000000002 /* ContentView.swift */,
+				E10000000000000000000004 /* Views */,
+				E10000000000000000000005 /* Models */,
+				E10000000000000000000006 /* Services */,
+				E10000000000000000000007 /* Theme */,
+				E10000000000000000000008 /* Resources */,
+				B10000000000000000000013 /* Info.plist */,
+			);
+			path = JANICEPocket;
+			sourceTree = "<group>";
+		};
+		E10000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C10000000000000000000001 /* JANICEPocket.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E10000000000000000000004 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000000B /* SplashView.swift */,
+				B1000000000000000000000C /* MainTabView.swift */,
+				B1000000000000000000000D /* RecordView.swift */,
+				B1000000000000000000000E /* ChatEntryView.swift */,
+				B1000000000000000000000F /* ArchiveView.swift */,
+				B10000000000000000000010 /* EntryDetailView.swift */,
+				B10000000000000000000011 /* SettingsView.swift */,
+				B10000000000000000000015 /* BrainLiveView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E10000000000000000000005 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000003 /* JournalEntry.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E10000000000000000000006 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000004 /* AudioRecorderService.swift */,
+				B10000000000000000000005 /* AudioStorageService.swift */,
+				B10000000000000000000006 /* AudioPlaybackService.swift */,
+				B10000000000000000000007 /* TranscriptionService.swift */,
+				B10000000000000000000014 /* JaniceAPIClient.swift */,
+				B10000000000000000000008 /* KeychainService.swift */,
+				B10000000000000000000009 /* ArchiveStore.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		E10000000000000000000007 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000000A /* EInkTheme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		E10000000000000000000008 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000012 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F10000000000000000000001 /* JANICEPocket */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F20000000000000000000002 /* Build configuration list for PBXNativeTarget "JANICEPocket" */;
+			buildPhases = (
+				D10000000000000000000001 /* Sources */,
+				D10000000000000000000003 /* Frameworks */,
+				D10000000000000000000002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = JANICEPocket;
+			productName = JANICEPocket;
+			productReference = C10000000000000000000001 /* JANICEPocket.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F10000000000000000000002 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					F10000000000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = F20000000000000000000001 /* Build configuration list for PBXProject "JANICEPocket" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = it;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				it,
+				Base,
+			);
+			mainGroup = E10000000000000000000001;
+			productRefGroup = E10000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F10000000000000000000001 /* JANICEPocket */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D10000000000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000012 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D10000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* JANICEPocketApp.swift in Sources */,
+				A10000000000000000000002 /* ContentView.swift in Sources */,
+				A10000000000000000000003 /* JournalEntry.swift in Sources */,
+				A10000000000000000000004 /* AudioRecorderService.swift in Sources */,
+				A10000000000000000000005 /* AudioStorageService.swift in Sources */,
+				A10000000000000000000006 /* AudioPlaybackService.swift in Sources */,
+				A10000000000000000000007 /* TranscriptionService.swift in Sources */,
+				A10000000000000000000014 /* JaniceAPIClient.swift in Sources */,
+				A10000000000000000000008 /* KeychainService.swift in Sources */,
+				A10000000000000000000009 /* ArchiveStore.swift in Sources */,
+				A1000000000000000000000A /* EInkTheme.swift in Sources */,
+				A1000000000000000000000B /* SplashView.swift in Sources */,
+				A1000000000000000000000C /* MainTabView.swift in Sources */,
+				A1000000000000000000000D /* RecordView.swift in Sources */,
+				A1000000000000000000000E /* ChatEntryView.swift in Sources */,
+				A1000000000000000000000F /* ArchiveView.swift in Sources */,
+				A10000000000000000000010 /* EntryDetailView.swift in Sources */,
+				A10000000000000000000011 /* SettingsView.swift in Sources */,
+				A10000000000000000000015 /* BrainLiveView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		G10000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		G10000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		G10000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = U5DSL3SFCG;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = JANICEPocket/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "J.A.N.I.C.E.";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.3;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.janzulino.janice.pocket;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		G10000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = U5DSL3SFCG;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = JANICEPocket/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "J.A.N.I.C.E.";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.3;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.janzulino.janice.pocket;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F20000000000000000000001 /* Build configuration list for PBXProject "JANICEPocket" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10000000000000000000001 /* Debug */,
+				G10000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F20000000000000000000002 /* Build configuration list for PBXNativeTarget "JANICEPocket" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10000000000000000000003 /* Debug */,
+				G10000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F10000000000000000000002 /* Project object */;
+}

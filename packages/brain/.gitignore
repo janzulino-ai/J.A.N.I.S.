@@ -1,0 +1,41 @@
+# Segreti e config locale
+.env
+*.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Log e dati runtime (memoria locale resta sul PC)
+data/*.log
+data/layer.log
+data/desktop.log
+data/start.log
+data/capability_gaps.json
+data/memory/
+
+# IDE / OS
+.vs/
+.vscode/
+.idea/
+Thumbs.db
+
+# TripoSR (repo esterno, opzionale)
+tools/TripoSR/
+tools/triposr-venv/
+
+# Build / distribuzione
+dist/
+build/
+*.spec
+
+# Node (se aggiunto in futuro)
+node_modules/
+
+# Cursor / temp
+.cursor/
+*.tmp

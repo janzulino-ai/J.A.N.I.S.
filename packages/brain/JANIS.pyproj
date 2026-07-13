@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>dev\play.py</StartupFile>
+    <SearchPath>.;backend;desktop</SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <CommandLineArguments>
+    </CommandLineArguments>
+    <IsWindowsApplication>false</IsWindowsApplication>
+    <InterpreterId>Global|PythonCore|3.12</InterpreterId>
+    <Name>JANICE</Name>
+    <RootNamespace>JANICE</RootNamespace>
+    <TestFramework>Pytest</TestFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="dev\play.py" />
+    <Compile Include="dev\start_backend.py" />
+    <Compile Include="dev\start_desktop.py" />
+    <Compile Include="run.py" />
+    <Compile Include="backend\**\*.py" />
+    <Compile Include="desktop\**\*.py" />
+    <Compile Include="scripts\**\*.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="frontend\**\*.*" />
+    <Content Include="docs\**\*.*" />
+    <Content Include="requirements.txt" />
+    <Content Include=".env.example" />
+    <Content Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="backend\" />
+    <Folder Include="backend\core\" />
+    <Folder Include="backend\core\tools\" />
+    <Folder Include="backend\routers\" />
+    <Folder Include="desktop\" />
+    <Folder Include="dev\" />
+    <Folder Include="docs\" />
+    <Folder Include="frontend\" />
+    <Folder Include="frontend\assets\" />
+    <Folder Include="frontend\assets\drafts\" />
+    <Folder Include="frontend\vendor\" />
+    <Folder Include="scripts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|3.12" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+</Project>

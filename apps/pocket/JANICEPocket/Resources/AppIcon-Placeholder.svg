@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="JANICE Pocket icon placeholder">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#0f2848"/>
+      <stop offset="100%" stop-color="#0a1628"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00D4FF" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#00D4FF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+  <circle cx="512" cy="512" r="280" fill="url(#glow)" filter="url(#blur)"/>
+  <!-- Neuron nodes -->
+  <g stroke="#00D4FF" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.85">
+    <line x1="512" y1="512" x2="512" y2="280"/>
+    <line x1="512" y1="512" x2="720" y2="380"/>
+    <line x1="512" y1="512" x2="680" y2="620"/>
+    <line x1="512" y1="512" x2="340" y2="620"/>
+    <line x1="512" y1="512" x2="300" y2="380"/>
+    <line x1="512" y1="280" x2="720" y2="380"/>
+    <line x1="720" y1="380" x2="680" y2="620"/>
+    <line x1="680" y1="620" x2="340" y2="620"/>
+    <line x1="340" y1="620" x2="300" y2="380"/>
+    <line x1="300" y1="380" x2="512" y2="280"/>
+  </g>
+  <circle cx="512" cy="512" r="42" fill="#FFCC00"/>
+  <circle cx="512" cy="512" r="28" fill="#00D4FF"/>
+  <circle cx="512" cy="280" r="22" fill="#00D4FF"/>
+  <circle cx="720" cy="380" r="22" fill="#FFCC00"/>
+  <circle cx="680" cy="620" r="22" fill="#00D4FF"/>
+  <circle cx="340" cy="620" r="22" fill="#FFCC00"/>
+  <circle cx="300" cy="380" r="22" fill="#00D4FF"/>
+</svg>

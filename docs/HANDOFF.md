@@ -1,0 +1,22 @@
+# HANDOFF — J.A.N.I.S.
+
+## Architettura (aggiornata)
+
+- **Brain**: server **Linux** `192.168.1.72` — non Windows
+- **Windows**: solo **VM win-vm** sulla stessa macchina (HDMI RTX)
+- **Kiosk**: tty1 → Chromium → `http://127.0.0.1:8001/server`
+
+## Perso luglio 2026
+
+HUD hud17 sul vecchio `~/projects/JANIS` — ricostruito in `packages/kiosk/`.
+
+## Deploy server
+
+```bash
+git clone git@github.com:janzulino-ai/JANIS.git ~/projects/J.A.N.I.S.
+cd ~/projects/J.A.N.I.S./packages/brain
+python3 -m venv .venv && . .venv/bin/activate
+pip install -r requirements.txt
+bash ../../infra/kiosk/setup-janis-tty.sh
+systemctl --user enable --now janis
+```

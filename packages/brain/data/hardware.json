@@ -1,0 +1,24 @@
+{
+  "nodes": {
+    "windows-pc": {
+      "label": "PC Windows (MSI MS-7D08)",
+      "cpu": "Intel i9-11900K",
+      "ram_gb": 16,
+      "gpu": "NVIDIA RTX 3080 Ti",
+      "role": "UI principale + worker + dev"
+    },
+    "mac-mini": {
+      "label": "Mac Mini M4",
+      "chip": "Apple M4",
+      "storage_internal_gb": 256,
+      "storage_external": "512 GB SSD USB-C",
+      "role": "Coordinatore fleet / bridge (da confermare)",
+      "lan_ip": "192.168.1.74",
+      "hostname": "mac-mini-di-janzu.local",
+      "ssh_port": 22,
+      "ssh_user": "janzu",
+      "ssh_note": "Porta 22 aperta; auth richiede chiave o password"
+    }
+  },
+  "updated": "2026-06-20"
+}

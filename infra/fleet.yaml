@@ -1,0 +1,16 @@
+nodes:
+  - node_id: mac-node
+    host: mac-mini-di-janzu.local
+    user: janzu
+    role: worker
+  - node_id: win-vm
+    host: 127.0.0.1
+    role: vm
+    display: hdmi-rtx
+    disk: /dev/nvme0n1
+  - node_id: pocket-iphone
+    host: lan
+    role: mobile
+
+coordinator: linux-server
+brain_url: http://127.0.0.1:8001

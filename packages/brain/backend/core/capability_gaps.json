@@ -1,0 +1,148 @@
+{
+  "gaps": [
+    {
+      "id": "bdc658e3-9159-4ba3-8833-e7873564b6c5",
+      "description": "Microfono non accessibile: Requested device not found",
+      "context": null,
+      "tool": "microphone",
+      "severity": "medium",
+      "proposed_fix": "Verificare permessi microfono Windows e dispositivo predefinito",
+      "status": "open",
+      "created_at": "2026-06-19T14:03:02.953594+00:00",
+      "resolved_at": null
+    },
+    {
+      "id": "38c3565d-b7fe-43bf-8521-27215268dcf3",
+      "description": "Microfono non accessibile: Requested device not found",
+      "context": null,
+      "tool": "microphone",
+      "severity": "medium",
+      "proposed_fix": "Verificare permessi microfono Windows e dispositivo predefinito",
+      "status": "open",
+      "created_at": "2026-06-19T14:15:13.636432+00:00",
+      "resolved_at": null
+    },
+    {
+      "id": "1032f5b4-6f35-4b41-b361-27addd8db555",
+      "description": "Eccezione strumento terminal:",
+      "context": "{\"command\": \"dir \\\"H:\\\\Video\\\"\", \"cwd\": \"\"}",
+      "tool": "terminal",
+      "severity": "high",
+      "proposed_fix": null,
+      "status": "open",
+      "created_at": "2026-06-20T15:12:09.537967+00:00",
+      "resolved_at": null
+    },
+    {
+      "id": "9e299b31-16c0-4b10-a4c8-ecb1bda4ae53",
+      "description": "Eccezione strumento self_develop: 'int' object has no attribute 'strip'",
+      "context": "{\"action\": \"record_decision\", \"question_id\": 4, \"answer\": \"terminal (motivo: è lo strumento più fondamentale per la diagnostica e l'operatività base dei nodi remoti)\"}",
+      "tool": "self_develop",
+      "severity": "high",
+      "proposed_fix": null,
+      "status": "open",
+      "created_at": "2026-06-20T18:03:42.234191+00:00",
+      "resolved_at": null
+    },
+    {
+      "id": "6be10ae8-c848-4e8f-badc-4833688b781e",
+      "description": "Autofix non risolto (tool_error). Tool=self_develop, esito=Errore esecuzione 'self_develop': 'int' object has no attribute 'strip'. Utente: 4 scegli tu",
+      "context": "[{'check': 'tool_result', 'ok': False, 'detail': \"Errore esecuzione 'self_develop': 'int' object has no attribute 'strip'\"}]",
+      "tool": "self_develop",
+      "severity": "high",
+      "proposed_fix": "Correzione codice JANIS o nuovo tool",
+      "status": "open",
+      "created_at": "2026-06-20T18:03:42.235890+00:00",
+      "resolved_at": null
+    },
+    {
+      "id": "0496e383-faa9-42f5-8c44-95d8e85e01cf",
+      "description": "Microfono non accessibile: The object can not be found here.",
+      "context": null,
+      "tool": "microphone",
+      "severity": "medium",
+      "proposed_fix": "Verificare permessi microfono Windows e dispositivo predefinito",
+      "status": "open",
+      "created_at": "2026-06-20T19:24:50.535640+00:00",
+      "resolved_at": null
+    },
+    {
+      "id": "66be2c39-45ce-4903-85fe-864b1ebf4019",
+      "description": "Microfono non accessibile: Requested device not found",
+      "context": null,
+      "tool": "microphone",
+      "severity": "medium",
+      "proposed_fix": "Verificare permessi microfono Windows e dispositivo predefinito",
+      "status": "open",
+      "created_at": "2026-06-21T12:39:37.273462+00:00",
+      "resolved_at": null
+    },
+    {
+      "id": "6b92406e-c20e-4276-ab85-d81398150b10",
+      "description": "Microfono non accessibile: Requested device not found",
+      "context": null,
+      "tool": "microphone",
+      "severity": "medium",
+      "proposed_fix": "Verificare permessi microfono Windows e dispositivo predefinito",
+      "status": "open",
+      "created_at": "2026-06-21T12:43:18.366709+00:00",
+      "resolved_at": null
+    },
+    {
+      "id": "a38127ed-151f-44bb-aa04-31c8ae3eb58e",
+      "description": "Microfono non accessibile: Requested device not found",
+      "context": null,
+      "tool": "microphone",
+      "severity": "medium",
+      "proposed_fix": "Verificare permessi microfono Windows e dispositivo predefinito",
+      "status": "open",
+      "created_at": "2026-06-21T12:54:08.351161+00:00",
+      "resolved_at": null
+    },
+    {
+      "id": "47492886-9178-4ae1-aa90-bc74ea614d9f",
+      "description": "Errore di connessione durante l'implementazione della Fase 2 (esecuzione remota). Il codice non è sbagliato, ma il canale di comunicazione tra il coordinatore Windows e il nodo Mac Mini è bloccato o inaccessibile. Questo è un problema di rete/firewall.",
+      "context": null,
+      "tool": "cursor_terminal",
+      "severity": "medium",
+      "proposed_fix": "Verificare che la porta 8001 sia aperta sul firewall di entrambi i lati (Windows e Mac) e che eventuali servizi di tunneling siano attivati per permettere la comunicazione WS tra le macchine.",
+      "status": "open",
+      "created_at": "2026-06-21T14:19:31.858154+00:00",
+      "resolved_at": null
+    },
+    {
+      "id": "b4551df4-6ba1-48e2-b8bb-2a242fee0926",
+      "description": "Autofix non risolto (unknown). Tool=None, esito=. Utente: Tentare di diagnosticare e risolvere il fallimento di connessione persistente WinError 10061 (Connection Refused) sulla porta WebSocket 8001, necessaria per la comunicazione del protocollo JANIS Fleet tra il Coordinatore Windows e i nodi Mac. Verificare l'apertura della porta sul firewall locale.",
+      "context": "[]",
+      "tool": "autofix",
+      "severity": "high",
+      "proposed_fix": "Correzione codice JANIS o nuovo tool",
+      "status": "open",
+      "created_at": "2026-06-21T14:19:45.601713+00:00",
+      "resolved_at": null
+    },
+    {
+      "id": "ee605d68-9a07-4645-9b5f-cbc794bbee5f",
+      "description": "Autofix non risolto (unknown). Tool=self_develop, esito=Fase 2 delegata a Cursor Agent.\n\nCursor Agent [finished]:\n**JANIS Fleet — Fase 2** è completata e verificata.\n\nLa maggior parte del codice era già presente (probabilmente da un tentativo Cursor Agent fallito per errore bridge). Ho chiuso l’ultimo gap e formalizzato la fase.\n\n### Correzione applicat. Utente: autofix",
+      "context": "[{'check': 'tool_result', 'ok': False, 'detail': 'Fase 2 delegata a Cursor Agent.\\n\\nCursor Agent [finished]:\\n**JANIS Fleet — Fase 2** è completata e verificata.\\n\\nLa maggior parte del codice era già presente (probabilmente da un tentativo Cursor Agent fallito per errore bridge). Ho chiuso l’ultimo gap e formalizzato la fase.\\n\\n### Correzione applicata\\n- **`frontend/janis-panel.js`** — `appendMacStream` esportato su `window.JanisPanel` (mancava, quindi gli eventi `mac_stream` dal WebSocke",
+      "tool": "self_develop",
+      "severity": "high",
+      "proposed_fix": "Correzione codice JANIS o nuovo tool",
+      "status": "open",
+      "created_at": "2026-06-21T14:22:23.839983+00:00",
+      "resolved_at": null
+    },
+    {
+      "id": "8bd84e86-2337-4303-b413-eea85d3bf095",
+      "description": "Microfono non accessibile: Requested device not found",
+      "context": null,
+      "tool": "microphone",
+      "severity": "medium",
+      "proposed_fix": "Verificare permessi microfono Windows e dispositivo predefinito",
+      "status": "open",
+      "created_at": "2026-06-21T14:33:56.068823+00:00",
+      "resolved_at": null
+    }
+  ],
+  "updated_at": "2026-06-21T14:33:56.068823+00:00"
+}

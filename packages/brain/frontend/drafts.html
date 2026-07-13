@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JANIS — Bozze avatar</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #08080e; color: #e0f7ff; font-family: "Segoe UI", system-ui, sans-serif; padding: 32px 20px 48px; }
+        h1 { text-align: center; font-weight: 300; letter-spacing: 8px; font-size: 20px; }
+        .sub { text-align: center; color: rgba(255,255,255,0.4); font-size: 13px; margin: 8px 0 28px; line-height: 1.5; }
+        .section { max-width: 1200px; margin: 0 auto 40px; }
+        .section h2 { font-size: 12px; letter-spacing: 4px; color: #00d4ff; margin-bottom: 16px; opacity: 0.7; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden; }
+        .card img { width: 100%; aspect-ratio: 9/16; object-fit: cover; object-position: top center; display: block; background: #111; }
+        .card-body { padding: 14px 16px 18px; }
+        .card h3 { font-size: 13px; letter-spacing: 2px; margin-bottom: 6px; }
+        .card p { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+        .tag { display: inline-block; margin-top: 8px; padding: 3px 9px; border-radius: 999px; font-size: 10px; letter-spacing: 1px; background: rgba(0,212,255,0.1); color: #00d4ff; }
+        .v3 { border-color: rgba(255,105,180,0.3); }
+        .v3 h3::after { content: " v3"; color: #ff69b4; font-size: 9px; }
+        a.back { display: block; text-align: center; margin-top: 24px; color: rgba(255,255,255,0.35); font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>JANIS</h1>
+    <p class="sub">Bozze v3 — più colore, sorriso amichevole, non lutto<br>Dimmi A, B, C o D (o mix)</p>
+
+    <div class="section">
+        <h2>V3 — COLORE + ESPRESSIONE VIVA</h2>
+        <div class="grid">
+            <div class="card v3">
+                <img src="/static/assets/drafts/draft-v3-A-umana-cyber-color.png" alt="A v3">
+                <div class="card-body">
+                    <h3>A — UMANA CYBER COLOR</h3>
+                    <p>Come v2-A ma con luce teal/rosa, sorriso soft. Più vita, meno nero.</p>
+                    <span class="tag">COLOR + SMILE</span>
+                </div>
+            </div>
+            <div class="card v3">
+                <img src="/static/assets/drafts/draft-v3-B-umana-cyber-warm.png" alt="B v3">
+                <div class="card-body">
+                    <h3>B — UMANA CYBER WARM</h3>
+                    <p>Quasi umana, gradiente blu-viola-ambra, espressione gentile.</p>
+                    <span class="tag">WARM + SMILE</span>
+                </div>
+            </div>
+            <div class="card v3">
+                <img src="/static/assets/drafts/draft-v3-C-ff-cyber-color.png" alt="C v3">
+                <div class="card-body">
+                    <h3>C — FF CYBER COLOR</h3>
+                    <p>Marvel/FF con teal, magenta, oro. Colorata ma non abbagliante.</p>
+                    <span class="tag">FF + COLOR</span>
+                </div>
+            </div>
+            <div class="card v3">
+                <img src="/static/assets/drafts/draft-v3-D-pop-cyber-color.png" alt="D v3">
+                <div class="card-body">
+                    <h3>D — POP CYBER COLOR</h3>
+                    <p>Pop cyber soft, rosa e blu, sorriso caldo. Annalisa vibe senza glare.</p>
+                    <span class="tag">POP + COLOR</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>V2 — RIFERIMENTO</h2>
+        <div class="grid">
+            <div class="card">
+                <img src="/static/assets/drafts/draft-v2-A-umana-cyber-01.png" alt="A">
+                <div class="card-body">
+                    <h3>A — UMANA CYBER 1</h3>
+                    <p>Photorealistic, corpo intero, circuiti sottili cyan. Umana al 90%. Luce bassa, moody.</p>
+                    <span class="tag">UMANA + CYBER</span>
+                </div>
+            </div>
+            <div class="card">
+                <img src="/static/assets/drafts/draft-v2-B-umana-cyber-02.png" alt="B">
+                <div class="card-body">
+                    <h3>B — UMANA CYBER 2</h3>
+                    <p>Quasi umana, impianti metallici leggeri, occhi chiari verde-blu. Ombre profonde.</p>
+                    <span class="tag">UMANA + CYBER</span>
+                </div>
+            </div>
+            <div class="card">
+                <img src="/static/assets/drafts/draft-v2-C-marvel-ff-cyber.png" alt="C">
+                <div class="card-body">
+                    <h3>C — MARVEL → FF CYBER</h3>
+                    <p>Penultima rivista: più cyber, meno luminosa, dark fantasy. Glow attenuato.</p>
+                    <span class="tag">FF + CYBER</span>
+                </div>
+            </div>
+            <div class="card">
+                <img src="/static/assets/drafts/draft-v2-D-pop-cyber-soft.png" alt="D">
+                <div class="card-body">
+                    <h3>D — POP CYBER SOFT</h3>
+                    <p>Annalisa-style rivista: umana, accenti cyan/rosa muted, NO scritte, NO over-bright.</p>
+                    <span class="tag">POP + CYBER</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>PRECEDENTI — RIFERIMENTO</h2>
+        <div class="grid">
+            <div class="card"><img src="/static/assets/drafts/draft-01-figura-posa.png" alt="1"><div class="card-body"><h3>1 FIGURA</h3><p>Base realistica</p></div></div>
+            <div class="card"><img src="/static/assets/drafts/draft-02-cyber.png" alt="2"><div class="card-body"><h3>2 CYBER</h3><p>Ologramma puro</p></div></div>
+            <div class="card"><img src="/static/assets/drafts/draft-02b-cyber-pop.png" alt="3"><div class="card-body"><h3>3 POP</h3><p>Troppo luminosa</p></div></div>
+            <div class="card"><img src="/static/assets/drafts/draft-03-marvel.png" alt="4"><div class="card-body"><h3>4 MARVEL</h3><p>Base penultima</p></div></div>
+        </div>
+    </div>
+
+    <a class="back" href="/">← Torna a JANIS</a>
+</body>
+</html>

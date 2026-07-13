@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JANIS</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/control-panel.css">
+    <link rel="stylesheet" href="/static/janis-shell.css">
+    <link rel="stylesheet" href="/static/janis-theme.css">
+    <script src="/static/vendor/three.min.js"></script>
+    <script src="/static/vendor/OrbitControls.js"></script>
+    <script src="/static/janis-neurons.js"></script>
+    <script src="/static/janis-brain.js"></script>
+    <script src="/static/janis-panel.js"></script>
+    <script src="/static/janis-pages.js"></script>
+    <script src="/static/janis-mic.js"></script>
+</head>
+<body class="mode-window mode-ide interact-mode">
+    <div id="janis-shell">
+        <!-- Sidebar sinistra: cervello + nav -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-brand">
+                <span class="logo">JANIS</span>
+            </div>
+            <div id="brain-viewport" class="brain-viewport" title="Cervello neurale"></div>
+            <div id="knowledge-legend" class="sidebar-knowledge"></div>
+            <div id="fleet-nodes" class="sidebar-fleet" title="Nodi Fleet connessi al coordinatore">
+                <span class="fleet-label">Fleet</span>
+                <span id="fleet-summary" class="fleet-summary">0 nodi</span>
+            </div>
+            <nav class="sidebar-nav">
+                <button type="button" class="nav-item active" data-nav="chat">💬 Chat</button>
+                <button type="button" class="nav-item" data-nav="jobs">📋 Lavori</button>
+                <button type="button" class="nav-item" data-nav="projects">📁 Progetti</button>
+                <button type="button" class="nav-item" data-nav="settings">⚙ Impostazioni</button>
+            </nav>
+            <div class="sidebar-agents">
+                <div class="sidebar-agents-label">Agenti</div>
+                <div class="agent-card-grid">
+                    <button type="button" class="agent-card mod-btn" data-panel="terminal" title="Terminal">
+                        <span class="agent-card-icon">⌨</span>
+                        <span class="agent-card-label">Terminal</span>
+                    </button>
+                    <button type="button" class="agent-card mod-btn" data-panel="web" title="Browser di sistema">
+                        <span class="agent-card-icon">🌐</span>
+                        <span class="agent-card-label">Browser</span>
+                    </button>
+                    <button type="button" class="agent-card mod-btn" data-panel="cursor" title="Cursor Agent">
+                        <span class="agent-card-icon">◆</span>
+                        <span class="agent-card-label">Cursor</span>
+                    </button>
+                    <button type="button" class="agent-card mod-btn" data-panel="mac" title="Mac Mini SSH">
+                        <span class="agent-card-icon">🍎</span>
+                        <span class="agent-card-label">Mac</span>
+                    </button>
+                    <button type="button" class="agent-card mod-btn" data-panel="whatsapp" title="WhatsApp">
+                        <span class="agent-card-icon">💬</span>
+                        <span class="agent-card-label">WhatsApp</span>
+                    </button>
+                    <button type="button" class="agent-card" id="analyze-btn" title="Analizza tecnologie, roadmap feature, pianifica implementazioni">
+                        <span class="agent-card-icon">🔬</span>
+                        <span class="agent-card-label">Analizza</span>
+                    </button>
+                    <button type="button" class="agent-card" id="autodev-btn" title="Auto-codice: verifica con Cursor, applica fix, valida e riavvia">
+                        <span class="agent-card-icon">🔧</span>
+                        <span class="agent-card-label">Auto-fix</span>
+                    </button>
+                    <button type="button" class="agent-card mod-btn" data-panel="app" title="Nuovo modulo">
+                        <span class="agent-card-icon">＋</span>
+                        <span class="agent-card-label">Modulo</span>
+                    </button>
+                </div>
+                <div id="agent-open-tabs" class="agent-open-tabs"></div>
+            </div>
+            <div class="sidebar-pro" id="sidebar-pro">
+                <button type="button" id="paid-toggle" class="pro-toggle" title="Funzioni API a pagamento (Cursor)">
+                    <span class="pro-badge">PRO</span>
+                    <span id="paid-state" class="pro-state">OFF</span>
+                </button>
+                <label class="pro-field-label" for="reasoning-quick">Ragionamento</label>
+                <select id="reasoning-quick" class="pro-select" disabled>
+                    <option value="ollama">Ollama (locale)</option>
+                    <option value="cursor">Cursor API</option>
+                    <option value="openrouter">OpenRouter</option>
+                    <option value="auto">Auto PRO</option>
+                </select>
+                <label class="pro-field-label" for="cursor-model-quick">Modello Cursor</label>
+                <select id="cursor-model-quick" class="pro-select" disabled></select>
+                <div id="pro-hint" class="pro-hint">Attiva PRO per Cursor API</div>
+            </div>
+            <div class="sidebar-footer">
+                <button type="button" id="float-layout-toggle" class="float-layout-btn" title="Layout finestre flottanti">⧉ Float</button>
+                <span id="status-badge" class="badge idle">IDLE</span>
+                <span id="conn-label" class="conn-label offline">OFFLINE</span>
+                <span id="conn-dot" class="conn-dot offline"></span>
+            </div>
+        </aside>
+
+        <!-- Colonna chat (agganciata — sganciabile come pannello) -->
+        <section id="chat-column" class="chat-column">
+            <div id="chat-column-resizer" class="chat-column-resizer" title="Trascina per larghezza chat"></div>
+            <header class="chat-header">
+                <span id="chat-agent-label" class="chat-title">Chat JANIS</span>
+                <button type="button" id="chat-dock-toggle" class="chat-dock-btn" title="Sgancia chat (finestra flottante)">⧉</button>
+            </header>
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-composer">
+                <label for="agent-select" class="chat-composer-label">Scrivi a JANIS</label>
+                <select id="agent-select" class="agent-select">
+                    <option value="janis">JANIS — Assistente</option>
+                    <option value="terminal">Terminal</option>
+                    <option value="cursor">Cursor Agent</option>
+                    <option value="mac">Mac Mini</option>
+                    <option value="web">Browser</option>
+                    <option value="whatsapp">WhatsApp</option>
+                </select>
+                <div class="composer-row">
+                    <select id="mic-select" class="mic-select" title="Microfono">
+                        <option value="">🎤 Mic predefinito</option>
+                    </select>
+                    <textarea id="cmd-input" rows="2" placeholder="Scrivi a JANIS... (Invio invia, Alt+Invio a capo)" autocomplete="off"></textarea>
+                    <span id="speaking-indicator" class="speaking-indicator" hidden>🔊</span>
+                    <button type="button" id="tts-toggle" class="btn btn-tts on" title="Voce JANIS attiva">🔊</button>
+                    <button type="button" id="stop-voice-btn" class="btn" title="Stop voce" hidden>⏹</button>
+                    <button type="button" id="voice-btn" class="btn" title="Clicca per ascoltare (clicca di nuovo per stop)">🎙</button>
+                    <button type="button" id="send-btn" class="btn btn-send" title="Invia">➤</button>
+                    <button type="button" id="clear-btn" class="btn" title="Reset">↺</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pagine sidebar (Lavori, Progetti, Impostazioni) -->
+        <section id="page-views" class="page-views">
+            <div id="page-jobs" class="page-view" data-page="jobs"></div>
+            <div id="page-projects" class="page-view" data-page="projects"></div>
+            <div id="page-settings" class="page-view" data-page="settings"></div>
+        </section>
+
+        <!-- Area agenti (finestre spostabili) -->
+        <main id="agent-zone" class="agent-zone">
+            <div id="panel-layer"></div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
