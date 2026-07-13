@@ -2,7 +2,11 @@
 
 **J**ust **A**nother **N**euralgic **I**mproving **S**erver
 
-Repo: https://github.com/janzulino-ai/J.A.N.I.S.
+**Repo ufficiale** (unica sorgente locale + GitHub):  
+https://github.com/janzulino-ai/J.A.N.I.S.  
+Cartella locale: `~/Documents/J.A.N.I.S./`
+
+Vedi [docs/OFFICIAL-REPO.md](docs/OFFICIAL-REPO.md)
 
 | Path | Ruolo |
 |------|--------|

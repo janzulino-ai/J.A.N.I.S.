@@ -1,5 +1,9 @@
 # HANDOFF — J.A.N.I.S.
 
+## Repo ufficiale
+
+Solo **J.A.N.I.S.** — `~/Documents/J.A.N.I.S./` (Mac), `~/projects/J.A.N.I.S./` (server), GitHub `janzulino-ai/J.A.N.I.S.`
+
 ## Architettura (aggiornata)
 
 - **Brain**: server **Linux** `192.168.1.72` — non Windows

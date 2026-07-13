@@ -1,4 +1,8 @@
-# JANICE Pocket
+# J.A.N.I.S. Pocket
+
+App iOS — corpo sensoriale. Parte del monorepo **J.A.N.I.S.** (`apps/pocket/`).
+
+Repo ufficiale: https://github.com/janzulino-ai/J.A.N.I.S.
 
 App iOS nativa (SwiftUI) per note vocali e di testo con archivio locale, trascrizione in italiano e estetica e-ink.
 
