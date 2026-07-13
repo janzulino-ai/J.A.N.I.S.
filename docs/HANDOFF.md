@@ -17,7 +17,7 @@ HUD hud17 sul vecchio `~/projects/JANIS` — ricostruito in `packages/kiosk/`.
 bash scripts/deploy-server.sh
 
 # Oppure manuale sul server:
-git clone git@github.com:janzulino-ai/JANIS.git ~/projects/J.A.N.I.S.
+git clone https://github.com/janzulino-ai/J.A.N.I.S..git ~/projects/J.A.N.I.S.
 cd ~/projects/J.A.N.I.S./packages/brain
 python3.12 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt

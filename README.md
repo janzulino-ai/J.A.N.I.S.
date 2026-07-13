@@ -2,6 +2,8 @@
 
 **J**ust **A**nother **N**euralgic **I**mproving **S**erver
 
+Repo: https://github.com/janzulino-ai/J.A.N.I.S.
+
 | Path | Ruolo |
 |------|--------|
 | `packages/brain/` | Hub FastAPI su **server Linux** |
