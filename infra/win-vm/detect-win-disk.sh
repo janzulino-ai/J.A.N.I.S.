@@ -12,8 +12,8 @@ WIN_PART=""
 while read -r name label fstype; do
   if [[ "${label}" == "WIN" ]] && [[ -b "/dev/${name}" ]]; then
     WIN_PART="/dev/${name}"
-    disk="${name%%[0-9]*}"
-    [[ -n "$disk" && "$disk" != "$name" ]] && WIN_DISK="/dev/${disk}"
+    disk="$(lsblk -no PKNAME "/dev/${name}" 2>/dev/null | head -1)"
+    [[ -n "$disk" ]] && WIN_DISK="/dev/${disk}"
     break
   fi
 done < <(lsblk -rno NAME,LABEL,FSTYPE 2>/dev/null || true)
@@ -23,8 +23,8 @@ if [[ -z "$WIN_PART" ]]; then
   while read -r name fstype size; do
     if [[ "$fstype" == "ntfs" ]] && [[ -b "/dev/${name}" ]]; then
       WIN_PART="/dev/${name}"
-      disk="${name%%[0-9]*}"
-      [[ -n "$disk" && "$disk" != "$name" ]] && WIN_DISK="/dev/${disk}"
+      disk="$(lsblk -no PKNAME "/dev/${name}" 2>/dev/null | head -1)"
+      [[ -n "$disk" ]] && WIN_DISK="/dev/${disk}"
       break
     fi
   done < <(lsblk -rno NAME,FSTYPE,SIZE 2>/dev/null | grep -i ntfs || true)

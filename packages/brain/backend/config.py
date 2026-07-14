@@ -17,6 +17,8 @@ class Settings(BaseSettings):
 
     # LLM router multi-provider
     LLM_PROVIDER: str = Field(default="ollama")  # ollama | openrouter | auto
+    LOCAL_FIRST: bool = Field(default=True, description="Solo Ollama locale; no cloud/LiteLLM")
+    CLOUD_LLM_ALLOWED: bool = Field(default=False, description="Abilita OpenRouter/Cursor/LiteLLM cloud")
     OPENROUTER_API_KEY: str = Field(default="")
     OPENROUTER_MODEL: str = Field(default="google/gemma-2-9b-it:free")
 
@@ -133,6 +135,23 @@ class Settings(BaseSettings):
     AUTONOMY_REFLECT_ENABLED: bool = Field(default=True)
     AUTONOMY_AUTODEV_ENABLED: bool = Field(default=False)
     AUTONOMY_INTERVAL_MIN: int = Field(default=360)
+
+    # LLM Lab — Unsloth fine-tuning automatico (harvest chat → train → Ollama)
+    LAB_ENABLED: bool = Field(default=True)
+    LAB_AUTO_TRAIN_ENABLED: bool = Field(default=False)
+    LAB_AUTO_PROMOTE: bool = Field(default=False)
+    LAB_MIN_DATASET_SIZE: int = Field(default=30)
+    LAB_BASE_MODEL: str = Field(default="unsloth/llama-3.2-3b-Instruct-bnb-4bit")
+    LAB_OLLAMA_MODEL_NAME: str = Field(default="janis-custom")
+    LAB_EVAL_BASELINE: str = Field(default="llama3.2:3b")
+    LAB_MAX_STEPS: int = Field(default=60)
+    LAB_LORA_R: int = Field(default=16)
+    LAB_LEARNING_RATE: float = Field(default=2e-4)
+    LAB_BATCH_SIZE: int = Field(default=2)
+    LAB_VENV_PATH: str = Field(
+        default="",
+        description="Path venv Unsloth; vuoto = ~/.janis-lab-venv",
+    )
 
     JANIS_SYSTEM_PROMPT: str = Field(
         default=(

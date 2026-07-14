@@ -55,16 +55,25 @@ async def api_win_vm_reboot():
     return await win_vm.vm_reboot()
 
 
+@router.post("/api/win-vm/wake")
+async def api_win_vm_wake():
+    """Invia input per svegliare display Windows (lock screen)."""
+    return await win_vm.vm_wake()
+
+
 @router.websocket("/ws/vnc")
 async def ws_vnc_proxy(websocket: WebSocket):
     """Proxy WebSocket ↔ VNC TCP (noVNC RFB)."""
     await websocket.accept()
     host = settings.WIN_VM_VNC_HOST
-    port = settings.WIN_VM_VNC_PORT
+    port = int(settings.WIN_VM_VNC_PORT)
 
     try:
-        reader, writer = await asyncio.open_connection(host, port)
-    except OSError as exc:
+        reader, writer = await asyncio.wait_for(
+            asyncio.open_connection(host, port),
+            timeout=8.0,
+        )
+    except (OSError, asyncio.TimeoutError) as exc:
         logger.warning("VNC non raggiungibile %s:%s — %s", host, port, exc)
         await websocket.close(code=1011, reason="VNC offline")
         return
@@ -72,9 +81,16 @@ async def ws_vnc_proxy(websocket: WebSocket):
     async def ws_to_tcp():
         try:
             while True:
-                data = await websocket.receive_bytes()
-                writer.write(data)
-                await writer.drain()
+                msg = await websocket.receive()
+                if msg.get("type") == "websocket.disconnect":
+                    break
+                data = msg.get("bytes")
+                if data:
+                    writer.write(data)
+                    await writer.drain()
+                elif msg.get("text") is not None:
+                    writer.write(msg["text"].encode("latin1", errors="replace"))
+                    await writer.drain()
         except WebSocketDisconnect:
             pass
         except Exception:
@@ -82,6 +98,7 @@ async def ws_vnc_proxy(websocket: WebSocket):
         finally:
             try:
                 writer.close()
+                await writer.wait_closed()
             except Exception:
                 pass
 

@@ -1,6 +1,7 @@
 """API Pocket v3.1 — telemetry, vision, push."""
 from __future__ import annotations
 
+import base64
 import json
 import logging
 from datetime import datetime, timezone
@@ -66,6 +67,7 @@ async def pocket_telemetry(body: TelemetryBody):
 async def pocket_vision(body: VisionBody):
     vision_dir = Path(settings.JANIS_PROJECT_DIR) / "data" / "pocket" / "vision"
     vision_dir.mkdir(parents=True, exist_ok=True)
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     meta = {
         "device_id": body.device_id,
         "timestamp": body.timestamp or datetime.now(timezone.utc).isoformat(),
@@ -73,9 +75,27 @@ async def pocket_vision(body: VisionBody):
         "owner": body.owner,
         "bytes": len(body.image_base64),
     }
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     (vision_dir / f"{body.device_id}_{ts}.json").write_text(json.dumps(meta), encoding="utf-8")
-    return {"ok": True, "stored": True}
+    # Salva immagine per describe locale
+    try:
+        raw = base64.b64decode(body.image_base64.split(",")[-1])
+        (vision_dir / f"{body.device_id}_{ts}.jpg").write_bytes(raw)
+        meta["image_file"] = f"{body.device_id}_{ts}.jpg"
+    except Exception:
+        pass
+
+    description = None
+    try:
+        from backend.core.perception import describe_image
+
+        description = await describe_image(image_base64=body.image_base64, context=body.context)
+        if description and not description.startswith("Errore") and "non disponibile" not in description:
+            meta["description"] = description[:2000]
+            (vision_dir / f"{body.device_id}_{ts}.json").write_text(json.dumps(meta), encoding="utf-8")
+    except Exception:
+        pass
+
+    return {"ok": True, "stored": True, "description": description}
 
 
 @router.post("/api/pocket/push/register")

@@ -22,3 +22,75 @@
   source: github
   url: https://github.com/modelcontextprotocol/servers
   topics: [mcp, plugin]
+- name: mem0
+  source: github
+  url: https://github.com/mem0ai/mem0
+  topics: [memory, agent, qdrant]
+- name: engram
+  source: github
+  url: https://github.com/bzanghi/engram
+  topics: [memory, mcp, qdrant]
+- name: mindvault
+  source: github
+  url: https://github.com/calebthecm/MindVault
+  topics: [second-brain, memory, ollama]
+- name: 5thmember
+  source: github
+  url: https://github.com/utsav-develops/5thMember
+  topics: [rag, memory, fastapi, ollama]
+- name: openclaw-mem0-ollama
+  source: github
+  url: https://github.com/AashiDutt/OpenClaw_Mem0_Ollama
+  topics: [memory, ollama, openclaw]
+- name: second-brain
+  source: github
+  url: https://github.com/thangaram611/second-brain
+  topics: [second-brain, knowledge-graph, mcp]
+- name: lumen
+  source: github
+  url: https://github.com/Sardor-M/lumen
+  topics: [knowledge-graph, agent, mcp]
+- name: engraph
+  source: github
+  url: https://github.com/devwhodevs/engraph
+  topics: [knowledge-graph, obsidian, mcp]
+- name: hifz
+  source: github
+  url: https://github.com/arriqaaq/hifz
+  topics: [knowledge-graph, memory, agent]
+- name: agent_trace
+  source: github
+  url: https://github.com/CURSED-ME/agent_trace
+  topics: [observability, agent, tracing]
+- name: ai-agent-inspector
+  source: github
+  url: https://github.com/koladilip/ai-agent-inspector
+  topics: [observability, agent, tracing]
+- name: agent-observability-kit
+  source: github
+  url: https://github.com/reflectt/agent-observability-kit
+  topics: [observability, agent, tracing]
+- name: reasontrace
+  source: github
+  url: https://github.com/kanishkpaul/reasontrace
+  topics: [observability, reasoning, agent]
+- name: lattice
+  source: github
+  url: https://github.com/Fqrina/lattice
+  topics: [observability, agent, visualization]
+- name: unsloth
+  source: github
+  url: https://github.com/unslothai/unsloth
+  topics: [finetuning, lora, ollama]
+- name: unsloth-finetuning
+  source: github
+  url: https://github.com/farhan-syah/unsloth-finetuning
+  topics: [finetuning, pipeline, gguf]
+- name: learn-unsloth-lab
+  source: github
+  url: https://github.com/mickpletcher/learn-unsloth-lab
+  topics: [finetuning, eval, ollama]
+- name: odysseus
+  source: github
+  url: https://github.com/pewdiepie-archdaemon/odysseus
+  topics: [workspace, agent, mcp]

@@ -1,34 +1,45 @@
 (function () {
-  /* Griglia 3×3 modulare — ogni blocco: col, row, colSpan, rowSpan (1–3) */
-  const BLOCKS = [
-    { id: "hardware", col: 1, row: 1, colSpan: 1, rowSpan: 1, title: "HARDWARE", accent: "cyan" },
-    { id: "providers", col: 2, row: 1, colSpan: 2, rowSpan: 1, title: "ROUTING · COSTI", accent: "gold" },
-    { id: "processes", col: 1, row: 2, colSpan: 1, rowSpan: 2, title: "PROCESSI · SERVIZI", accent: "lime" },
-    { id: "focus", col: 2, row: 2, colSpan: 2, rowSpan: 2, title: "NEURAL CORE", accent: "magenta", carousel: true },
-  ];
+  let perception = {};
+  let peripherals = {};
+  let llmModels = {};
+  let evolve = {};
+  let hudPage = 0;
 
-  const FOCUS_VIEWS = [
-    { id: "runtime", label: "RUNTIME", sub: "CPU · RAM · GPU · TEMP" },
-    { id: "reasoning", label: "RAGIONAMENTO", sub: "PIPELINE · TOOL LOOP" },
-    { id: "fleet", label: "SATELLITI", sub: "MAC · WIN-VM · POCKET" },
-    { id: "memory", label: "MEMORIA", sub: "KNOWLEDGE · SESSION" },
-    { id: "peripherals", label: "PERIFERICHE", sub: "API · CANALI · I/O" },
+  const BLOCKS = [
+    { id: "hardware", page: 0, col: 1, row: 1, colSpan: 1, rowSpan: 1, title: "HARDWARE LIVE", accent: "cyan" },
+    { id: "inventory", page: 0, col: 2, row: 1, colSpan: 1, rowSpan: 1, title: "INVENTARIO", accent: "gold" },
+    { id: "network", page: 0, col: 3, row: 1, colSpan: 1, rowSpan: 1, title: "RETE · LOAD", accent: "lime" },
+    { id: "disks", page: 0, col: 1, row: 2, colSpan: 1, rowSpan: 1, title: "DISCHI · BLOCK", accent: "gold" },
+    { id: "sidecars", page: 0, col: 2, row: 2, colSpan: 1, rowSpan: 1, title: "SIDECAR · STACK", accent: "lime" },
+    { id: "providers", page: 0, col: 3, row: 2, colSpan: 1, rowSpan: 1, title: "ROUTING · COSTI", accent: "gold" },
+    { id: "services", page: 0, col: 1, row: 3, colSpan: 1, rowSpan: 1, title: "SERVIZI · CANALI", accent: "lime" },
+    { id: "fleet", page: 0, col: 2, row: 3, colSpan: 1, rowSpan: 1, title: "FLOTTA · I/O", accent: "magenta" },
+    { id: "brain", page: 0, col: 3, row: 3, colSpan: 1, rowSpan: 1, title: "CERVELLO · TOOL", accent: "magenta" },
+    { id: "peripherals", page: 1, col: 1, row: 1, colSpan: 1, rowSpan: 2, title: "PERIFERICHE", accent: "magenta" },
+    { id: "perception", page: 1, col: 2, row: 1, colSpan: 1, rowSpan: 2, title: "VEDERE · SENTIRE", accent: "cyan" },
+    { id: "llm", page: 1, col: 3, row: 1, colSpan: 1, rowSpan: 1, title: "MODELLI LLM", accent: "gold" },
+    { id: "evolve", page: 1, col: 3, row: 2, colSpan: 1, rowSpan: 1, title: "AUTO-EVOLVE", accent: "lime" },
   ];
 
   const PAUSE_MS = 10 * 60 * 1000;
-  const ARC_R = 46;
-  const ARC_C = 2 * Math.PI * ARC_R;
-
-  let focusIdx = 0;
   let fullscreenId = null;
-  let paused = false;
   let pauseUntil = 0;
   let timer = null;
+  let pollOk = false;
+  let pollErr = "";
+  let pollCount = 0;
+
+  let dash = {};
   let metrics = {};
   let status = {};
-  let hardware = {};
+  let inventory = {};
   let knowledge = {};
-  let wavePhase = 0;
+  let scout = {};
+  let gaps = {};
+  let winVm = {};
+  let tools = [];
+  let mcp = {};
+  let reasoning = {};
 
   const gridEl = document.getElementById("hud-grid");
   const dotsEl = document.getElementById("sheet-dots");
@@ -43,24 +54,20 @@
 
   function formatUptime(sec) {
     if (!sec) return "—";
-    const h = Math.floor(sec / 3600);
+    const d = Math.floor(sec / 86400);
+    const h = Math.floor((sec % 86400) / 3600);
     const m = Math.floor((sec % 3600) / 60);
+    if (d) return `${d}D ${h}H`;
     return `${h}H ${m}M`;
   }
 
-  function arcGauge(label, value, unit, max, accent) {
-    const pct = value != null && !isNaN(value) ? Math.min(100, Math.max(0, value)) : null;
-    const dash = pct != null ? (pct / max) * ARC_C : 0;
-    const display = pct != null ? `${Math.round(pct)}${unit}` : "—";
-    return `<div class="arc-gauge accent-${accent}">
-      <svg viewBox="0 0 110 110">
-        <circle class="arc-bg" cx="55" cy="55" r="${ARC_R}"/>
-        <circle class="arc-fill" cx="55" cy="55" r="${ARC_R}"
-          stroke-dasharray="${ARC_C}" stroke-dashoffset="${ARC_C - dash}"/>
-      </svg>
-      <span class="arc-val">${display}</span>
-      <label>${label}</label>
-    </div>`;
+  function formatBytes(n) {
+    if (n == null || isNaN(n)) return "—";
+    const u = ["B", "KB", "MB", "GB", "TB"];
+    let v = Number(n);
+    let i = 0;
+    while (v >= 1024 && i < u.length - 1) { v /= 1024; i++; }
+    return `${v.toFixed(i > 1 ? 1 : 0)} ${u[i]}`;
   }
 
   function statRow(label, value, tone) {
@@ -71,279 +78,383 @@
   }
 
   function badge(text, on, extra) {
-    const cls = on ? "on" : (extra || "off");
-    return `<span class="proc-badge ${cls}">${text}</span>`;
+    return `<span class="proc-badge ${on ? "on" : (extra || "off")}">${text}</span>`;
   }
 
-  function processList() {
-    const orch = status.orchestrator || {};
-    const items = [
-      { label: "OLLAMA", on: !!status.ollama?.online, load: status.ollama?.online ? 88 : 4, tag: status.ollama?.online ? "ON" : "OFF" },
-      { label: "JANIS.API", on: true, load: 92, tag: "ON" },
-      { label: "STT", on: !!status.stt?.ready, load: status.stt?.ready ? 55 : 12, tag: status.stt?.ready ? "ON" : "DEG" },
-      { label: "FLEET_HUB", on: (status.fleet?.nodes_online || 0) > 0, load: Math.round(((status.fleet?.nodes_online || 0) / (status.fleet?.nodes_total || 3)) * 100), tag: `${status.fleet?.nodes_online || 0}/${status.fleet?.nodes_total || 3}` },
-      { label: "COST_ROUTER", on: !status.orchestrator?.cloud_blocked, load: orch.active ? 75 : 35, tag: (orch.cloud_blocked ? "BLOCK" : (orch.mode || orch.default_tier || "LOCAL")).toUpperCase() },
-      { label: "TELEGRAM", on: !!status.channels?.telegram, load: status.channels?.telegram ? 40 : 0, tag: status.channels?.telegram ? "ON" : "OFF" },
-      { label: "SCHEDULER", on: status.scheduler !== false, load: 30, tag: "ON" },
-      { label: "CURSOR_SDK", on: !!status.paid_mode || !!status.cursor_ready, load: status.paid_mode ? 60 : 8, tag: status.paid_mode ? "PRO" : "FREE" },
-    ];
-    return items.map((p) => `<div class="proc-row">
-      <span class="proc-name">${p.label}</span>
-      ${badge(p.tag, p.on, p.on ? "on" : "exe")}
-      <div class="proc-bar-wrap"><span class="proc-bar tone-lime" style="width:${p.load}%"></span></div>
-    </div>`).join("");
+  function sidecarRow(name, on, detail) {
+    return `<div class="proc-row">
+      <span class="proc-name">${name}</span>
+      ${badge(on ? "ON" : "OFF", on)}
+      ${detail ? `<span class="proc-detail">${esc(detail)}</span>` : ""}
+    </div>`;
+  }
+
+  function physicalDisks(list) {
+    return (list || []).filter((d) => {
+      const m = d.mount || "";
+      return !m.startsWith("/snap") && d.fstype !== "squashfs";
+    });
+  }
+
+  function applyDashboard(d) {
+    dash = d || {};
+    metrics = d.metrics || {};
+    status = d.status || {};
+    inventory = d.inventory || {};
+    knowledge = d.knowledge || {};
+    scout = d.scout || {};
+    gaps = d.gaps || {};
+    winVm = d.win_vm || {};
+    tools = d.tools || [];
+    mcp = d.mcp || {};
+    reasoning = d.reasoning || {};
+    perception = d.perception || {};
+    peripherals = d.peripherals || inventory.peripherals || {};
+    llmModels = d.llm_models || {};
+    evolve = d.evolve || {};
   }
 
   function renderHardware() {
     const cpu = metrics.cpu || {};
     const gpu = metrics.gpu || {};
     const mem = metrics.memory || {};
-    const hw = hardware || {};
-    return `<div class="block-body">
-      <div class="big-metrics">
+    return `<div class="block-body scroll-y">
+      <div class="big-metrics compact">
         <div class="big-metric tone-cyan"><span class="bm-val">${Math.round(cpu.usage_pct || 0)}%</span><span class="bm-lbl">CPU</span></div>
         <div class="big-metric tone-magenta"><span class="bm-val">${Math.round(mem.usage_pct || 0)}%</span><span class="bm-lbl">RAM</span></div>
         <div class="big-metric tone-gold"><span class="bm-val">${Math.round(gpu.usage_pct || 0)}%</span><span class="bm-lbl">GPU</span></div>
       </div>
-      ${statRow("HOST", (metrics.hostname || "—").toUpperCase())}
-      ${statRow("PLATFORM", metrics.platform || "LINUX")}
-      ${statRow("ARCH", hw.cpu?.arch || "—", "lime")}
-      ${statRow("RAM TOT", hw.ram_gb ? `${hw.ram_gb} GB` : "—", "gold")}
-      ${statRow("TEMP", cpu.temp_c != null ? `${Math.round(cpu.temp_c)}°C` : "—", cpu.temp_c > 75 ? "warn" : "cyan")}
+      ${statRow("HOST", (metrics.hostname || inventory.hostname || "—").toUpperCase())}
+      ${statRow("PLATFORM", `${metrics.platform || inventory.platform || "—"} ${inventory.release || ""}`.trim())}
+      ${statRow("CPU", inventory.cpu?.model || "—", "cyan")}
+      ${statRow("CORES", inventory.cpu?.cores_logical || "—", "lime")}
+      ${statRow("RAM TOT", inventory.memory_gb ? `${inventory.memory_gb} GB` : "—", "gold")}
+      ${statRow("TEMP CPU", cpu.temp_c != null ? `${Math.round(cpu.temp_c)}°C` : "—", (cpu.temp_c || 0) > 75 ? "warn" : "cyan")}
+      ${gpu.name ? statRow("GPU", gpu.name, "gold") : statRow("GPU", "non rilevata", "warn")}
       ${statRow("UPTIME", formatUptime(metrics.uptime_sec), "lime")}
-      ${metrics.disk?.[0] ? statRow("DISCO", `${metrics.disk[0].mount} ${metrics.disk[0].used_pct}%`, "gold") : ""}
-      ${metrics.glances ? statRow("GLANCES", "LINK", "lime") : statRow("GLANCES", "OFF", "warn")}
+      ${statRow("BRAIN UP", formatUptime(metrics.process_uptime_sec), "muted")}
     </div>`;
   }
 
-  let scout = {};
+  function renderInventory() {
+    const gpus = inventory.gpu || [];
+    const probed = inventory.probed_at ? new Date(inventory.probed_at).toLocaleString("it-IT") : "—";
+    return `<div class="block-body scroll-y">
+      ${statRow("HOSTNAME", inventory.hostname || "—")}
+      ${statRow("KERNEL", inventory.release || "—", "lime")}
+      ${statRow("ARCH", inventory.arch || "—", "cyan")}
+      ${statRow("USB DEV", inventory.usb_devices ?? "—", "magenta")}
+      ${statRow("PROBED", probed, "muted")}
+      ${gpus.length ? gpus.map((g) => statRow("GPU", `${g.name || "?"} · ${g.vram || ""} ${g.driver || ""}`.trim(), "gold")).join("") : statRow("GPU", "nessuna", "warn")}
+      <div class="mini-head">BLOCK DEV</div>
+      ${(inventory.block_devices || []).slice(0, 8).map((b) =>
+        statRow(b.name || "dev", `${b.size || "?"} · ${b.type || ""} ${b.model || ""}`.trim(), "cyan")
+      ).join("") || statRow("BLOCK", "—", "warn")}
+    </div>`;
+  }
+
+  function renderNetwork() {
+    const nics = inventory.network || [];
+    const net = metrics.network || {};
+    const la = metrics.cpu?.load_avg || {};
+    return `<div class="block-body scroll-y">
+      ${statRow("RX", formatBytes(net.rx_bytes), "cyan")}
+      ${statRow("TX", formatBytes(net.tx_bytes), "lime")}
+      ${la["1m"] != null ? statRow("LOAD 1M", Number(la["1m"]).toFixed(2), "gold") : ""}
+      ${la["5m"] != null ? statRow("LOAD 5M", Number(la["5m"]).toFixed(2), "gold") : ""}
+      ${la["15m"] != null ? statRow("LOAD 15M", Number(la["15m"]).toFixed(2), "gold") : ""}
+      ${statRow("GLANCES", metrics.glances ? "ON :61208" : "OFF", metrics.glances ? "lime" : "warn")}
+      <div class="mini-head">NIC</div>
+      ${nics.length ? nics.map((n) =>
+        statRow(n.name, (n.addresses || []).join(" · ") || "down", "cyan")
+      ).join("") : statRow("NIC", "nessuna", "warn")}
+    </div>`;
+  }
+
+  function renderDisks() {
+    const disks = physicalDisks(inventory.disks || metrics.disk || []);
+    if (!disks.length) return `<div class="block-body scroll-y">${statRow("DISCHI", "nessuno", "warn")}</div>`;
+    return `<div class="block-body scroll-y">${disks.map((d) => {
+      const label = d.device || d.mount || "?";
+      return `<div class="disk-row">
+        <div class="disk-head"><span>${esc(label)}</span><span>${d.used_pct ?? 0}%</span></div>
+        <div class="proc-bar-wrap"><span class="proc-bar tone-gold" style="width:${d.used_pct || 0}%"></span></div>
+        <div class="disk-sub">${esc(d.mount || "")} ${esc(d.fstype || "")} · ${d.total_gb ?? "?"} GB · free ${d.free_gb ?? "?"} GB</div>
+      </div>`;
+    }).join("")}</div>`;
+  }
+
+  function renderSidecars() {
+    const sc = metrics.sidecars || {};
+    const oll = status.ollama || {};
+    const lp = status.llm_provider || {};
+    const sched = status.scheduler || {};
+    return `<div class="block-body scroll-y">
+      <div class="process-list">
+        ${sidecarRow("JANIS BRAIN", sc.brain !== false, `v${status.brain_version || "?"}`)}
+        ${sidecarRow("OLLAMA", !!(sc.ollama || oll.online), (oll.models || []).slice(0, 2).join(", ") || "off")}
+        ${sidecarRow("GLANCES", !!sc.glances, sc.glances ? ":61208" : "off")}
+        ${sidecarRow("LITELLM", !!(sc.litellm || lp.litellm_online), lp.active || "proxy")}
+        ${sidecarRow("QDRANT", !!sc.qdrant, sc.qdrant ? ":6333" : "off")}
+        ${sidecarRow("STT", !!status.stt?.ready, status.stt?.engine || "—")}
+        ${sidecarRow("SCHEDULER", !!sched.running, `${sched.enabled_jobs || 0}/${sched.job_count || 0} job`)}
+        ${sidecarRow("AUTONOMY", !!sched.autonomy_running, sched.autonomy_enabled ? "loop" : "off")}
+      </div>
+    </div>`;
+  }
 
   function renderProviders() {
     const orch = status.orchestrator || {};
     const usage = status.llm_usage || {};
-    const prov = (status.reasoning_provider || "ollama").toUpperCase();
-    const paid = status.paid_mode ? "PRO · A PAGAMENTO" : "FREE · LOCALE";
+    const lp = status.llm_provider || {};
+    const byTier = (lp.ollama_probe || {}).by_tier || {};
+    const prov = (reasoning.provider || lp.active || status.reasoning_provider || "ollama").toUpperCase();
     const budget = orch.daily_budget_usd ?? 2;
     const spent = usage.spent_today_usd ?? orch.spent_today_usd ?? 0;
     const rem = orch.remaining_usd ?? budget;
     const pct = budget ? Math.min(100, (spent / budget) * 100) : 0;
-    const cloudBlocked = orch.cloud_blocked ? `<div class="warning-strip">CLOUD BLOCCATO · BUDGET</div>` : "";
-    const lat = usage.avg_latency_ms ? `${Math.round(usage.avg_latency_ms)}ms` : "—";
-    const scoutLines = (scout.recent || []).slice(0, 3).map((c) =>
-      `<span class="tier-pill tone-cyan">${esc(c.name)} · ${esc(c.status)} · ${esc(c.deployment || "local")}</span>`
-    ).join(" ");
-    return `<div class="block-body">
-      ${cloudBlocked}
+    return `<div class="block-body scroll-y">
+      ${orch.cloud_blocked ? `<div class="warning-strip">CLOUD BLOCCATO</div>` : ""}
       <div class="provider-hero tone-gold">
         <span class="ph-main">${prov}</span>
-        <span class="ph-sub">${paid}</span>
-      </div>
-      <div class="tier-row">
-        <span class="tier-pill tone-lime active">LOCALE</span>
-        <span class="tier-pill tone-cyan ${prov.includes("OPEN") ? "active" : ""}">OPENROUTER</span>
-        <span class="tier-pill tone-magenta ${status.paid_mode ? "active" : ""}">CURSOR PRO</span>
+        <span class="ph-sub">${status.paid_mode ? "PRO" : "FREE"} · ${lp.configured || "local"}</span>
       </div>
       <div class="budget-bar"><span class="budget-fill" style="width:${pct}%"></span></div>
       <div class="budget-labels">
-        <span>SPESO $${Number(spent).toFixed(2)} · ${usage.calls_today ?? 0} call</span>
-        <span>RESTO $${Number(rem).toFixed(2)} / $${budget}</span>
+        <span>$${Number(spent).toFixed(2)} · ${usage.calls_today ?? 0} call</span>
+        <span>$${Number(rem).toFixed(2)} / $${budget}</span>
       </div>
-      ${statRow("LATENZA LLM", lat, "lime")}
-      ${statRow("LITELLM", status.llm_provider?.litellm_online ? "ON" : "OFF", "cyan")}
-      ${statRow("MODELLO", status.ollama?.model || status.ollama?.models?.[0] || "gemma4", "cyan")}
-      ${statRow("SESSIONI", status.session_messages ?? 0, "magenta")}
-      ${scoutLines ? `<div class="tier-row scout-row">${scoutLines}</div>` : ""}
-      ${statRow("TECH SCOUT", scout.total != null ? `${scout.total} candidati` : "—", "gold")}
+      ${statRow("MODELLO", lp.ollama_model || ollamaModel(), "cyan")}
+      ${byTier.fast ? statRow("FAST", byTier.fast, "lime") : ""}
+      ${byTier.balanced ? statRow("BALANCED", byTier.balanced, "gold") : ""}
+      ${byTier.capable ? statRow("CAPABLE", byTier.capable, "magenta") : ""}
+      ${statRow("FALLBACK", (lp.fallback_chain || []).join(" → ") || "—", "lime")}
+      ${statRow("LATENZA", usage.avg_latency_ms ? `${Math.round(usage.avg_latency_ms)}ms` : "—", "gold")}
+      ${statRow("TIER", reasoning.tier || (orch.default_tier || "local").toUpperCase(), "lime")}
+      ${statRow("MODE", reasoning.mode || (orch.mode || "—").toUpperCase(), "magenta")}
+      ${(status.paid_capabilities || []).map((c) =>
+        statRow(c.name.toUpperCase(), c.key_present ? `${c.tier} · KEY OK` : `${c.tier} · NO KEY`, c.key_present ? "lime" : "warn")
+      ).join("")}
     </div>`;
   }
 
-  function renderProcesses() {
-    const warnings = [];
-    if (!status.ollama?.online) warnings.push("OLLAMA OFFLINE");
-    if ((status.fleet?.nodes_online || 0) < (status.fleet?.nodes_total || 3)) warnings.push("FLEET GAP");
-    if ((metrics.cpu?.temp_c || 0) > 75) warnings.push("THERMAL");
-    const warn = warnings.length
-      ? `<div class="warning-strip">${warnings.join(" · ")}</div>`
-      : "";
-    return `<div class="block-body scroll-y">
-      ${warn}
-      <div class="process-list">${processList()}</div>
-      <div class="tracer-block">
-        <span class="tracer-label">LOAD TRACE</span>
-        <div class="tracer-bar"><span class="tracer-fill tone-cyan" style="width:${Math.min(100, metrics.cpu?.usage_pct || 0)}%"></span></div>
-      </div>
-      <div class="tracer-block">
-        <span class="tracer-label">MEM TRACE</span>
-        <div class="tracer-bar"><span class="tracer-fill tone-magenta" style="width:${metrics.memory?.usage_pct || 0}%"></span></div>
-      </div>
-    </div>`;
+  function ollamaModel() {
+    const o = status.ollama || {};
+    return o.models?.[0] || "—";
   }
 
-  function livePipeIndex() {
-    if ((status.connected_clients || []).length > 0) return 4;
-    if ((metrics.gpu?.usage_pct || 0) > 20) return 2;
-    if (status.ollama?.online) return 1;
-    return 0;
-  }
-
-  function fleetNodes() {
-    const nodes = status.fleet?.nodes || [];
-    if (nodes.length) return nodes;
-    return [
-      { node_id: "mac-node", online: !!status.mac_node?.ok, info: status.mac_node?.detail || "SSH" },
-      { node_id: "win-vm", online: true, info: "KVM · VNC" },
-      { node_id: "pocket-iphone", online: !!(status.presence?.devices?.length), info: "iOS body" },
+  function renderServices() {
+    const skills = status.channel_skills?.skills || [];
+    const sched = status.scheduler || {};
+    const core = [
+      { label: "JANIS.API", on: pollOk, tag: pollOk ? "LIVE" : "ERR" },
+      { label: "OLLAMA", on: !!status.ollama?.online, tag: status.ollama?.online ? "ON" : "OFF" },
+      { label: "STT", on: !!status.stt?.ready, tag: status.stt?.engine || "OFF" },
+      { label: "COST_ROUTER", on: !status.orchestrator?.cloud_blocked, tag: (status.orchestrator?.mode || "LOCAL").toUpperCase() },
+      { label: "CURSOR", on: !!status.paid_mode, tag: status.paid_mode ? "PRO" : "FREE" },
+      { label: "WS CLIENTS", on: (status.connected_clients || []).length > 0, tag: `${(status.connected_clients || []).length}` },
     ];
-  }
-
-  function fleetCard(name, online, info) {
-    return `<div class="fleet-card ${online ? "online" : "offline"}">
-      <span class="fleet-icon">${online ? "◉" : "◎"}</span>
-      <div><div class="fleet-name">${esc(name)}</div><div class="fleet-info">${esc(info)}</div></div>
-      <span class="fleet-status">${online ? "LINK" : "GAP"}</span>
+    const coreHtml = core.map((p) => `<div class="proc-row"><span class="proc-name">${p.label}</span>${badge(p.tag, p.on)}</div>`).join("");
+    const skillHtml = skills.map((s) => {
+      const caps = (s.capabilities || []).join(",");
+      const why = !s.ready && s.requires ? `manca ${s.requires.join(",")}` : (s.ready ? caps : "not ready");
+      return `<div class="proc-row"><span class="proc-name">${(s.channel || s.id).toUpperCase()}</span>${badge(s.ready ? "READY" : "WAIT", s.ready, s.ready ? "on" : "exe")}<span class="proc-detail">${esc(why)}</span></div>`;
+    }).join("");
+    const jobHtml = (sched.jobs || []).map((j) =>
+      `<div class="proc-row"><span class="proc-name">${(j.id || "?").toUpperCase()}</span>${badge(j.enabled ? "ON" : "OFF", j.enabled)}<span class="proc-detail">${j.action} @ ${j.hour}:${String(j.minute).padStart(2, "0")}</span></div>`
+    ).join("");
+    return `<div class="block-body scroll-y">
+      <div class="mini-head">CORE · ${pollOk ? "API OK" : "API ERR"}</div>
+      <div class="process-list">${coreHtml}</div>
+      <div class="mini-head">CANALI · ${status.channel_skills?.ready_count ?? 0} ready</div>
+      <div class="process-list">${skillHtml || statRow("CANALI", "—", "warn")}</div>
+      <div class="mini-head">SCHEDULER</div>
+      <div class="process-list">${jobHtml || statRow("JOBS", "—", "warn")}</div>
     </div>`;
   }
 
-  function renderFocusRuntime() {
-    return `<div class="gauge-grid">
-      ${arcGauge("CPU", metrics.cpu?.usage_pct, "%", 100, "cyan")}
-      ${arcGauge("RAM", metrics.memory?.usage_pct, "%", 100, "magenta")}
-      ${arcGauge("GPU", metrics.gpu?.usage_pct, "%", 100, "gold")}
-      ${arcGauge("TEMP", metrics.cpu?.temp_c, "°C", 100, "warn")}
+  function renderFleet() {
+    const nodes = status.fleet?.nodes || [];
+    const mac = status.mac_node || {};
+    const pres = status.presence || {};
+    const pocket = status.pocket_api || {};
+    const vm = winVm || {};
+    return `<div class="block-body scroll-y">
+      <div class="mini-head">NODI · ${status.fleet?.nodes_online || 0}/${status.fleet?.nodes_total || 0}</div>
+      ${nodes.map((n) =>
+        `<div class="fleet-card ${n.online ? "online" : "offline"} compact">
+          <span class="fleet-icon">${n.online ? "◉" : "◎"}</span>
+          <div><div class="fleet-name">${esc(n.node_id || n.hostname)}</div>
+          <div class="fleet-info">${esc(n.os || "")} · hb ${n.last_heartbeat_sec_ago != null ? `${Math.round(n.last_heartbeat_sec_ago)}s` : "—"}</div></div>
+          <span class="fleet-status">${n.online ? "LINK" : "GAP"}</span>
+        </div>`
+      ).join("") || statRow("FLEET", "vuota", "warn")}
+      ${statRow("MAC SSH", mac.online ? "ONLINE" : "OFFLINE", mac.online ? "lime" : "warn")}
+      ${mac.info ? statRow("MAC ERR", String(mac.info).slice(0, 48), "warn") : ""}
+      ${statRow("WIN-VM", vm.available ? (vm.state || "?").toUpperCase() : "N/D", vm.state === "running" ? "lime" : "warn")}
+      ${vm.disk ? statRow("VM DISK", vm.disk, "muted") : ""}
+      ${statRow("VNC", vm.vnc ? `${vm.vnc.host}:${vm.vnc.port}` : "—", "cyan")}
+      ${statRow("PRESENCE", `${pres.surface || "—"} · ${pres.power_state || "—"}`, "magenta")}
+      ${statRow("ACTIVE WS", status.active_client || "—", "gold")}
+      <div class="mini-head">POCKET API</div>
+      ${Object.entries(pocket).map(([k, v]) => statRow(k.toUpperCase(), v, "cyan")).join("")}
     </div>`;
   }
 
-  function renderFocusReasoning() {
-    const nodes = ["INPUT", "THINK", "TOOLS", "AGENTS", "OUT"];
-    const live = livePipeIndex();
-    const parts = nodes.map((n, i) => {
+  function renderBrain() {
+    const nodes = reasoning.pipeline || ["INPUT", "THINK", "TOOLS", "AGENTS", "OUT"];
+    const live = reasoning.live_step ?? 0;
+    const pipe = nodes.map((n, i) => {
       const conn = i > 0 ? '<span class="pipe-connector"></span>' : "";
       return `${conn}<span class="pipe-node ${i === live ? "live" : ""}">${n}</span>`;
     }).join("");
-    const orch = status.orchestrator || {};
-    return `<div class="pipeline-wrap"><div class="pipeline">${parts}</div></div>
-      <div class="focus-meta">
-        ${statRow("PROVIDER", (status.reasoning_provider || "local").toUpperCase(), "gold")}
-        ${statRow("TIER", (orch.default_tier || "LOCAL").toUpperCase(), "lime")}
-        ${statRow("TOOL LOOP", "max 8 iter", "cyan")}
-      </div>`;
-  }
-
-  function renderFocusFleet() {
-    return `<div class="fleet-grid">${fleetNodes().map((n) =>
-      fleetCard(n.node_id || n.id, n.online, n.info || n.status || "")
-    ).join("")}</div>`;
-  }
-
-  function renderFocusMemory() {
-    const k = knowledge || {};
-    return `<div class="mem-grid">
-      <div class="mem-cell tone-cyan"><label>VERSION</label><span class="val">${esc(status.version)}</span></div>
-      <div class="mem-cell tone-magenta"><label>BRAIN</label><span class="val">v${status.brain_version || "?"}</span></div>
-      <div class="mem-cell tone-lime"><label>MSG</label><span class="val">${status.session_messages ?? "—"}</span></div>
-      <div class="mem-cell tone-gold"><label>MEMORIES</label><span class="val">${k.total_memories ?? k.count ?? "—"}</span></div>
-      <div class="mem-cell tone-cyan"><label>FOLDERS</label><span class="val">${k.knowledge_folders ?? "—"}</span></div>
-      <div class="mem-cell tone-warn"><label>GAPS</label><span class="val">${k.open_gaps ?? "—"}</span></div>
+    const open = gaps.open || [];
+    const gs = gaps.stats || {};
+    return `<div class="block-body scroll-y">
+      <div class="mini-head">PIPELINE · ${reasoning.provider || "—"}</div>
+      <div class="pipeline-wrap compact"><div class="pipeline">${pipe}</div></div>
+      ${statRow("TOOLS", `${tools.length} registrati`, "lime")}
+      ${statRow("MCP", `${(mcp.mcp_servers || []).length} server`, "cyan")}
+      <div class="mini-head">TOOL REGISTRY</div>
+      ${tools.slice(0, 12).map((t) => statRow(t, "OK", "cyan")).join("")}
+      ${tools.length > 12 ? statRow("…", `+${tools.length - 12}`, "muted") : ""}
+      <div class="mini-head">MEMORIA · L${knowledge.level ?? "—"}</div>
+      ${statRow("MEM TOTAL", knowledge.memories ?? knowledge.count ?? 0, "gold")}
+      ${statRow("USER / JANIS", `${knowledge.user_memories ?? 0} / ${knowledge.janis_memories ?? 0}`, "magenta")}
+      ${statRow("SESSION MSG", status.session_messages ?? 0, "cyan")}
+      ${statRow("GAP APERTI", gs.open ?? open.length, gs.open ? "warn" : "lime")}
+      ${open.slice(0, 3).map((g) => statRow("GAP", String(g.description || g.id).slice(0, 36), "warn")).join("")}
+      ${statRow("SCOUT", scout.total ?? 0, "gold")}
+      ${(scout.recent || []).slice(0, 3).map((c) => statRow(c.name, `${c.status} · ${c.deployment || "local"}`, "cyan")).join("")}
     </div>`;
   }
 
-  function renderFocusPeripherals() {
-    const pocket = status.pocket_api || {};
-    const apis = Object.entries(pocket).slice(0, 6);
-    const mac = status.mac_node || {};
-    const pres = status.presence || {};
-    return `<div class="periph-grid">
-      <div class="periph-col">
-        <span class="periph-head tone-orange">POCKET API</span>
-        ${apis.map(([k, v]) => statRow(k.toUpperCase(), v, "cyan")).join("")}
-      </div>
-      <div class="periph-col">
-        <span class="periph-head tone-blue">NODI</span>
-        ${statRow("MAC SSH", mac.ok ? "ONLINE" : "OFFLINE", mac.ok ? "lime" : "warn")}
-        ${statRow("PRESENCE", (pres.devices || []).length || 0, "magenta")}
-        ${statRow("STT", status.stt?.engine || "—", "gold")}
-        ${statRow("ACTIVE", status.active_client || "—", "cyan")}
-      </div>
-      <div class="waveform-row compact">
-        <div class="wave-block"><span class="wave-label">SIGNAL</span><svg class="wave-svg" id="wave-focus" viewBox="0 0 120 32"></svg></div>
-      </div>
+  function renderPeripherals() {
+    const p = peripherals || {};
+    const usb = p.usb || {};
+    const aud = p.audio || {};
+    const vid = p.video || {};
+    const disp = p.displays || {};
+    const bt = p.bluetooth || {};
+    const inp = p.input || {};
+    const missing = p.missing || [];
+    return `<div class="block-body scroll-y">
+      ${statRow("RIEPILOGO", p.summary || "—", "cyan")}
+      ${missing.length ? `<div class="warning-strip">MANCA: ${missing.join(", ")}</div>` : ""}
+      <div class="mini-head">USB · ${usb.count || 0}</div>
+      ${(usb.devices || []).slice(0, 8).map((u) => statRow(u.id || "?", (u.name || "").slice(0, 32), "gold")).join("") || statRow("USB", "nessuno", "warn")}
+      <div class="mini-head">AUDIO · ${aud.cards || 0} schede</div>
+      ${(aud.devices || []).map((a) => statRow(`CARD ${a.card}`, a.name, aud.ready ? "lime" : "warn")).join("") || statRow("AUDIO", "non rilevato", "warn")}
+      ${(aud.capture_lines || []).slice(0, 3).map((l) => statRow("CAP", l.slice(0, 40), "muted")).join("")}
+      <div class="mini-head">VIDEO · ${vid.count || 0}</div>
+      ${(vid.devices || []).map((v) => statRow(v.name || v.node, v.node || "", vid.ready ? "lime" : "warn")).join("") || statRow("CAMERA", "non rilevata", "warn")}
+      <div class="mini-head">DISPLAY · ${disp.count || 0}</div>
+      ${(disp.outputs || []).slice(0, 4).map((o) => statRow(o.connector, o.status + (o.mode ? ` ${o.mode}` : ""), "cyan")).join("")}
+      ${statRow("BLUETOOTH", bt.adapters || 0, bt.adapters ? "lime" : "muted")}
+      ${statRow("INPUT", inp.count || 0, "magenta")}
+      ${(inp.by_id || []).slice(0, 4).map((n) => statRow("DEV", n.slice(0, 36), "muted")).join("")}
     </div>`;
   }
 
-  function renderFocusBody(viewId) {
-    switch (viewId) {
-      case "runtime": return renderFocusRuntime();
-      case "reasoning": return renderFocusReasoning();
-      case "fleet": return renderFocusFleet();
-      case "memory": return renderFocusMemory();
-      case "peripherals": return renderFocusPeripherals();
-      default: return "";
-    }
+  function renderPerception() {
+    const stt = perception.stt || status.stt || {};
+    const vis = perception.vision || {};
+    const hw = perception.hardware_needed || [];
+    return `<div class="block-body scroll-y">
+      ${statRow("LOCAL FIRST", perception.local_first ? "SI" : "NO", perception.local_first ? "lime" : "warn")}
+      ${statRow("CLOUD", perception.cloud_llm_allowed ? "ALLOW" : "BLOCK", perception.cloud_llm_allowed ? "warn" : "lime")}
+      <div class="mini-head">ASCOLTO (STT)</div>
+      ${statRow("ENGINE", stt.engine || "—", stt.ready ? "lime" : "warn")}
+      ${statRow("READY", stt.ready ? "SI" : "NO", stt.ready ? "lime" : "warn")}
+      ${statRow("API", stt.endpoint || "/api/stt", "cyan")}
+      <div class="mini-head">VISIONE</div>
+      ${statRow("MODELLI", (vis.ollama_vision_models || []).join(", ") || "nessuno", vis.vision_ready ? "lime" : "warn")}
+      ${statRow("FRAME POCKET", vis.recent_frames ?? 0, "gold")}
+      ${statRow("ULTIMO", vis.last_frame || "—", "muted")}
+      ${statRow("API", vis.pocket_endpoint || "/api/pocket/vision", "cyan")}
+      ${hw.length ? `<div class="warning-strip">${hw.join(" · ")}</div>` : statRow("PERCEZIONE", "OK", "lime")}
+      ${statRow("WIN-VM", (perception.win_vm || {}).state || "—", "cyan")}
+    </div>`;
   }
 
-  function renderFocus() {
-    const v = FOCUS_VIEWS[focusIdx];
-    return `<div class="focus-inner">
-      <div class="focus-head">
-        <span class="focus-title">[-${v.label}-]</span>
-        <span class="focus-sub">${v.sub}</span>
-      </div>
-      <div class="focus-body">${renderFocusBody(v.id)}</div>
-      <div class="reactor-mini" aria-hidden="true">
-        <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="36" class="rx-ring"/>
-          <circle cx="40" cy="40" r="24" class="rx-ring" style="animation-direction:reverse"/>
-          <circle cx="40" cy="40" r="4" class="rx-core"/></svg>
-      </div>
+  function renderLlm() {
+    const by = llmModels.by_tier || {};
+    const results = llmModels.results || [];
+    return `<div class="block-body scroll-y">
+      ${statRow("ATTIVI", (llmModels.working || []).join(", ") || "—", "lime")}
+      ${statRow("FAST", by.fast || "—", "lime")}
+      ${statRow("BALANCED", by.balanced || "—", "gold")}
+      ${statRow("CAPABLE", by.capable || "—", "magenta")}
+      <div class="mini-head">PROBE LATENZA</div>
+      ${results.map((r) => statRow(r.model, r.ok ? `${Math.round(r.latency_ms)}ms` : "FAIL", r.ok ? "cyan" : "warn")).join("") || statRow("PROBE", "—", "warn")}
+    </div>`;
+  }
+
+  function renderEvolve() {
+    const au = evolve.autonomy || {};
+    const sched = evolve.scheduler || status.scheduler || {};
+    const props = evolve.proposals || [];
+    const lab = evolve.lab || {};
+    const labRun = lab.active_run || lab.latest_run || {};
+    const labStatus = lab.active_run ? (labRun.stage || "RUN") : (lab.ready_train ? "READY" : "IDLE");
+    const labTone = lab.active_run ? "cyan" : lab.ready_train ? "lime" : "muted";
+    return `<div class="block-body scroll-y">
+      ${statRow("GAP APERTI", evolve.gaps_open ?? 0, evolve.gaps_open ? "warn" : "lime")}
+      ${statRow("PROPOSTE", evolve.proposals_open ?? 0, "gold")}
+      ${statRow("SCOUT", evolve.scout_total ?? 0, "cyan")}
+      ${statRow("LLM LAB", labStatus, labTone)}
+      ${statRow("DATASET", lab.curated_examples ?? 0, (lab.curated_examples || 0) >= (lab.min_dataset_size || 30) ? "lime" : "warn")}
+      ${statRow("GPU LAB", lab.gpu && lab.gpu.available ? "OK" : "NO", lab.gpu && lab.gpu.available ? "lime" : "warn")}
+      ${statRow("AUTONOMY", au.enabled ? "ON" : "OFF", au.enabled ? "lime" : "warn")}
+      ${statRow("REFLECT", au.reflect ? "ON" : "OFF", "lime")}
+      ${statRow("AUTODEV", au.autodev ? "ON" : "OFF", au.autodev ? "lime" : "muted")}
+      ${statRow("SCHEDULER", sched.running ? "RUN" : "STOP", sched.running ? "lime" : "warn")}
+      ${props.slice(0, 2).map((p) => statRow("PROP", String(p.title || p.id || "?").slice(0, 30), "gold")).join("")}
+      ${(scout.recent || []).slice(0, 1).map((c) => statRow("SCOUT", c.name, "cyan")).join("")}
     </div>`;
   }
 
   const RENDERERS = {
     hardware: renderHardware,
+    inventory: renderInventory,
+    network: renderNetwork,
+    disks: renderDisks,
+    sidecars: renderSidecars,
     providers: renderProviders,
-    processes: renderProcesses,
-    focus: renderFocus,
+    services: renderServices,
+    fleet: renderFleet,
+    brain: renderBrain,
+    peripherals: renderPeripherals,
+    perception: renderPerception,
+    llm: renderLlm,
+    evolve: renderEvolve,
   };
 
+  function visibleBlocks() {
+    return BLOCKS.filter((b) => b.page === hudPage);
+  }
+
   function blockStyle(b) {
-    if (!fullscreenId) {
-      return `grid-column:${b.col} / span ${b.colSpan};grid-row:${b.row} / span ${b.rowSpan}`;
-    }
-    if (fullscreenId === b.id) {
-      return "grid-column:2;grid-row:2";
-    }
-    const rims = BLOCKS.filter((x) => x.id !== fullscreenId);
-    const idx = rims.findIndex((x) => x.id === b.id);
-    const slots = [
-      "grid-column:2;grid-row:1",
-      "grid-column:1;grid-row:2",
-      "grid-column:3;grid-row:2",
-    ];
-    return slots[idx] || "grid-column:2;grid-row:3";
+    if (b.page !== hudPage && !fullscreenId) return "display:none";
+    if (!fullscreenId) return `grid-column:${b.col} / span ${b.colSpan};grid-row:${b.row} / span ${b.rowSpan}`;
+    if (fullscreenId === b.id) return "grid-column:1 / span 3;grid-row:1 / span 3";
+    return "display:none";
   }
 
   function buildGrid() {
-    gridEl.innerHTML = BLOCKS.map((b) => {
-      const body = (RENDERERS[b.id] || (() => ""))();
+    gridEl.innerHTML = visibleBlocks().map((b) => {
       const isFs = fullscreenId === b.id;
-      const isRim = fullscreenId && fullscreenId !== b.id;
-      return `<article class="hud-block accent-${b.accent} ${isFs ? "is-focus" : ""} ${isRim ? "is-rim" : ""}"
-        data-id="${b.id}" style="${blockStyle(b)}" tabindex="0">
+      return `<article class="hud-block accent-${b.accent} ${isFs ? "is-focus" : ""}" data-id="${b.id}" style="${blockStyle(b)}" tabindex="0">
         <div class="block-frame">
-          <span class="frame-corner tl"></span><span class="frame-corner tr"></span>
-          <span class="frame-corner bl"></span><span class="frame-corner br"></span>
-          <header class="block-head"><span class="block-title">${b.title}</span>
-            <span class="block-expand">${isFs ? "◈ FULL" : "⊞"}</span>
-          </header>
-          ${body}
+          <div class="block-scan"></div>
+          <span class="block-id">${b.id.slice(0, 3).toUpperCase()}</span>
+          <header class="block-head"><span class="block-title">${b.title}</span><span class="block-expand">${isFs ? "◈ EXP" : "⊞"}</span></header>
+          ${(RENDERERS[b.id] || (() => ""))()}
         </div>
       </article>`;
     }).join("");
-
     gridEl.querySelectorAll(".hud-block").forEach((el) => {
-      el.addEventListener("click", (e) => {
-        e.stopPropagation();
-        toggleFullscreen(el.dataset.id);
-      });
+      el.addEventListener("click", (e) => { e.stopPropagation(); toggleFullscreen(el.dataset.id); });
     });
   }
 
@@ -351,132 +462,85 @@
     if (fullscreenId === id) {
       fullscreenId = null;
       stage.classList.remove("grid-fullscreen");
+      pauseBadge.classList.add("hidden");
+      footMeta.textContent = pollOk ? `PAG ${hudPage + 1}/2 · POLL 5S` : `ERR: ${pollErr}`;
     } else {
       fullscreenId = id;
       stage.classList.add("grid-fullscreen");
-      paused = true;
       pauseUntil = Date.now() + PAUSE_MS;
       pauseBadge.classList.remove("hidden");
-      footMeta.textContent = `FULLSCREEN · ${id.toUpperCase()} · CLICK = ESCI`;
+      footMeta.textContent = `FULL · ${id.toUpperCase()}`;
       clearTimeout(timer);
-      timer = setTimeout(exitFullscreenPause, PAUSE_MS);
+      timer = setTimeout(() => {
+        fullscreenId = null;
+        stage.classList.remove("grid-fullscreen");
+        pauseBadge.classList.add("hidden");
+        buildGrid();
+      }, PAUSE_MS);
     }
     buildGrid();
-    renderWaveforms();
-  }
-
-  function exitFullscreenPause() {
-    if (Date.now() >= pauseUntil) {
-      paused = false;
-      fullscreenId = null;
-      stage.classList.remove("grid-fullscreen");
-      pauseBadge.classList.add("hidden");
-      footMeta.textContent = "GRID 3×3 · CLICK BLOCCO = FULLSCREEN";
-      buildGrid();
-      scheduleCarousel();
-    }
   }
 
   function renderDots() {
-    dotsEl.innerHTML = FOCUS_VIEWS.map((v, i) =>
-      `<span class="dot ${i === focusIdx ? "on" : ""}" data-i="${i}" title="${v.label}"></span>`
+    const pages = ["OPS", "I/O · PERCEZIONE"];
+    dotsEl.innerHTML = pages.map((label, i) =>
+      `<span class="dot ${i === hudPage ? "on" : ""}" data-page="${i}" title="${label}"></span>`
     ).join("");
     dotsEl.querySelectorAll(".dot").forEach((d) => {
       d.addEventListener("click", (e) => {
         e.stopPropagation();
-        focusIdx = parseInt(d.dataset.i, 10);
-        paused = true;
-        pauseUntil = Date.now() + PAUSE_MS;
-        pauseBadge.classList.remove("hidden");
+        hudPage = parseInt(d.dataset.page, 10);
+        fullscreenId = null;
+        stage.classList.remove("grid-fullscreen");
         buildGrid();
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          paused = false;
-          pauseBadge.classList.add("hidden");
-          scheduleCarousel();
-        }, PAUSE_MS);
+        renderDots();
+        footMeta.textContent = pollOk
+          ? `PAG ${hudPage + 1}/2 · ${pages[hudPage]} · POLL 5S`
+          : `API ERR · ${pollErr}`;
       });
     });
-  }
-
-  function carouselMs() {
-    const v = FOCUS_VIEWS[focusIdx];
-    let base = 35000;
-    if (v.id === "runtime" && (metrics.gpu?.usage_pct || 0) > 30) base = 50000;
-    if (v.id === "fleet" && (status.fleet?.nodes_online || 0) > 0) base = 25000;
-    return base;
-  }
-
-  function scheduleCarousel() {
-    clearTimeout(timer);
-    if (paused && Date.now() < pauseUntil) return;
-    if (fullscreenId) return;
-    timer = setTimeout(() => {
-      focusIdx = (focusIdx + 1) % FOCUS_VIEWS.length;
-      buildGrid();
-      renderDots();
-      scheduleCarousel();
-    }, carouselMs());
-  }
-
-  function wavePath(phase, amp, freq) {
-    const pts = [];
-    for (let x = 0; x <= 120; x += 2) {
-      const y = 16 + Math.sin((x + phase) * freq * 0.08) * amp;
-      pts.push(`${x === 0 ? "M" : "L"}${x},${y.toFixed(1)}`);
-    }
-    return pts.join(" ");
-  }
-
-  function renderWaveforms() {
-    wavePhase += 4;
-    const amp = 3 + (metrics.cpu?.usage_pct || 0) * 0.1;
-    const svg = document.getElementById("wave-focus");
-    if (svg) {
-      svg.innerHTML = `<path class="wave-path tone-cyan" d="${wavePath(wavePhase, amp, 1.1)}"/>
-        <path class="wave-path tone-magenta" d="${wavePath(wavePhase + 30, amp * 0.6, 1.9)}" style="opacity:0.4"/>`;
-    }
   }
 
   function updateSysStatus() {
     const el = document.getElementById("sys-status");
     if (!el) return;
-    el.textContent = status.ollama?.online ? "ONLINE" : "DEGRADED";
+    if (!pollOk) { el.textContent = "NO DATA"; return; }
+    const ok = status.ollama?.online && metrics.sidecars?.brain !== false;
+    el.textContent = ok ? "ONLINE" : "DEGRADED";
   }
 
   function refresh() {
     buildGrid();
     renderDots();
-    renderWaveforms();
     updateSysStatus();
-    clockEl.textContent = new Date().toLocaleTimeString("it-IT", { hour12: false });
+    if (clockEl) clockEl.textContent = new Date().toLocaleTimeString("it-IT", { hour12: false });
+    if (!fullscreenId) {
+      footMeta.textContent = pollOk
+        ? `PAG ${hudPage + 1}/2 · LIVE · POLL 5S`
+        : `API ERR · ${pollErr}`;
+    }
   }
 
   async function poll() {
+    pollCount += 1;
+    const refreshInv = pollCount % 12 === 1;
     try {
-      const [m, s, h, k, sc] = await Promise.all([
-        fetch("/api/host/metrics").then((r) => r.json()),
-        fetch("/api/status").then((r) => r.json()),
-        fetch("/api/host/hardware").then((r) => r.json()).catch(() => ({})),
-        fetch("/api/knowledge").then((r) => r.json()).catch(() => ({})),
-        fetch("/api/scout/status").then((r) => r.json()).catch(() => ({})),
-      ]);
-      metrics = m;
-      status = s;
-      hardware = h;
-      knowledge = k;
-      scout = sc;
-    } catch (_) { /* preview / offline */ }
+      const r = await fetch(`/api/hud/dashboard${refreshInv ? "?refresh_inventory=true" : ""}`);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const d = await r.json();
+      if (!d.ok) throw new Error("dashboard not ok");
+      applyDashboard(d);
+      pollOk = true;
+      pollErr = "";
+    } catch (e) {
+      pollOk = false;
+      pollErr = e.message || "fetch failed";
+    }
     refresh();
   }
 
-  stage.addEventListener("click", () => {
-    if (fullscreenId) toggleFullscreen(fullscreenId);
-  });
-
+  stage.addEventListener("click", () => { if (fullscreenId) toggleFullscreen(fullscreenId); });
   refresh();
   poll();
-  scheduleCarousel();
   setInterval(poll, 5000);
-  setInterval(renderWaveforms, 250);
 })();

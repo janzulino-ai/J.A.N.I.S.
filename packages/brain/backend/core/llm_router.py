@@ -19,16 +19,23 @@ logger = logging.getLogger("JANIS.LLMRouter")
 _CLOUD = frozenset({"openrouter", "cursor"})
 
 
-async def _ollama_chat(messages: list[dict]) -> tuple[str, dict]:
+async def _ollama_chat(messages: list[dict], *, model: str | None = None, user_text: str = "", tool_loop: bool = False, iteration: int = 0) -> tuple[str, dict]:
+    from backend.core.ollama_model_router import select_model
+
+    if not model:
+        model, sel_meta = await select_model(user_text, tool_loop=tool_loop, iteration=iteration)
+    else:
+        sel_meta = {"tier": "manual", "selected": model}
+
     t0 = time.perf_counter()
     async with httpx.AsyncClient(timeout=120.0) as client:
         r = await client.post(
             f"{settings.OLLAMA_BASE_URL.rstrip('/')}/api/chat",
             json={
-                "model": settings.OLLAMA_MODEL,
+                "model": model,
                 "messages": messages,
                 "stream": False,
-                "options": {"temperature": 0.62, "num_ctx": 8192},
+                "options": {"temperature": 0.62, "num_ctx": 4096, "num_predict": 512},
             },
         )
         r.raise_for_status()
@@ -40,7 +47,8 @@ async def _ollama_chat(messages: list[dict]) -> tuple[str, dict]:
             "completion_tokens": data.get("eval_count") or 0,
             "cost_usd": 0.0,
             "latency_ms": latency,
-            "model": settings.OLLAMA_MODEL,
+            "model": model,
+            "model_tier": sel_meta.get("tier"),
         }
         return content, usage
 
@@ -148,10 +156,13 @@ def _build_chain(provider: str) -> list[str]:
     p = (provider or "ollama").lower().strip()
     cloud_ok = cost_router.cloud_budget_available()
 
-    if settings.LITELLM_PROXY_URL:
-        if cloud_ok:
-            return ["litellm"]
+    # Modalità privata: solo Ollama locale salvo opt-in esplicito
+    if settings.LOCAL_FIRST and not settings.CLOUD_LLM_ALLOWED:
         return ["ollama"]
+
+    if settings.LITELLM_PROXY_URL:
+        # Ollama diretto prima: più veloce e privato del proxy LiteLLM
+        return ["ollama", "litellm"]
 
     if not rt.paid_mode:
         if p == "openrouter" and cloud_ok:
@@ -190,34 +201,39 @@ def _build_chain(provider: str) -> list[str]:
     return chain
 
 
-def _litellm_model_for_provider(p: str) -> str:
+def _litellm_model_for_provider(p: str, ollama_model: str | None = None) -> str:
     if p == "ollama":
-        return f"ollama/{settings.OLLAMA_MODEL}"
+        return f"ollama/{ollama_model or settings.OLLAMA_MODEL}"
     if p == "openrouter":
         return f"openrouter/{settings.OPENROUTER_MODEL}"
     return settings.OLLAMA_MODEL
 
 
-async def chat(messages: list[dict], *, session_id: str = "") -> tuple[str, str]:
+async def chat(messages: list[dict], *, session_id: str = "", user_text: str = "", tool_loop: bool = False, iteration: int = 0) -> tuple[str, str]:
     """Invia messaggi al provider attivo con catena di fallback e tracking costi."""
     provider = effective_reasoning_provider()
     chain = _build_chain(provider)
 
     last_err: Exception | None = None
+    ollama_pick: str | None = None
+    if "ollama" in chain:
+        from backend.core.ollama_model_router import select_model
+        ollama_pick, _ = await select_model(user_text, tool_loop=tool_loop, iteration=iteration)
+
     for p in chain:
         if p in _CLOUD and not cost_router.can_use_provider(p):
             logger.warning("Provider %s bloccato — budget esaurito", p)
             continue
         try:
             if p == "litellm":
-                model = _litellm_model_for_provider(provider if provider != "auto" else "ollama")
+                model = _litellm_model_for_provider(provider if provider != "auto" else "ollama", ollama_pick)
                 content, usage = await _litellm_chat(messages, model)
                 prov_label = "litellm"
             elif p == "cursor":
                 content, usage = await _cursor_chat(messages)
                 prov_label = "cursor"
             elif p == "ollama":
-                content, usage = await _ollama_chat(messages)
+                content, usage = await _ollama_chat(messages, user_text=user_text, tool_loop=tool_loop, iteration=iteration)
                 prov_label = "ollama"
             elif p == "openrouter":
                 content, usage = await _openrouter_chat(messages)
@@ -254,7 +270,7 @@ async def chat_stream(messages: list[dict]) -> AsyncIterator[str]:
                 "model": settings.OLLAMA_MODEL,
                 "messages": messages,
                 "stream": True,
-                "options": {"temperature": 0.62, "num_ctx": 8192},
+                "options": {"temperature": 0.62, "num_ctx": 4096, "num_predict": 256},
             },
         ) as response:
             response.raise_for_status()
@@ -315,6 +331,10 @@ async def get_active_provider() -> dict:
             break
 
     from backend.core.llm_usage import summary_today
+    from backend.core.ollama_model_router import get_probe_status
+
+    probe = await get_probe_status()
+    by_tier = probe.get("by_tier") or {}
 
     return {
         "configured": configured,
@@ -327,11 +347,20 @@ async def get_active_provider() -> dict:
         "cursor_configured": cursor_ok,
         "litellm_proxy": bool(settings.LITELLM_PROXY_URL),
         "litellm_online": litellm_ok,
-        "ollama_model": settings.OLLAMA_MODEL,
+        "ollama_model": by_tier.get("balanced") or settings.OLLAMA_MODEL,
+        "ollama_models": probe.get("models_available") or [],
+        "ollama_probe": {
+            "working": probe.get("working") or [],
+            "by_tier": by_tier,
+            "results": probe.get("results") or [],
+            "probed_at": probe.get("probed_at"),
+        },
         "openrouter_model": settings.OPENROUTER_MODEL,
         "cursor_model": settings.CURSOR_MODEL,
         "fallback_chain": chain,
         "cloud_blocked": not cost_router.cloud_budget_available(),
+        "local_first": settings.LOCAL_FIRST,
+        "cloud_llm_allowed": settings.CLOUD_LLM_ALLOWED,
         "llm_usage": summary_today(),
     }
 

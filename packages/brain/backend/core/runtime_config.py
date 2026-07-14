@@ -89,6 +89,8 @@ def get_runtime() -> RuntimeConfig:
 
 
 def effective_reasoning_provider() -> str:
+    if settings.LOCAL_FIRST and not settings.CLOUD_LLM_ALLOWED:
+        return "ollama"
     rt = get_runtime()
     if not rt.paid_mode:
         return (settings.LLM_PROVIDER or "ollama").lower().strip()

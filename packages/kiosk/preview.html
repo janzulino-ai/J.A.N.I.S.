@@ -2,27 +2,29 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>J.A.N.I.S. Kiosk — HUD Preview</title>
-  <link rel="stylesheet" href="static/server-infographic.css?v=hudgrid03">
+  <link rel="stylesheet" href="static/server-infographic.css?v=hudcli03">
 </head>
-<body class="res-fhd">
-  <div class="hud-bg-grid"></div>
-  <div class="hud-scanline"></div>
-  <div class="hud-bg-schematic" aria-hidden="true"></div>
+<body class="res-fhd hud-terminal">
+  <div class="hud-bg" aria-hidden="true"></div>
 
   <div id="server-stage" class="hud-frame">
-    <span class="hud-corner tl"></span>
-    <span class="hud-corner tr"></span>
-    <span class="hud-corner bl"></span>
-    <span class="hud-corner br"></span>
+    <span class="hud-bracket tl"></span>
+    <span class="hud-bracket tr"></span>
+    <span class="hud-bracket bl"></span>
+    <span class="hud-bracket br"></span>
 
     <header class="hud-head">
       <div class="head-left">
         <span class="logo">J.A.N.I.S.</span>
-        <span class="sys-pill"><span class="pulse-dot"></span><span id="sys-status">ONLINE</span></span>
+        <span class="sys-pill"><span class="pulse-ring"></span><span id="sys-status">ONLINE</span></span>
       </div>
-      <span class="acronym">Just Another Neuralgic Improving Server</span>
+      <div class="head-center">
+        <span class="head-line"></span>
+        <span class="acronym">Just Another Neuralgic Improving Server</span>
+        <span class="head-line"></span>
+      </div>
       <div class="head-right">
         <span class="hud-tag">PREVIEW · MOCK</span>
         <span id="hud-clock" class="hud-clock"></span>
@@ -119,6 +121,6 @@
       return _fetch(url);
     };
   </script>
-  <script src="static/server-stage.js?v=hudgrid03"></script>
+  <script src="static/server-stage.js?v=hudcli03"></script>
 </body>
 </html>

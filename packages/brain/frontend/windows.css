@@ -1,12 +1,15 @@
 * { box-sizing: border-box; }
-body {
+html, body {
   margin: 0;
+  height: 100%;
   font-family: system-ui, sans-serif;
   background: #0d1117;
   color: #e6edf3;
-  min-height: 100vh;
+}
+body {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 .win-head {
   display: flex;
@@ -15,6 +18,7 @@ body {
   padding: 10px 16px;
   background: #161b22;
   border-bottom: 1px solid #30363d;
+  flex-shrink: 0;
 }
 .win-head h1 { margin: 0; font-size: 1rem; font-weight: 600; }
 .win-actions { display: flex; gap: 8px; align-items: center; }
@@ -36,14 +40,29 @@ body {
 .badge.on { background: #238636; }
 .badge.off { background: #6e7681; }
 .vnc-screen {
-  flex: 1;
-  min-height: 60vh;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  position: relative;
   background: #000;
   overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+/* noVNC inserisce canvas dentro #screen */
+.vnc-screen canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 .win-foot {
   padding: 8px 16px;
   font-size: 0.8rem;
   color: #8b949e;
   border-top: 1px solid #30363d;
+  flex-shrink: 0;
 }

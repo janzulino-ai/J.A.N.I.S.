@@ -31,10 +31,14 @@ from backend.routers.ios_bridge import router as ios_bridge_router
 from backend.routers.identity import router as identity_router
 from backend.routers.emergency import router as emergency_router
 from backend.routers.host_metrics import router as host_metrics_router
+from backend.routers.hud import router as hud_router
+from backend.routers.llm_models import router as llm_models_router
+from backend.routers.perception import router as perception_router
 from backend.routers.kiosk import router as kiosk_router, mount_kiosk_static
 from backend.routers.windows import router as windows_router
 from backend.routers.evolve import router as evolve_router
 from backend.routers.scout import router as scout_router
+from backend.routers.lab import router as lab_router
 
 # Registra strumenti
 import backend.core.tools  # noqa: F401
@@ -86,10 +90,14 @@ app.include_router(ios_bridge_router)
 app.include_router(identity_router)
 app.include_router(emergency_router)
 app.include_router(host_metrics_router)
+app.include_router(hud_router)
+app.include_router(llm_models_router)
+app.include_router(perception_router)
 app.include_router(kiosk_router)
 app.include_router(windows_router)
 app.include_router(evolve_router)
 app.include_router(scout_router)
+app.include_router(lab_router)
 mount_kiosk_static(app)
 
 
@@ -181,6 +189,23 @@ async def startup():
         logger.warning("Ollama offline — la chat non funzionerà finché non è avviato")
     provider = await get_active_provider()
     logger.info("JANIS online — provider: %s, modello: %s", provider.get("active"), settings.OLLAMA_MODEL)
+    import asyncio
+    from backend.core.ollama_model_router import probe_all_models
+
+    async def _probe_models_bg():
+        try:
+            result = await probe_all_models(force=True)
+            logger.info(
+                "Ollama probe: %s modelli OK — fast=%s balanced=%s capable=%s",
+                len(result.get("working") or []),
+                (result.get("by_tier") or {}).get("fast"),
+                (result.get("by_tier") or {}).get("balanced"),
+                (result.get("by_tier") or {}).get("capable"),
+            )
+        except Exception:
+            logger.exception("Probe modelli Ollama fallito")
+
+    asyncio.create_task(_probe_models_bg(), name="janis-ollama-probe")
     logger.info("Workspace: %s", settings.JANIS_WORKSPACE)
     from backend.core.evolve_paths import ensure_workspace_dirs
     paths = ensure_workspace_dirs()

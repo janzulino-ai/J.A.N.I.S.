@@ -13,8 +13,11 @@ fi
 # shellcheck source=/dev/null
 [[ -f "$ROOT/win-vm.env" ]] && source "$ROOT/win-vm.env"
 
-bash "$ROOT/detect-win-disk.sh"
-WIN_DISK="${WIN_DISK:-/dev/nvme1n1}"
+bash "$ROOT/detect-win-disk.sh" || true
+# win-vm.env ha priorità su detect
+# shellcheck source=/dev/null
+[[ -f "$ROOT/win-vm.env" ]] && source "$ROOT/win-vm.env"
+WIN_DISK="${WIN_DISK:-/dev/nvme0n1}"
 VNC_PASS="${VNC_PASS:-winvm01}"
 
 vm_disk=$(virsh dumpxml win-vm 2>/dev/null | grep -oP "source dev='\K[^']+" | head -1 || true)
@@ -25,8 +28,8 @@ else
   echo "==> [1/3] win-vm già su ${WIN_DISK} — skip"
 fi
 
-echo "==> [2/3] Fix VNC"
-VNC_PASS="${VNC_PASS}" bash "$ROOT/fix-win-vm-vnc.sh"
+echo "==> [2/3] Fix VNC (opzionale — passwd già in create)"
+VNC_PASS="${VNC_PASS}" bash "$ROOT/fix-win-vm-vnc.sh" 2>/dev/null || true
 
 echo "==> [3/3] Inventario Windows"
 bash "$ROOT/setup-windows-inventory.sh" || true

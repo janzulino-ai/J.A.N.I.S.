@@ -177,8 +177,31 @@ async def host_metrics():
         "network": ps["net"],
         "platform": platform.system(),
         "glances": glances is not None,
+        "sidecars": await _sidecar_health(glances is not None),
         "history": _load_ring()[-30:],
         "process_uptime_sec": int(time.time() - _boot),
+    }
+
+
+async def _sidecar_health(glances_ok: bool) -> dict:
+    litellm_ok = False
+    qdrant_ok = False
+    try:
+        from backend.core.llm_router import get_active_provider
+        prov = await get_active_provider()
+        litellm_ok = bool(prov.get("litellm_online"))
+    except Exception:
+        pass
+    try:
+        from backend.core.qdrant_client import qdrant_available
+        qdrant_ok = await qdrant_available()
+    except Exception:
+        pass
+    return {
+        "glances": glances_ok,
+        "litellm": litellm_ok,
+        "qdrant": qdrant_ok,
+        "brain": True,
     }
 
 
@@ -204,6 +227,13 @@ async def host_inventory(refresh: bool = False):
         save_inventory(inv)
         return {"ok": True, "refreshed": True, "inventory": inv}
     return {"ok": True, "inventory": load_inventory()}
+
+
+@router.get("/api/host/capabilities")
+async def host_capabilities(refresh_inventory: bool = False):
+    from backend.core.host_awareness import build_awareness, format_awareness_text
+    data = await build_awareness(refresh_inventory=refresh_inventory)
+    return {"ok": True, "capabilities": data, "summary": format_awareness_text(data)}
 
 
 def _ram_gb() -> float | None:

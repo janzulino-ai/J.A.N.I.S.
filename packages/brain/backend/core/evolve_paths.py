@@ -33,7 +33,9 @@ def runtime_dir() -> Path:
 
 
 def ensure_workspace_dirs() -> dict[str, str]:
-    """Crea cartelle evolve/sandbox/runtime se mancanti."""
+    """Crea cartelle evolve/sandbox/runtime/lab se mancanti."""
+    from backend.core.llm_lab.paths import ensure_lab_dirs
+
     paths = {
         "evolve": evolve_dir(),
         "sandbox": sandbox_dir(),
@@ -44,6 +46,8 @@ def ensure_workspace_dirs() -> dict[str, str]:
     }
     for p in paths.values():
         p.mkdir(parents=True, exist_ok=True)
+    lab_paths = ensure_lab_dirs()
+    paths.update({f"lab_{k}": Path(v) for k, v in lab_paths.items()})
     return {k: str(v) for k, v in paths.items()}
 
 

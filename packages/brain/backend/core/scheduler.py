@@ -44,6 +44,25 @@ def default_jobs() -> list[dict]:
             "channel": "",
             "chat_id": "",
         },
+        {
+            "id": "nightly-lab-harvest",
+            "enabled": True,
+            "hour": 3,
+            "minute": 0,
+            "action": "lab_harvest",
+            "channel": "",
+            "chat_id": "",
+        },
+        {
+            "id": "weekly-lab-train",
+            "enabled": False,
+            "hour": 4,
+            "minute": 0,
+            "weekday": 6,
+            "action": "lab_train",
+            "channel": "",
+            "chat_id": "",
+        },
     ]
 
 
@@ -81,6 +100,33 @@ async def _run_job(job: dict) -> None:
             reply = await process_message(prompt, stream_final=False)
         except Exception:
             logger.exception("Scout job fallito")
+            return
+    elif action == "lab_harvest":
+        from backend.core.llm_lab.harvest import harvest_chats
+        from backend.core.llm_lab.curate import curate_dataset
+        logger.info("Scheduler lab_harvest")
+        try:
+            h = await harvest_chats()
+            c = await curate_dataset()
+            reply = await process_message(
+                f"[LLM Lab] Harvest {h.get('examples', 0)} esempi. Curated totale: {c.get('total', 0)}.",
+                stream_final=False,
+            )
+        except Exception:
+            logger.exception("Lab harvest job fallito")
+            return
+    elif action == "lab_train":
+        from backend.core.llm_lab.train import run_full_cycle
+        logger.info("Scheduler lab_train")
+        try:
+            result = await run_full_cycle(harvest_first=True)
+            reply = await process_message(
+                f"[LLM Lab] Cycle action={result.get('action')}. "
+                f"Steps: {len(result.get('steps') or [])}.",
+                stream_final=False,
+            )
+        except Exception:
+            logger.exception("Lab train job fallito")
             return
     else:
         prompt = (job.get("prompt") or "").strip()
@@ -150,6 +196,29 @@ async def start_scheduler() -> None:
     if settings.AUTONOMY_ENABLED:
         _autonomy_task = asyncio.create_task(_autonomy_loop(), name="janis-autonomy")
     logger.info("Scheduler avviato (autonomy=%s)", settings.AUTONOMY_ENABLED)
+
+
+def scheduler_status() -> dict:
+    jobs = load_jobs()
+    return {
+        "enabled": settings.SCHEDULER_ENABLED,
+        "running": _task is not None and not _task.done(),
+        "autonomy_enabled": settings.AUTONOMY_ENABLED,
+        "autonomy_running": _autonomy_task is not None and not _autonomy_task.done(),
+        "job_count": len(jobs),
+        "enabled_jobs": sum(1 for j in jobs if j.get("enabled")),
+        "jobs": [
+            {
+                "id": j.get("id"),
+                "enabled": j.get("enabled"),
+                "hour": j.get("hour"),
+                "minute": j.get("minute"),
+                "weekday": j.get("weekday"),
+                "action": j.get("action") or "prompt",
+            }
+            for j in jobs
+        ],
+    }
 
 
 async def stop_scheduler() -> None:

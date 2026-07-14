@@ -6,8 +6,10 @@
   const input = document.getElementById("chat-input");
   const sendBtn = document.getElementById("chat-send");
   const liveContent = document.getElementById("live-content");
+  const chatTitle = document.querySelector(".chat-title");
   const tabs = document.querySelectorAll(".tab");
   let ws = null;
+  let wsOk = false;
   let activeTab = "agents";
   const liveBuffers = { agents: [], tools: [], fleet: [], logs: [] };
 
@@ -25,12 +27,19 @@
     });
   });
 
+  function setConn(ok, label) {
+    wsOk = ok;
+    if (chatTitle) chatTitle.textContent = ok ? "J.A.N.I.S. · LIVE" : `J.A.N.I.S. · ${label || "OFFLINE"}`;
+    sendBtn.disabled = false;
+  }
+
   function appendMsg(role, text) {
     const div = document.createElement("div");
     div.className = "msg " + role;
     div.textContent = text;
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
+    return div;
   }
 
   function pushLive(kind, line) {
@@ -50,6 +59,9 @@
     const proto = location.protocol === "https:" ? "wss:" : "ws:";
     const url = `${proto}//${location.host}/ws/janis?device_id=client-web`;
     ws = new WebSocket(url);
+    ws.onopen = () => setConn(true);
+    ws.onclose = () => { setConn(false, "WS reconnect…"); setTimeout(connect, 3000); };
+    ws.onerror = () => setConn(false, "WS err");
     let buf = "";
     ws.onmessage = (ev) => {
       try {
@@ -74,15 +86,47 @@
         }
       } catch (_) {}
     };
-    ws.onclose = () => setTimeout(connect, 3000);
+  }
+
+  async function sendHttp(text) {
+    appendMsg("user", text);
+    const el = appendMsg("assistant", "…");
+    el.classList.add("streaming");
+    try {
+      const r = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      const reader = r.body.getReader();
+      const dec = new TextDecoder();
+      let acc = "";
+      let out = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += dec.decode(value, { stream: true });
+        for (const m of acc.matchAll(/"text"\s*:\s*"((?:\\.|[^"\\])*)"/g)) {
+          try { out = JSON.parse('"' + m[1].replace(/\\/g, "\\\\") + '"'); } catch (_) { out = m[1]; }
+        }
+        if (out) el.textContent = out;
+      }
+    } catch (e) {
+      el.textContent = "Errore chat: " + (e.message || "?");
+    }
+    el.classList.remove("streaming");
   }
 
   function sendChat() {
     const text = input.value.trim();
-    if (!text || !ws || ws.readyState !== 1) return;
-    appendMsg("user", text);
-    ws.send(JSON.stringify({ type: "chat", text, device_id: "client-web" }));
+    if (!text) return;
     input.value = "";
+    if (ws && ws.readyState === 1) {
+      appendMsg("user", text);
+      ws.send(JSON.stringify({ type: "chat", text, device_id: "client-web" }));
+    } else {
+      sendHttp(text);
+    }
   }
 
   sendBtn.addEventListener("click", sendChat);

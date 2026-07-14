@@ -2,30 +2,32 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>J.A.N.I.S. Server HUD</title>
-  <link rel="stylesheet" href="/kiosk-static/server-infographic.css?v=hudgrid03">
+  <link rel="stylesheet" href="/kiosk-static/server-infographic.css?v=hudcli03">
 </head>
-<body class="res-fhd">
-  <div class="hud-bg-grid"></div>
-  <div class="hud-scanline"></div>
-  <div class="hud-bg-schematic" aria-hidden="true"></div>
+<body class="res-fhd hud-terminal">
+  <div class="hud-bg" aria-hidden="true"></div>
 
   <div id="server-stage" class="hud-frame">
-    <span class="hud-corner tl"></span>
-    <span class="hud-corner tr"></span>
-    <span class="hud-corner bl"></span>
-    <span class="hud-corner br"></span>
+    <span class="hud-bracket tl"></span>
+    <span class="hud-bracket tr"></span>
+    <span class="hud-bracket bl"></span>
+    <span class="hud-bracket br"></span>
 
     <header class="hud-head">
       <div class="head-left">
         <span class="logo">J.A.N.I.S.</span>
-        <span class="sys-pill"><span class="pulse-dot"></span><span id="sys-status">ONLINE</span></span>
+        <span class="sys-pill"><span class="pulse-ring"></span><span id="sys-status">ONLINE</span></span>
       </div>
-      <span class="acronym">Just Another Neuralgic Improving Server</span>
+      <div class="head-center">
+        <span class="head-line"></span>
+        <span class="acronym">Just Another Neuralgic Improving Server</span>
+        <span class="head-line"></span>
+      </div>
       <div class="head-right">
-        <span class="hud-tag">HUD · TTY1</span>
-        <span id="hud-clock" class="hud-clock"></span>
+        <span class="hud-tag">SYS.HUD</span>
+        <span id="hud-clock" class="hud-clock">00:00:00</span>
       </div>
     </header>
 
@@ -33,11 +35,26 @@
 
     <footer class="hud-foot">
       <span id="sheet-dots" class="sheet-dots"></span>
-      <span class="foot-meta" id="foot-meta">GRID 3×3 · CLICK BLOCCO = FULLSCREEN</span>
-      <span id="pause-badge" class="pause-badge hidden">◆ PAUSA 10 MIN</span>
+      <span class="foot-meta" id="foot-meta">GRID 3×3 · CLICK = FULLSCREEN · ?v=hudcli02</span>
+      <button type="button" id="chat-toggle" class="chat-toggle">[ CHAT ]</button>
+      <span id="pause-badge" class="pause-badge hidden">◆ HOLD 10M</span>
     </footer>
+
+    <aside id="hud-chat" class="hud-chat hidden" aria-label="Chat JANIS">
+      <header class="hud-chat-head">
+        <span>BRAIN · LIVE</span>
+        <span id="chat-ws-status" class="chat-ws off">WS</span>
+        <button type="button" id="chat-close" class="chat-close">✕</button>
+      </header>
+      <div id="hud-chat-log" class="hud-chat-log"></div>
+      <form id="hud-chat-form" class="hud-chat-form">
+        <input id="hud-chat-input" type="text" autocomplete="off" placeholder="Messaggio a JANIS…" />
+        <button type="submit">INVIA</button>
+      </form>
+    </aside>
   </div>
 
-  <script src="/kiosk-static/server-stage.js?v=hudgrid03"></script>
+  <script src="/kiosk-static/server-stage.js?v=hudcli03"></script>
+  <script src="/kiosk-static/hud-chat.js?v=hudcli03"></script>
 </body>
 </html>

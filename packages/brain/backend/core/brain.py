@@ -640,6 +640,22 @@ async def _emit_brain_agent_end(agent_id: str | None, emit: EventCallback) -> No
         await emit({"type": "brain_agent", "action": "dismiss", "id": agent_id})
 
 
+def _base_system_prompt() -> str:
+    """Prompt compatto su Linux server — gemma4 CPU non regge il prompt Windows completo."""
+    import platform
+    if platform.system() == "Linux":
+        return (
+            "Sei JANIS — brain sul server Linux (Just Another Neuralgic Improving Server).\n"
+            "Rispondi SEMPRE in italiano, breve e utile.\n"
+            "Protocollo: JSON {\"tool\":\"nome\",\"args\":{...},\"reason\":\"...\"} oppure {\"final\":\"risposta\"}.\n"
+            "Per hardware/software/periferiche usa host_capabilities o system_info — non inventare.\n"
+            "Tool chiave: terminal, read_file, write_file, list_dir, host_capabilities, system_info, "
+            "remember, recall, mac_ssh, fleet_execute, scout, win_vm, perception_status, describe_vision.\n"
+            "Windows è solo VM win-vm su questo host. Mac via SSH se online.\n"
+        )
+    return settings.JANIS_SYSTEM_PROMPT
+
+
 async def process_message(
     user_text: str,
     on_event: EventCallback | None = None,
@@ -656,8 +672,28 @@ async def process_message(
     from backend.core.tools.memory_tool import increment_user_message
     increment_user_message()
 
+    from backend.core.host_awareness import is_awareness_query
     tools_list = ", ".join(list_tools())
-    system = settings.JANIS_SYSTEM_PROMPT + f"\n\nStrumenti attivi: {tools_list}"
+    system = _base_system_prompt() + f"\n\nStrumenti attivi: {tools_list}"
+
+    # Snapshot compatto (non l'inventario completo — gemma4 su CPU impiega minuti)
+    if is_awareness_query(user_text):
+        from backend.core.host_awareness import get_awareness_context_for_brain
+        awareness_ctx = await get_awareness_context_for_brain()
+        if awareness_ctx:
+            system += "\n\n" + awareness_ctx
+    else:
+        try:
+            from backend.core.host_awareness import get_awareness_cached
+            snap = await get_awareness_cached()
+            cpu = (snap.get("cpu") or {}).get("model", "?")
+            system += (
+                f"\n\nHOST: {snap.get('hostname')} · {cpu} · {snap.get('memory_gb')}GB RAM · "
+                f"LLM {((snap.get('llm') or {}).get('active'))} · "
+                f"{snap.get('tool_count', 0)} tool. Per inventario completo usa tool host_capabilities."
+            )
+        except Exception:
+            pass
 
     from backend.core.self_dev import SELF_DEV_KEYWORDS, get_context_for_brain as self_dev_context
 
@@ -740,6 +776,12 @@ async def process_message(
     if memory_answer:
         return memory_answer
 
+    if is_awareness_query(user_text):
+        await emit({"type": "state", "state": "ACTING"})
+        from backend.core.host_awareness import answer_awareness_query
+        final = await answer_awareness_query(user_text)
+        return await _deliver_final(final, emit, stream_final)
+
     whatsapp_answer = await _answer_whatsapp_if_asked(user_text, emit, stream_final)
     if whatsapp_answer:
         return whatsapp_answer
@@ -768,7 +810,12 @@ async def process_message(
     last_tool_result: str | None = None
 
     for iteration in range(max_iter):
-        raw, provider = await llm_chat(messages)
+        raw, provider = await llm_chat(
+            messages,
+            user_text=user_text,
+            tool_loop=iteration > 0,
+            iteration=iteration,
+        )
         logger.info("Brain iter %d (%s): %s", iteration, provider, (raw or "")[:200])
 
         if not (raw or "").strip():

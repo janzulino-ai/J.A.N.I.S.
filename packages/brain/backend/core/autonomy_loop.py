@@ -28,21 +28,54 @@ async def run_autonomy_tick() -> dict:
 
     if not high and not open_code:
         report["actions"].append("nothing_todo")
-        return report
+        if not settings.AUTONOMY_REFLECT_ENABLED:
+            report["actions"].append("reflect_disabled")
+        elif settings.LAB_ENABLED:
+            pass  # salta reflect, continua verso lab sotto
+        else:
+            return report
 
-    if not settings.AUTONOMY_REFLECT_ENABLED:
-        report["actions"].append("reflect_disabled")
-        return report
+    if high or open_code:
+        if not settings.AUTONOMY_REFLECT_ENABLED:
+            report["actions"].append("reflect_disabled")
+        else:
+            result = await run_reflection(dry_run=False, max_msgs=40)
+            report["reflect"] = {
+                "summary": result.get("summary", ""),
+                "proposals": len(result.get("proposals") or []),
+                "preferences": len(result.get("preferences") or []),
+            }
+            report["actions"].append("reflect_run")
 
-    result = await run_reflection(dry_run=False, max_msgs=40)
-    report["reflect"] = {
-        "summary": result.get("summary", ""),
-        "proposals": len(result.get("proposals") or []),
-        "preferences": len(result.get("preferences") or []),
-    }
-    report["actions"].append("reflect_run")
+            if settings.AUTONOMY_AUTODEV_ENABLED and high:
+                report["actions"].append("autodev_skipped_needs_approval")
 
-    if settings.AUTONOMY_AUTODEV_ENABLED and high:
-        report["actions"].append("autodev_skipped_needs_approval")
+    if settings.LAB_ENABLED:
+        try:
+            from backend.core.llm_lab.train import run_full_cycle
+
+            lab_result = await run_full_cycle(harvest_first=True)
+            report["lab"] = {
+                "action": lab_result.get("action"),
+                "steps": len(lab_result.get("steps") or []),
+            }
+            report["actions"].append(f"lab_{lab_result.get('action', 'cycle')}")
+        except Exception:
+            logger.exception("Lab cycle in autonomy")
+
+    try:
+        from pathlib import Path
+        import json
+        from datetime import datetime, timezone
+        from backend.config import settings
+
+        p = Path(settings.JANIS_PROJECT_DIR) / "data" / "autonomy_last.json"
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps({
+            "at": datetime.now(timezone.utc).isoformat(),
+            "report": report,
+        }, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
 
     return report

@@ -28,13 +28,36 @@ def main() -> None:
     import webview
 
     wait_brain()
+    screen_w, screen_h = 1920, 1080
+    try:
+        import gi
+
+        gi.require_version("Gtk", "3.0")
+        from gi.repository import Gdk, Gtk
+
+        display = Gdk.Display.get_default()
+        if display:
+            mon = display.get_primary_monitor() or display.get_monitor(0)
+            if mon:
+                geo = mon.get_geometry()
+                scale = mon.get_scale_factor()
+                screen_w = geo.width * scale
+                screen_h = geo.height * scale
+    except Exception:
+        pass
+
     webview.create_window(
         "J.A.N.I.S.",
         HUD_URL,
+        width=screen_w,
+        height=screen_h,
+        x=0,
+        y=0,
         fullscreen=True,
         frameless=True,
         easy_drag=False,
         text_select=False,
+        zoomable=False,
     )
     # Linux: GTK + WebKit2 (open source, UI solo /server)
     webview.start(gui="gtk", debug=False)

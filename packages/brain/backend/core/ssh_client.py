@@ -101,18 +101,28 @@ async def run_mac_ssh(command: str, cwd: str | None = None) -> tuple[int, str, s
 
 
 async def mac_ssh_ping() -> dict:
-    """Verifica connettività SSH al Mac."""
+    """Verifica connettività SSH al Mac (cache 30s)."""
+    import time
+    global _MAC_PING_CACHE, _MAC_PING_AT
+    now = time.time()
+    if _MAC_PING_CACHE is not None and now - _MAC_PING_AT < _MAC_PING_TTL_SEC:
+        return _MAC_PING_CACHE
+
     cfg = mac_node_config()
     if not cfg["enabled"]:
-        return {**cfg, "online": False, "error": "disabled"}
+        _MAC_PING_CACHE = {**cfg, "online": False, "error": "disabled"}
+        _MAC_PING_AT = now
+        return _MAC_PING_CACHE
     try:
         code, out, err = await run_mac_ssh("echo JANIS_OK && uname -s && sw_vers -productVersion")
         ok = code == 0 and "JANIS_OK" in out
-        return {
+        _MAC_PING_CACHE = {
             **cfg,
             "online": ok,
             "exit_code": code,
             "info": (out or err).strip()[:500],
         }
     except Exception as e:
-        return {**cfg, "online": False, "error": str(e)}
+        _MAC_PING_CACHE = {**cfg, "online": False, "error": str(e)}
+    _MAC_PING_AT = now
+    return _MAC_PING_CACHE

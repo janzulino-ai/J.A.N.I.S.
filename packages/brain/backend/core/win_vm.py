@@ -46,6 +46,27 @@ def _parse_dominfo(stdout: str) -> dict[str, str]:
     return out
 
 
+def _guest_network() -> dict[str, str]:
+    """IP guest da ultima lease DHCP rete libvirt default."""
+    code, out, _ = _virsh("net-dhcp-leases", "default")
+    if code != 0:
+        return {}
+    best: dict[str, str] = {}
+    for line in out.splitlines():
+        if "52:54:" not in line or "ipv4" not in line:
+            continue
+        parts = line.split()
+        try:
+            ip_idx = parts.index("ipv4") + 1
+            ip = parts[ip_idx].split("/")[0]
+            host = parts[ip_idx + 1] if len(parts) > ip_idx + 1 else ""
+            if ip and ip[0].isdigit():
+                best = {"guest_ip": ip, "guest_hostname": host}
+        except (ValueError, IndexError):
+            continue
+    return best
+
+
 async def vm_status() -> dict[str, Any]:
     """Stato VM + VNC."""
     code, out, err = await _virsh_async("dominfo", _VM_NAME)
@@ -71,6 +92,7 @@ async def vm_status() -> dict[str, Any]:
         "autostart": info.get("autostart", "?"),
         "disk": disk,
         "vnc": vnc_info(),
+        **_guest_network(),
     }
 
 
@@ -96,6 +118,16 @@ async def vm_stop() -> dict[str, Any]:
     if code != 0:
         return {"ok": False, "error": err or out}
     return {"ok": True, "state": "shut off"}
+
+
+async def vm_wake() -> dict[str, Any]:
+    """Tasto/mouse via monitor QEMU per svegliare schermo."""
+    code, out, err = await _virsh_async("domstate", _VM_NAME)
+    if "running" not in (out or "").lower():
+        return {"ok": False, "error": "VM non running"}
+    # Invio Enter + movimento mouse via send-key
+    await _virsh_async("send-key", _VM_NAME, "--codeset", "usb", "KEY_ENTER")
+    return {"ok": True, "action": "wake"}
 
 
 async def vm_reboot() -> dict[str, Any]:

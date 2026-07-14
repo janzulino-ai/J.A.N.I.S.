@@ -66,6 +66,9 @@ def probe_host() -> dict:
 
     usb_count = len(_run(["lsusb"]).splitlines()) if _run(["which", "lsusb"]) else 0
 
+    from backend.core.peripheral_probe import probe_peripherals
+    peripherals = probe_peripherals()
+
     inv = {
         "hostname": platform.node(),
         "platform": platform.system(),
@@ -79,6 +82,7 @@ def probe_host() -> dict:
         "network": nics,
         "gpu": gpu,
         "usb_devices": usb_count,
+        "peripherals": peripherals,
     }
     return inv
 
