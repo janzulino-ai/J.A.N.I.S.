@@ -4,7 +4,12 @@ Hub attivo: **windows-pc** · LAN `192.168.1.73` · brain WSL `:8001`
 
 ## Mattina — avvio hub (Windows PC)
 
-1. Tray JANIS (icona **J**) → **Avvia tutto** — oppure:
+1. **LAN forward** (Admin, una volta per sessione WSL o dopo reboot):
+   ```powershell
+   # doppio click:
+   infra\windows\setup-lan-forward-admin.cmd
+   ```
+2. Tray JANIS (icona **J**) → **Avvia tutto** — oppure:
    ```powershell
    powershell -ExecutionPolicy Bypass -File "C:\APP IA\JANIS\infra\wsl\start-janis-wsl.ps1"
    ```
@@ -72,7 +77,7 @@ xcodebuild -scheme JANICEPocket -destination 'id=00008120-0011759C1E40201E' \
 
 | Problema | Azione |
 |----------|--------|
-| Brain offline LAN | Tray → Riavvia brain · `bash infra/wsl/start-brain.sh` |
+| Brain offline LAN | Esegui `setup-lan-forward-admin.cmd` (Admin) · Tray → Riavvia brain |
 | Ollama offline | `infra/wsl/start-ollama-windows.ps1` |
 | Mac non in fleet | `launchctl kickstart -k gui/$(id -u)/ai.janzulino.janis.fleet-bridge` |
 | VPN ok, brain no | Verifica route `192.168.1.0/24` nel profilo WireGuard |

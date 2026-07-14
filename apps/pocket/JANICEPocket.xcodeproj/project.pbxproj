@@ -359,9 +359,13 @@
 				TargetAttributes = {
 					F10000000000000000000001 = {
 						CreatedOnToolsVersion = 15.0;
+						DevelopmentTeam = GVSL58WX9R;
+						ProvisioningStyle = Automatic;
 					};
 					F10000000000000000000003 = {
 						CreatedOnToolsVersion = 15.0;
+						DevelopmentTeam = GVSL58WX9R;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
