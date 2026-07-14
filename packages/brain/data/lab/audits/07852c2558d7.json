@@ -1,0 +1,33 @@
+{
+  "id": "07852c2558d7",
+  "created_at": "2026-07-14T20:30:00.303342+00:00",
+  "prompt": "Rispondi solo: OK",
+  "teacher_response": "OK",
+  "student_response": "OK",
+  "student_model": "gemma4:latest",
+  "teacher_model": "teacher",
+  "run_id": null,
+  "tags": [],
+  "judge_provider": "ollama",
+  "judge_error": null,
+  "audit": {
+    "reasoning_gap": {
+      "missed_logic": [],
+      "hallucinations": [],
+      "skipped_steps": []
+    },
+    "code_architecture": {
+      "elegance": "La risposta è perfetta e minimalista, rispettando strettamente il vincolo del prompt.",
+      "modularity": "Non applicabile per una singola parola di output. Ottima aderenza al formato richiesto.",
+      "critical_misses": []
+    },
+    "prompt_tuned": "Rispondi solo con la stringa: OK",
+    "modelfile": {
+      "temperature": 0.62,
+      "top_p": 0.9,
+      "system_prompt": "Seleziona e restituisci esattamente la stringa 'OK' senza alcun testo introduttivo o formattazione aggiuntiva."
+    },
+    "overall_score": 100
+  },
+  "quality_score": 100.0
+}

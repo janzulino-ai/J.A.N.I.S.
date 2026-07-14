@@ -99,6 +99,28 @@
       "latency_ms": 5330.3,
       "session_id": "",
       "blocked": false
+    },
+    {
+      "ts": "2026-07-14T20:29:53.276123+00:00",
+      "provider": "ollama",
+      "model": "gemma4:latest",
+      "prompt_tokens": 1357,
+      "completion_tokens": 42,
+      "cost_usd": 0.0,
+      "latency_ms": 1045.9,
+      "session_id": "",
+      "blocked": false
+    },
+    {
+      "ts": "2026-07-14T20:30:00.294998+00:00",
+      "provider": "ollama",
+      "model": "gemma4:latest",
+      "prompt_tokens": 352,
+      "completion_tokens": 213,
+      "cost_usd": 0.0,
+      "latency_ms": 2667.6,
+      "session_id": "",
+      "blocked": false
     }
   ]
 }

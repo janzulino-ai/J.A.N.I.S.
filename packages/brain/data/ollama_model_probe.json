@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "probed_at": 1784059290,
+  "probed_at": 1784061007,
   "models_available": [
     "llama3.1:70b-instruct-q4_K_M",
     "qwen3.6:latest",
@@ -10,29 +10,29 @@
     {
       "model": "llama3.1:70b-instruct-q4_K_M",
       "ok": false,
-      "latency_ms": 25009.4,
+      "latency_ms": 25010.3,
       "tier_guess": "capable",
       "sample": "",
       "error": null,
-      "probed_at": 1784059315
+      "probed_at": 1784061032
     },
     {
       "model": "qwen3.6:latest",
       "ok": false,
-      "latency_ms": 18900.5,
+      "latency_ms": 21170.7,
       "tier_guess": "balanced",
       "sample": "",
       "error": null,
-      "probed_at": 1784059334
+      "probed_at": 1784061053
     },
     {
       "model": "gemma4:latest",
       "ok": true,
-      "latency_ms": 8192.2,
+      "latency_ms": 9929.3,
       "tier_guess": "capable",
       "sample": "OK",
       "error": null,
-      "probed_at": 1784059342
+      "probed_at": 1784061063
     }
   ],
   "working": [
