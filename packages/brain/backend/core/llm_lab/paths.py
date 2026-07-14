@@ -62,6 +62,12 @@ def harvest_state_path() -> Path:
     return lab_data_dir() / "harvest_state.json"
 
 
+def lab_audits_dir() -> Path:
+    p = lab_data_dir() / "audits"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
 def ensure_lab_dirs() -> dict[str, str]:
     paths = {
         "data": lab_data_dir(),

@@ -1,0 +1,54 @@
+# Pacchetti base JANIS server (Debian bookworm)
+systemd
+systemd-sysv
+openssh-server
+sudo
+curl
+wget
+ca-certificates
+gnupg
+jq
+rsync
+git
+python3
+python3-venv
+python3-pip
+locales
+locales-all
+console-setup
+keyboard-configuration
+network-manager
+ifupdown
+iproute2
+dnsutils
+htop
+nvme-cli
+lvm2
+cryptsetup
+grub-efi-amd64
+grub-efi-amd64-bin
+shim-signed
+efibootmgr
+os-prober
+linux-image-amd64
+firmware-linux
+firmware-linux-nonfree
+firmware-misc-nonfree
+# Desktop minimale X11 + i3 (opzione A)
+xorg
+xinit
+x11-xserver-utils
+lightdm
+i3
+i3status
+dmenu
+rofi
+alacritty
+chromium
+feh
+picom
+unzip
+# Audio per Chromium kiosk
+libasound2
+# NVIDIA — installati al primo boot nativo (non in chroot WSL)
+# nvidia-driver

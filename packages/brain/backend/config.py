@@ -144,6 +144,7 @@ class Settings(BaseSettings):
     LAB_BASE_MODEL: str = Field(default="unsloth/llama-3.2-3b-Instruct-bnb-4bit")
     LAB_OLLAMA_MODEL_NAME: str = Field(default="janis-custom")
     LAB_EVAL_BASELINE: str = Field(default="llama3.2:3b")
+    LAB_PROMOTE_MIN_SCORE: int = Field(default=60, description="Soglia % minima per promote/eval audit")
     LAB_MAX_STEPS: int = Field(default=60)
     LAB_LORA_R: int = Field(default=16)
     LAB_LEARNING_RATE: float = Field(default=2e-4)
@@ -196,14 +197,15 @@ class Settings(BaseSettings):
             "- add_knowledge_folder: aggiungi cartella da conoscere e impara con Ollama "
             "(args: path obbligatorio, es. D:\\\\Film — learn opzionale default true)\n"
             "- list_knowledge_folders: elenco cartelle già registrate e stato apprendimento\n"
-            "- scan_folder / search_folder_index: indice file media locale (opzionale)\n"
+            "- scan_folder / search_folder_index: indice file (movies o documents). "
+            "Path WSL: /mnt/c/Users/... — non usare path Mac (/Users/...) dal brain WSL.\n"
             "- CONOSCENZA CARTELLE: se l'utente chiede di imparare/indicizzare una cartella, "
-            "usa SEMPRE add_knowledge_folder con il path completo Windows. "
-            "Esempio: {\"tool\":\"add_knowledge_folder\",\"args\":{\"path\":\"D:\\\\Film\"}}\n"
-            "- autofix: diagnostica un fallimento, tenta fix locale, poi lancia agente se serve "
+            "usa SEMPRE add_knowledge_folder con path WSL (/mnt/c/...) o Windows (C:\\\\...). "
+            "Esempio: {\"tool\":\"add_knowledge_folder\",\"args\":{\"path\":\"/mnt/c/Users/agenz/Documents/Obsidian Vault\"}}\n"
+            "- autofix: diagnostica un fallimento, tenta fix locale, poi agente Cursor solo se PRO attivo "
             "(args: description/user_text, tool_name, tool_result opzionali)\n"
             "- AUTO-CORREZIONE: se un tool fallisce o inventi limiti sandbox/drive, "
-            "il sistema esegue autofix in automatico; se non basta lancia Cursor Agent (PRO).\n"
+            "il sistema esegue autofix in automatico; in local-first registra gap senza Cursor.\n"
             "- cursor_code: delega task di programmazione a Cursor Agent (args: prompt, cwd opzionale)\n"
             "- self_develop: auto-sviluppo JANIS (Fleet, bridge Mac, flotta PC)\n"
             "  * status — stato progetto e domande aperte\n"

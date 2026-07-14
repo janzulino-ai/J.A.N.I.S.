@@ -15,7 +15,7 @@ async def build_dashboard(*, refresh_inventory: bool = False) -> dict:
     from backend.core.tech_scout.discover import list_candidates
     from backend.core.capability_gaps import list_gaps, stats as gap_stats
     from backend.core.mcp_bridge import list_mcp_capabilities
-    from backend.core.tools.registry import list_tools
+    from backend.core.tools.registry import list_tools, list_active_tools
     from backend.core.scheduler import scheduler_status
     from backend.core import win_vm
     from backend.routers.host_metrics import _psutil_metrics, _gpu_metrics, _fetch_glances, _sidecar_health, _boot
@@ -92,6 +92,12 @@ async def build_dashboard(*, refresh_inventory: bool = False) -> dict:
     open_proposals = [p for p in proposals if p.get("status") == "open"]
     evolve_paths = ensure_workspace_dirs()
 
+    from backend.core.knowledge_graph import build_knowledge_graph
+
+    kg = build_knowledge_graph(limit=48)
+    kg_user = sum(1 for n in kg.get("nodes", []) if n.get("source") == "user")
+    kg_janis = sum(1 for n in kg.get("nodes", []) if n.get("source") != "user")
+
     autonomy_state = {
         "enabled": settings.AUTONOMY_ENABLED,
         "reflect": settings.AUTONOMY_REFLECT_ENABLED,
@@ -165,7 +171,14 @@ async def build_dashboard(*, refresh_inventory: bool = False) -> dict:
             "brain_version": 5,
             "scheduler": sched,
         },
-        "knowledge": get_knowledge_stats(),
+        "knowledge": {
+            **get_knowledge_stats(),
+            "graph_nodes": kg.get("count", 0),
+            "graph_edges": len(kg.get("edges", [])),
+            "graph_user_nodes": kg_user,
+            "graph_janis_nodes": kg_janis,
+            "graph_sample": kg.get("nodes", [])[:12],
+        },
         "scout": {
             "total": len(scout_items),
             "by_status": by_status,
@@ -174,6 +187,7 @@ async def build_dashboard(*, refresh_inventory: bool = False) -> dict:
         "gaps": {"stats": gaps_s, "open": open_gaps},
         "win_vm": win,
         "tools": list_tools(),
+        "tools_active": list_active_tools(),
         "mcp": mcp,
         "reasoning": {
             "provider": (rt.reasoning_provider or "ollama").upper(),
@@ -183,6 +197,7 @@ async def build_dashboard(*, refresh_inventory: bool = False) -> dict:
             "pipeline": ["INPUT", "THINK", "TOOLS", "AGENTS", "OUT"],
             "live_step": live_pipe,
             "tool_count": len(list_tools()),
+            "active_tool_count": len(list_active_tools()),
         },
         "perception": perception,
         "peripherals": inv.get("peripherals") or {},

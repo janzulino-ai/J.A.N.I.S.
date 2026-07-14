@@ -11,7 +11,7 @@
     "network": {
       "answer": "lan",
       "at": "2026-06-21T12:51:33+00:00",
-      "note": "sync chat utente"
+      "note": "LAN casa + WireGuard server per accesso esterno (P6)"
     },
     "power_model": {
       "answer": "mac_always_on",

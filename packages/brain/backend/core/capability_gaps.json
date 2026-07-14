@@ -142,7 +142,18 @@
       "status": "open",
       "created_at": "2026-06-21T14:33:56.068823+00:00",
       "resolved_at": null
+    },
+    {
+      "id": "71d3c569-2881-4e5b-be30-50d75c53992d",
+      "description": "Autofix non risolto (tool_error). Tool=scan_folder, esito=Errore permessi: Percorso fuori radici autorizzate per scansione: /Users/janzu/Documents/Obsidian Vault. Consentiti: /mnt/c/APP IA/JANIS/packages/brain/C:\\Users\\agenz\\Videos, /home/agenz. Aggiungi la cartella a JANIS_SCAN_ROOTS in .env.. Utente: esegui una scansione in cerca di documenti per il second brain",
+      "context": "[{'check': 'tool_result', 'ok': False, 'detail': 'Errore permessi: Percorso fuori radici autorizzate per scansione: /Users/janzu/Documents/Obsidian Vault. Consentiti: /mnt/c/APP IA/JANIS/packages/brain/C:\\\\Users\\\\agenz\\\\Videos, /home/agenz. Aggiungi la cartella a JANIS_SCAN_ROOTS in .env.'}]",
+      "tool": "scan_folder",
+      "severity": "high",
+      "proposed_fix": "Correzione codice JANIS o nuovo tool",
+      "status": "open",
+      "created_at": "2026-07-14T18:58:00.700111+00:00",
+      "resolved_at": null
     }
   ],
-  "updated_at": "2026-06-21T14:33:56.068823+00:00"
+  "updated_at": "2026-07-14T18:58:00.700136+00:00"
 }

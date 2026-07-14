@@ -87,7 +87,49 @@ async def lab_tool(args: dict) -> str:
             return f"Promote fallito: {r.get('error')}"
         return f"Promosso modello {r.get('model')}"
 
+    if action == "audit":
+        prompt = (args.get("prompt") or "").strip()
+        teacher = (args.get("teacher_response") or args.get("teacher") or "").strip()
+        student = (args.get("student_response") or args.get("student") or "").strip()
+        if not prompt or not teacher or not student:
+            return (
+                "lab audit richiede prompt, teacher_response e student_response. "
+                "Opzionali: student_model, teacher_model, run_id, tags"
+            )
+        from backend.core.llm_lab.audit import audit_responses
+
+        tags_raw = args.get("tags")
+        tags = tags_raw if isinstance(tags_raw, list) else []
+        r = await audit_responses(
+            prompt=prompt,
+            teacher_response=teacher,
+            student_response=student,
+            student_model=(args.get("student_model") or None),
+            teacher_model=(args.get("teacher_model") or None),
+            run_id=(args.get("run_id") or None),
+            tags=tags,
+        )
+        if not r.get("ok"):
+            return f"Audit parziale id={r.get('audit_id')} score={r.get('quality_score')} err={r.get('error')}"
+        a = r.get("audit") or {}
+        return (
+            f"Audit id={r.get('audit_id')} score={r.get('quality_score')} "
+            f"judge={r.get('judge_provider')} gaps={len((a.get('reasoning_gap') or {}).get('missed_logic') or [])}"
+        )
+
+    if action == "audits":
+        from backend.core.llm_lab.audit import list_audits
+
+        items = list_audits(limit=int(args.get("limit") or 5))
+        lines = [f"Audits recenti: {len(items)}"]
+        for item in items:
+            lines.append(
+                f"- {item.get('id')} score={item.get('overall_score')} "
+                f"student={item.get('student_model')} judge={item.get('judge_provider')}"
+            )
+        return "\n".join(lines)
+
     return (
         f"Azione lab sconosciuta: {action}. "
-        "Usa: status|harvest|curate|train|cycle|runs|promote"
+        "Usa: status|harvest|curate|train|cycle|runs|promote|audit|audits"
     )

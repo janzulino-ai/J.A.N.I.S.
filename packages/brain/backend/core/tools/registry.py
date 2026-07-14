@@ -17,9 +17,23 @@ def register(name: str):
 
 
 async def execute_tool(name: str, args: dict, context: dict | None = None) -> str:
+    if name in CURSOR_DEPENDENT_TOOLS and not tool_allowed(name):
+        return (
+            f"Errore: strumento '{name}' disabilitato (local-first). "
+            "Usa terminal, read_file, write_file, autofix o add_knowledge_folder."
+        )
     fn = _registry.get(name)
     if not fn:
         from backend.core.capability_gaps import log_gap
+        from backend.core.runtime_config import load_runtime
+
+        rt = load_runtime()
+        hint = (
+            "Gap registrato — abilita cursor_code (PRO) per auto-patch, "
+            "oppure usa autofix / add_knowledge_folder."
+            if rt.cursor_code_enabled
+            else "Gap registrato — usa autofix, add_knowledge_folder o terminal (modalità local-first)."
+        )
 
         log_gap(
             f"Strumento non disponibile: {name}",
@@ -28,10 +42,7 @@ async def execute_tool(name: str, args: dict, context: dict | None = None) -> st
             severity="high",
             proposed_fix=f"Implementare o registrare lo strumento '{name}'",
         )
-        return (
-            f"Errore: strumento '{name}' non registrato. "
-            f"Gap registrato — usa cursor_terminal per proporre una soluzione."
-        )
+        return f"Errore: strumento '{name}' non registrato. {hint}"
     try:
         import inspect
         sig = inspect.signature(fn)
@@ -55,3 +66,26 @@ async def execute_tool(name: str, args: dict, context: dict | None = None) -> st
 
 def list_tools() -> list[str]:
     return sorted(_registry.keys())
+
+
+CURSOR_DEPENDENT_TOOLS = frozenset({
+    "cursor_code",
+    "cursor_terminal",
+    "self_develop",
+    "paid_cli_tool",
+})
+
+
+def list_active_tools() -> list[str]:
+    """Tool esposti al LLM — esclude Cursor/cloud se disabilitati in runtime."""
+    tools = list_tools()
+    from backend.core.runtime_config import load_runtime
+
+    rt = load_runtime()
+    if not rt.cursor_code_enabled:
+        tools = [t for t in tools if t not in CURSOR_DEPENDENT_TOOLS]
+    return tools
+
+
+def tool_allowed(name: str) -> bool:
+    return name in list_active_tools()

@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "probed_at": 1784059290,
+  "models_available": [
+    "llama3.1:70b-instruct-q4_K_M",
+    "qwen3.6:latest",
+    "gemma4:latest"
+  ],
+  "results": [
+    {
+      "model": "llama3.1:70b-instruct-q4_K_M",
+      "ok": false,
+      "latency_ms": 25009.4,
+      "tier_guess": "capable",
+      "sample": "",
+      "error": null,
+      "probed_at": 1784059315
+    },
+    {
+      "model": "qwen3.6:latest",
+      "ok": false,
+      "latency_ms": 18900.5,
+      "tier_guess": "balanced",
+      "sample": "",
+      "error": null,
+      "probed_at": 1784059334
+    },
+    {
+      "model": "gemma4:latest",
+      "ok": true,
+      "latency_ms": 8192.2,
+      "tier_guess": "capable",
+      "sample": "OK",
+      "error": null,
+      "probed_at": 1784059342
+    }
+  ],
+  "working": [
+    "gemma4:latest"
+  ],
+  "by_tier": {
+    "fast": "gemma4:latest",
+    "balanced": "gemma4:latest",
+    "capable": "gemma4:latest"
+  },
+  "default": "gemma4:latest",
+  "recommended": "gemma4:latest"
+}

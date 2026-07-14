@@ -1,7 +1,1 @@
-{
-  "paid_mode": true,
-  "reasoning_provider": "ollama",
-  "cursor_reasoning_model": "composer-2.5",
-  "cursor_code_enabled": true,
-  "openrouter_when_paid": true
-}
+{"paid_mode":false,"reasoning_provider":"ollama","cursor_reasoning_model":"","cursor_code_enabled":false,"openrouter_when_paid":false}

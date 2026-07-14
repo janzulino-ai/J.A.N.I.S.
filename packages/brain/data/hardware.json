@@ -1,24 +1,150 @@
 {
   "nodes": {
+    "linux-server": {
+      "label": "Server Linux JANIS",
+      "hardware": "Samsung SSD 970 EVO Plus 500GB",
+      "os": "Debian 12 (target)",
+      "cpu": "Intel (host fisico · da confermare al boot)",
+      "gpu": "NVIDIA RTX 3080 Ti (100% nativo) / passthrough win-vm",
+      "ram_gb": 128,
+      "role": "Coordinatore · brain :8001 · Ollama · sidecar · kiosk HDMI",
+      "lan_ip": "192.168.1.72",
+      "ssh_user": "janis",
+      "fleet_node_id": "linux-server"
+    },
     "windows-pc": {
       "label": "PC Windows (MSI MS-7D08)",
       "cpu": "Intel i9-11900K",
       "ram_gb": 16,
       "gpu": "NVIDIA RTX 3080 Ti",
-      "role": "UI principale + worker + dev"
+      "os": "Windows 11",
+      "role": "UI principale + worker + dev Cursor/WSL",
+      "fleet_node_id": "windows-pc"
     },
     "mac-mini": {
       "label": "Mac Mini M4",
       "chip": "Apple M4",
       "storage_internal_gb": 256,
       "storage_external": "512 GB SSD USB-C",
-      "role": "Coordinatore fleet / bridge (da confermare)",
+      "role": "Fleet worker · bridge WS · SSH",
       "lan_ip": "192.168.1.74",
       "hostname": "mac-mini-di-janzu.local",
       "ssh_port": 22,
       "ssh_user": "janzu",
-      "ssh_note": "Porta 22 aperta; auth richiede chiave o password"
+      "fleet_node_id": "mac-node"
+    },
+    "zenbook": {
+      "label": "ASUS Zenbook",
+      "os": "Windows 11 Home",
+      "role": "Satellite mobile · worker fleet + dev portatile",
+      "cpu": "Intel Core Ultra 9 185H (16 core, 22 thread, fino a 5.1 GHz, 24 MB cache)",
+      "npu": "Intel AI Boost",
+      "gpu": "Intel Arc (integrata)",
+      "display": {
+        "size_in": 14,
+        "resolution": "2880x1800",
+        "panel": "OLED 16:10 3K",
+        "refresh_hz": 120,
+        "response_ms": 0.2,
+        "brightness_nits": 400,
+        "peak_hdr_nits": 500,
+        "color_gamut": "100% DCI-P3",
+        "contrast": "1000000:1",
+        "certifications": ["VESA DisplayHDR True Black 500", "PANTONE Validated"],
+        "touchscreen": true,
+        "stylus": true,
+        "screen_to_body_pct": 91
+      },
+      "ram_gb": 32,
+      "ram_type": "LPDDR5X",
+      "storage_gb": 1024,
+      "storage_type": "M.2 NVMe PCIe 4.0 SSD",
+      "expansion_slots": ["1x M.2 2280 PCIe 4.0 x4 (incluso utilizzato)"],
+      "ports": [
+        "1x USB 3.2 Gen 1 Type-A",
+        "2x Thunderbolt 4 (display + power)",
+        "1x HDMI 2.1 TMDS",
+        "1x jack audio 3.5 mm combo",
+        "Supporto ASUS XG Mobile GC34"
+      ],
+      "keyboard": "Italiana · soft keyboard · corsa 1.4 mm",
+      "camera": "FHD IR · Windows Hello",
+      "audio": "harman/kardon · Smart Amp · array mic · Cortana",
+      "network": {
+        "wifi": "Wi-Fi 6E (802.11ax) 2x2 dual band",
+        "bluetooth": "5.3"
+      },
+      "battery_wh": 75,
+      "charger_w": 65,
+      "charger_type": "USB-C Ultra Mini AC 20V/3.25A",
+      "vpn_tunnel_ip": "10.8.0.20",
+      "fleet_node_id": "zenbook"
+    },
+    "iphone-15-pro-max": {
+      "label": "iPhone 15 Pro Max",
+      "manufacturer": "Apple",
+      "chip": "A17 Pro",
+      "display": {
+        "size_in": 6.7,
+        "technology": "Super Retina XDR OLED",
+        "resolution": "2796x1290",
+        "refresh_hz": 120,
+        "features": ["ProMotion", "Always-On", "Dynamic Island", "Ceramic Shield"]
+      },
+      "camera": "48 MP main · 12 MP ultra-wide · 12 MP tele 5x · LiDAR",
+      "connectivity": ["USB-C", "Wi-Fi 6E", "Bluetooth 5.3", "5G", "UWB"],
+      "biometrics": "Face ID",
+      "storage_note": "capacità da confermare sul device",
+      "app": "JANIS Pocket v3.1",
+      "role": "Corpo iOS primario · organi · push · telemetry",
+      "vpn_tunnel_ip": "10.8.0.10",
+      "machine_ids": ["iPhone16,2"],
+      "fleet_node_id": "iphone-15-pro-max"
+    },
+    "iphone-14-pro": {
+      "label": "iPhone 14 Pro",
+      "manufacturer": "Apple",
+      "chip": "A16 Bionic",
+      "display": {
+        "size_in": 6.1,
+        "technology": "Super Retina XDR OLED",
+        "resolution": "2556x1179",
+        "refresh_hz": 120,
+        "features": ["ProMotion", "Always-On", "Dynamic Island"]
+      },
+      "camera": "48 MP main · 12 MP ultra-wide · 12 MP tele 3x · LiDAR",
+      "connectivity": ["Lightning", "Wi-Fi 6", "Bluetooth 5.3", "5G", "UWB"],
+      "biometrics": "Face ID",
+      "storage_note": "capacità da confermare sul device",
+      "app": "JANIS Pocket v3.1",
+      "role": "Corpo iOS secondario",
+      "vpn_tunnel_ip": "10.8.0.11",
+      "machine_ids": ["iPhone15,2"],
+      "fleet_node_id": "iphone-14-pro"
+    },
+    "ipad-pro-2020": {
+      "label": "iPad Pro 12.9\" (4ª gen, 2020)",
+      "manufacturer": "Apple",
+      "chip": "A12Z Bionic",
+      "display": {
+        "size_in": 12.9,
+        "technology": "Liquid Retina",
+        "resolution": "2732x2048",
+        "refresh_hz": 120,
+        "features": ["ProMotion", "P3 wide color", "True Tone"]
+      },
+      "camera": "12 MP wide · 10 MP ultra-wide · LiDAR Scanner",
+      "connectivity": ["USB-C", "Wi-Fi 6", "Bluetooth 5.0"],
+      "biometrics": "Face ID",
+      "audio": "Quattro altoparlanti · cinque microfoni",
+      "accessories": ["Apple Pencil 2", "Magic Keyboard"],
+      "storage_note": "capacità da confermare sul device",
+      "app": "JANIS Pocket v3.1",
+      "role": "Tablet fleet · presenza · HUD mobile · organi",
+      "vpn_tunnel_ip": "10.8.0.12",
+      "machine_ids": ["iPad8,11", "iPad8,12", "iPad8,9", "iPad8,10"],
+      "fleet_node_id": "ipad-pro-2020"
     }
   },
-  "updated": "2026-06-20"
+  "updated": "2026-07-14"
 }

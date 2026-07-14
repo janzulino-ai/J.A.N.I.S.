@@ -1,0 +1,34 @@
+[
+  {
+    "id": "telegram",
+    "channel": "telegram",
+    "enabled": true,
+    "capabilities": [
+      "inbound",
+      "outbound",
+      "groups_mention"
+    ]
+  },
+  {
+    "id": "whatsapp",
+    "channel": "whatsapp",
+    "enabled": true,
+    "capabilities": [
+      "inbound",
+      "outbound"
+    ],
+    "requires": [
+      "WHATSAPP_BRIDGE_URL"
+    ]
+  },
+  {
+    "id": "pocket",
+    "channel": "pocket",
+    "enabled": true,
+    "capabilities": [
+      "stt",
+      "ingest",
+      "presence"
+    ]
+  }
+]

@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import re
 import shlex
+from pathlib import Path
 
 from backend.config import settings
 
@@ -110,6 +111,41 @@ def _is_under_root(target: str, root: str) -> bool:
     if t == r:
         return True
     return t.startswith(r + os.sep)
+
+
+def wsl_path_to_windows(path: str) -> str | None:
+    """Converte /mnt/c/... in C:\\... (brain su WSL)."""
+    try:
+        resolved = str(Path(path).resolve()).replace("\\", "/")
+    except OSError:
+        resolved = (path or "").replace("\\", "/")
+    if resolved.startswith("/mnt/") and len(resolved) > 6:
+        drive = resolved[5].upper()
+        tail = resolved[6:].replace("/", "\\")
+        return f"{drive}:\\{tail}"
+    return None
+
+
+def windows_path_to_wsl(path: str) -> str | None:
+    """Converte C:\\Users\\... in /mnt/c/Users/... (brain su WSL)."""
+    raw = (path or "").strip()
+    m = re.match(r"^([A-Za-z]):\\(.*)$", raw)
+    if not m:
+        return None
+    drive = m.group(1).lower()
+    rest = m.group(2).replace("\\", "/").rstrip("/")
+    return f"/mnt/{drive}/{rest}"
+
+
+def mac_path_hint(path: str) -> str | None:
+    """Rileva path macOS non raggiungibili dal brain WSL."""
+    p = (path or "").strip()
+    if p.startswith("/Users/") or p.startswith("~/"):
+        return (
+            f"Il path `{p}` è su Mac — il brain WSL non vi accede direttamente. "
+            "Usa mac_ssh, sincronizza su Windows (/mnt/c/...), o aggiungi il vault Obsidian locale."
+        )
+    return None
 
 
 def validate_scan_path(path: str, *, must_exist: bool = False) -> str:

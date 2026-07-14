@@ -1,0 +1,114 @@
+{
+  "hostname": "JN-PC",
+  "platform": "Linux",
+  "release": "6.18.33.1-microsoft-standard-WSL2",
+  "arch": "x86_64",
+  "probed_at": "2026-07-14T20:04:19.039154+00:00",
+  "cpu": {
+    "model": "11th Gen Intel(R) Core(TM) i9-11900K @ 3.50GHz",
+    "cores_logical": 16
+  },
+  "memory_gb": 62.7,
+  "disks": [
+    {
+      "device": "/dev/sde",
+      "mount": "/",
+      "fstype": "ext4",
+      "total_gb": 1006.9,
+      "free_gb": 952.9,
+      "used_pct": 0.3
+    },
+    {
+      "device": "/dev/sde",
+      "mount": "/mnt/wslg/distro",
+      "fstype": "ext4",
+      "total_gb": 1006.9,
+      "free_gb": 952.9,
+      "used_pct": 0.3
+    }
+  ],
+  "block_devices": [
+    {
+      "name": "sda",
+      "size": "356.9M",
+      "type": "disk",
+      "model": "Virtual Disk"
+    },
+    {
+      "name": "sdb",
+      "size": "159.5M",
+      "type": "disk",
+      "model": "Virtual Disk"
+    },
+    {
+      "name": "sdc",
+      "size": "16G",
+      "type": "disk",
+      "model": "Virtual Disk"
+    },
+    {
+      "name": "sdd",
+      "size": "465.8G",
+      "type": "disk",
+      "model": "Samsung SSD 970"
+    },
+    {
+      "name": "sde",
+      "size": "1T",
+      "type": "disk",
+      "model": "Virtual Disk"
+    }
+  ],
+  "network": [
+    {
+      "name": "eth0",
+      "addresses": [
+        "192.168.129.106",
+        "fe80::215:5dff:fe09:37b3%eth0"
+      ]
+    }
+  ],
+  "gpu": [
+    {
+      "name": "NVIDIA GeForce RTX 3080 Ti",
+      "vram": "12288 MiB",
+      "driver": "610.62"
+    }
+  ],
+  "usb_devices": 0,
+  "peripherals": {
+    "usb": {
+      "count": 0,
+      "devices": []
+    },
+    "audio": {
+      "cards": 0,
+      "devices": [],
+      "capture_lines": [],
+      "ready": false
+    },
+    "video": {
+      "count": 0,
+      "devices": [],
+      "ready": false
+    },
+    "displays": {
+      "count": 0,
+      "outputs": []
+    },
+    "bluetooth": {
+      "adapters": 0,
+      "lines": []
+    },
+    "input": {
+      "count": 0,
+      "by_id": []
+    },
+    "missing": [
+      "audio",
+      "camera",
+      "usb"
+    ],
+    "summary": "USB 0 · Audio 0 · Video 0 · Display 0 · BT 0 · Input 0"
+  }
+}

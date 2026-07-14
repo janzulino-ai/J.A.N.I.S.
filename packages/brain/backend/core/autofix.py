@@ -145,6 +145,8 @@ def _classify_issue(
         return "missing_tool"
     if bad_response and looks_like_false_access_block(bad_response, user_text):
         return "false_path_block"
+    if tool_result and "JANIS_SCAN_ROOTS" in tool_result:
+        return "scan_permission"
     if tool_result and tool_result.startswith("Errore"):
         return "tool_error"
     return "unknown"
@@ -253,6 +255,83 @@ async def _try_fix_ollama(on_event: EventCallback | None) -> AutofixOutcome | No
     return None
 
 
+async def _try_fix_scan_permission(
+    user_text: str,
+    tool_result: str | None,
+    on_event: EventCallback | None,
+) -> AutofixOutcome | None:
+    """Aggiunge radici scan locali (WSL) invece di escalare a Cursor."""
+    if not tool_result or "JANIS_SCAN_ROOTS" not in tool_result:
+        return None
+
+    from backend.core.folder_knowledge import add_knowledge_folder_path, persist_scan_roots
+    from backend.core.security import mac_path_hint, scan_roots, windows_path_to_wsl
+    from backend.core.tools.registry import execute_tool
+
+    blocked = re.search(
+        r"scansione:\s*(.+?)(?:\.\s*Consentiti|\.$)",
+        tool_result,
+        re.IGNORECASE,
+    )
+    candidates: list[str] = _extract_paths(user_text)
+    if blocked:
+        candidates.insert(0, blocked.group(1).strip())
+
+    diagnostics: list[dict[str, Any]] = []
+    for raw in candidates[:3]:
+        mac_hint = mac_path_hint(raw)
+        if mac_hint:
+            return AutofixOutcome(
+                fixed=False,
+                message=mac_hint,
+                diagnostics=[{"check": "mac_path", "ok": False, "detail": raw}],
+            )
+
+        paths_to_try = [raw]
+        wsl = windows_path_to_wsl(raw)
+        if wsl and wsl not in paths_to_try:
+            paths_to_try.append(wsl)
+
+        for p in paths_to_try:
+            if not p or not os.path.isdir(p):
+                diagnostics.append({"check": f"path:{p}", "ok": False, "detail": "non esiste su questo host"})
+                continue
+            try:
+                if on_event:
+                    await on_event({"type": "tool_start", "tool": "add_knowledge_folder", "args": {"path": p}})
+                resolved = add_knowledge_folder_path(p)
+                persist_scan_roots(scan_roots())
+                if on_event:
+                    await on_event({"type": "tool_end", "tool": "add_knowledge_folder", "result": resolved})
+                scan_out = await execute_tool(
+                    "scan_folder",
+                    {"path": resolved, "category": "documents"},
+                )
+                if scan_out.startswith("Errore"):
+                    diagnostics.append({"check": "scan_retry", "ok": False, "detail": scan_out[:300]})
+                    continue
+                return AutofixOutcome(
+                    fixed=True,
+                    message=(
+                        f"Auto-correzione: aggiunta radice scan `{resolved}`.\n\n{scan_out}"
+                    ),
+                    diagnostics=diagnostics,
+                )
+            except Exception as e:
+                diagnostics.append({"check": f"path:{p}", "ok": False, "detail": str(e)})
+
+    allowed = ", ".join(scan_roots())
+    return AutofixOutcome(
+        fixed=False,
+        message=(
+            "Scansione bloccata — nessun path utente accessibile dal brain WSL.\n"
+            f"Radici attuali: {allowed}\n"
+            "Aggiungi in `.env`: JANIS_SCAN_ROOTS=/mnt/c/percorso/vault,..."
+        ),
+        diagnostics=diagnostics,
+    )
+
+
 async def _escalate_to_agent(
     issue_type: str,
     user_text: str,
@@ -294,55 +373,60 @@ async def _escalate_to_agent(
     if memory_ctx:
         cursor_prompt = f"{memory_ctx}\n{cursor_prompt}"
 
-    agent = "cursor_terminal"
-    agent_msg = ""
+    escalated = bool(settings.CURSOR_API_KEY and settings.CURSOR_API_KEY.strip())
+    from backend.core.runtime_config import get_runtime
 
-    if settings.CURSOR_API_KEY and settings.CURSOR_API_KEY.strip():
-        from backend.core.runtime_config import get_runtime
+    rt = get_runtime()
+    if escalated and not (rt.paid_mode and rt.cursor_code_enabled):
+        escalated = False
 
-        rt = get_runtime()
-        if rt.paid_mode and rt.cursor_code_enabled:
-            agent = "cursor_code"
-            if on_event:
-                await on_event({
-                    "type": "brain_agent",
-                    "action": "spawn",
-                    "id": f"agent-autofix-{gap['id'][:8]}",
-                    "label": "Autofix → Cursor",
-                    "tool": "cursor_code",
-                })
-            from backend.core.tools.registry import execute_tool
+    if escalated:
+        agent = "cursor_code"
+        if on_event:
+            await on_event({
+                "type": "brain_agent",
+                "action": "spawn",
+                "id": f"agent-autofix-{gap['id'][:8]}",
+                "label": "Autofix → Cursor",
+                "tool": "cursor_code",
+            })
+        from backend.core.tools.registry import execute_tool
 
-            agent_msg = await execute_tool(
-                "cursor_code",
-                {
-                    "prompt": cursor_prompt,
-                    "cwd": settings.JANIS_PROJECT_DIR,
-                    "memory_source": "autofix",
-                    "memory_decision": f"Escalation autofix per {issue_type}",
-                    "memory_gap": issue_type,
-                },
-                context={"on_event": on_event},
-            )
-        else:
-            agent_msg = (
-                f"Gap [{gap['id']}]: serve PRO + Cursor API per auto-patch codice.\n"
-                f"Diagnostica completata: {diagnostics}"
-            )
+        agent_msg = await execute_tool(
+            "cursor_code",
+            {
+                "prompt": cursor_prompt,
+                "cwd": settings.JANIS_PROJECT_DIR,
+                "memory_source": "autofix",
+                "memory_decision": f"Escalation autofix per {issue_type}",
+                "memory_gap": issue_type,
+            },
+            context={"on_event": on_event},
+        )
     else:
+        agent = None
+        hints = []
+        if not settings.CURSOR_API_KEY or not settings.CURSOR_API_KEY.strip():
+            hints.append("CURSOR_API_KEY assente — auto-patch codice disabilitato (modalità local-first).")
+        elif not (rt.paid_mode and rt.cursor_code_enabled):
+            hints.append("Cursor code disabilitato in runtime — abilita paid_mode + cursor_code_enabled per auto-patch.")
         agent_msg = (
-            f"Gap [{gap['id']}]: CURSOR_API_KEY assente — impossibile lanciare agente codice.\n"
-            f"Diagnostica: {diagnostics}\n"
-            f"Proposta: {cursor_prompt[:400]}…"
+            f"Gap [{gap['id']}]: registrato per revisione.\n"
+            + "\n".join(hints)
+            + f"\nDiagnostica: {diagnostics}\n"
+            + f"Proposta: {cursor_prompt[:400]}…"
         )
 
+    agent_label = agent or "gap_registry"
     return AutofixOutcome(
         fixed=False,
-        escalated=True,
-        agent=agent,
+        escalated=escalated,
+        agent=agent_label,
         message=(
             "Ho analizzato il problema e il fix automatico locale non è bastato.\n"
-            f"Ho registrato il gap `{gap['id']}` e lanciato **{agent}**.\n\n{agent_msg[:2500]}"
+            f"Ho registrato il gap `{gap['id']}`"
+            + (f" e lanciato **{agent}**." if agent else ".")
+            + f"\n\n{agent_msg[:2500]}"
         ),
         diagnostics=diagnostics,
     )
@@ -395,6 +479,14 @@ async def run_autofix(
         outcome = await _try_fix_fleet_connection(on_event)
         diagnostics.extend(outcome.diagnostics)
         return outcome
+
+    if issue == "scan_permission" or (tool_name == "scan_folder" and tool_result and "JANIS_SCAN_ROOTS" in tool_result):
+        outcome = await _try_fix_scan_permission(user_text, tool_result, on_event)
+        if outcome:
+            if outcome.fixed and on_event:
+                await on_event({"type": "knowledge_grow", "amount": 2})
+            if outcome.fixed or not settings.CURSOR_API_KEY:
+                return outcome
 
     if tool_result:
         diagnostics.append({"check": "tool_result", "ok": False, "detail": tool_result[:500]})

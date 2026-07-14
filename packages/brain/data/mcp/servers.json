@@ -1,0 +1,29 @@
+[
+  {
+    "name": "filesystem",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-filesystem",
+      "/tmp"
+    ]
+  },
+  {
+    "name": "git",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-git",
+      "--repository",
+      "."
+    ]
+  },
+  {
+    "name": "fetch",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-fetch"
+    ]
+  }
+]

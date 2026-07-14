@@ -1,6 +1,16 @@
 # JANIS API Contract — Pocket v3.1
 
-Contratto stabile tra **JANICE Pocket** (`device_id=pocket-iphone`) e hub **JANIS**.
+Contratto stabile tra **JANIS Pocket** e hub **JANIS**.
+
+## Device ID (fleet)
+
+| device_id | Dispositivo |
+|-----------|-------------|
+| `iphone-15-pro-max` | iPhone 15 Pro Max |
+| `iphone-14-pro` | iPhone 14 Pro |
+| `ipad-pro-2020` | iPad Pro 12.9" 4ª gen 2020 |
+
+Legacy (deprecati): `pocket-iphone`, `pocket-ipad`
 
 ## Autenticazione
 
@@ -31,7 +41,7 @@ Header: X-JANIS-Token: <token opzionale>
 ### POST /api/presence/claim
 ```json
 {
-  "device_id": "pocket-iphone",
+  "device_id": "iphone-15-pro-max",
   "surface": "mobile",
   "follow_user": true,
   "body": { "organs": {}, "bridge_actions": [], "version": "3.1.0" }
@@ -46,7 +56,7 @@ Campi v3: `battery`, `location`, `environment`, `network`, `health`, `owner`, `b
 ### POST /api/pocket/vision
 ```json
 {
-  "device_id": "pocket-iphone",
+  "device_id": "iphone-15-pro-max",
   "image_base64": "<jpeg>",
   "timestamp": "ISO8601",
   "owner": { "display_name": "...", "verified": true },
@@ -57,14 +67,14 @@ Campi v3: `battery`, `location`, `environment`, `network`, `health`, `owner`, `b
 ### POST /api/pocket/push/register
 ```json
 {
-  "device_id": "pocket-iphone",
+  "device_id": "iphone-15-pro-max",
   "token": "<apns_hex>",
   "platform": "ios",
   "owner": {}
 }
 ```
 
-### GET /api/devices/ios/pending?device=pocket-iphone
+### GET /api/devices/ios/pending?device=iphone-15-pro-max
 **200**: `[]` oppure
 ```json
 {
@@ -77,7 +87,7 @@ Campi v3: `battery`, `location`, `environment`, `network`, `health`, `owner`, `b
 ### POST /api/devices/ios/complete
 ```json
 {
-  "device": "pocket-iphone",
+  "device": "iphone-15-pro-max",
   "command_id": "cmd-1",
   "result": { "ok": true }
 }
@@ -85,18 +95,18 @@ Campi v3: `battery`, `location`, `environment`, `network`, `health`, `owner`, `b
 
 ## WebSocket
 
-`ws://HOST/ws/janis?device_id=pocket-iphone&session_id=<uuid>`
+`ws://HOST/ws/janis?device_id=iphone-15-pro-max&session_id=<uuid>`
 
 ### Client → server
 ```json
 {
   "type": "chat",
   "text": "messaggio",
-  "device_id": "pocket-iphone",
+  "device_id": "iphone-15-pro-max",
   "identity": {
     "display_name": "Nome",
     "verified": true,
-    "device_id": "pocket-iphone",
+    "device_id": "iphone-15-pro-max",
     "verified_at": "ISO8601"
   }
 }
@@ -132,5 +142,5 @@ notify, speak, stop_speak, open_url, get_location, get_heading, get_battery, get
 - [ ] Tutti gli endpoint rispondono 2xx in produzione
 - [ ] WS rispetta session_id
 - [ ] ios_bridge pending/complete funzionante
-- [ ] push register + invio APNs verso pocket-iphone
+- [ ] push register + invio APNs verso iphone-15-pro-max, iphone-14-pro, ipad-pro-2020
 - [ ] identity in chat usata per personalizzazione risposta

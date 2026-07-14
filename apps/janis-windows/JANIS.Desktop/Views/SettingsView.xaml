@@ -1,0 +1,25 @@
+<UserControl x:Class="JANIS.Desktop.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ScrollViewer Background="{StaticResource BgDark}" VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="16" MaxWidth="720">
+      <TextBlock Text="IMPOSTAZIONI" FontSize="16" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,12"/>
+      <TextBlock Text="Repo JANIS" Foreground="{StaticResource TextMuted}"/>
+      <TextBox x:Name="RepoBox" IsReadOnly="True" Margin="0,4,0,12" Background="#111C26" Foreground="#C8E6F0"/>
+      <TextBlock Text="Brain URL" Foreground="{StaticResource TextMuted}"/>
+      <StackPanel Orientation="Horizontal" Margin="0,4,0,12">
+        <TextBox x:Name="BrainUrlBox" Width="360" Background="#111C26" Foreground="#C8E6F0"/>
+        <Button Content="Salva" Margin="8,0,0,0" Padding="12,6" Click="SaveUrl_Click"/>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+        <Button Content="Apri HUD browser" Padding="12,6" Click="OpenHud_Click" Margin="0,0,8,0"/>
+        <Button Content="Installa autostart tray" Padding="12,6" Click="InstallAutostart_Click"/>
+      </StackPanel>
+      <TextBlock x:Name="StatusText" Foreground="{StaticResource AccentGreen}" Margin="0,0,0,8"/>
+      <TextBlock Text="Runtime (da /api/runtime)" Foreground="{StaticResource TextMuted}"/>
+      <TextBox x:Name="RuntimeBox" Height="200" IsReadOnly="True" TextWrapping="Wrap"
+               FontFamily="Consolas" FontSize="10" Margin="0,4,0,0"
+               Background="#050A0E" Foreground="{StaticResource TextMuted}"/>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

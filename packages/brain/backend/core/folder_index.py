@@ -15,10 +15,16 @@ VIDEO_EXTENSIONS = frozenset({
     ".mkv", ".mp4", ".avi", ".mov", ".m4v", ".wmv", ".webm", ".flv", ".mpg", ".mpeg", ".ts",
 })
 
+DOC_EXTENSIONS = frozenset({
+    ".md", ".txt", ".json", ".yaml", ".yml", ".pdf", ".doc", ".docx", ".rtf", ".org",
+    ".py", ".js", ".ts", ".html", ".csv", ".log", ".rst", ".epub",
+})
+
 YEAR_RE = re.compile(r"(?<!\d)(19|20)\d{2}(?!\d)")
 
 CATEGORY_EXTENSIONS: dict[str, frozenset[str]] = {
     "movies": VIDEO_EXTENSIONS,
+    "documents": DOC_EXTENSIONS,
 }
 
 
@@ -35,6 +41,12 @@ def index_file(category: str) -> str:
 def default_scan_path(category: str) -> str:
     if category == "movies":
         return os.path.abspath(os.path.expanduser(settings.JANIS_MOVIES_PATH))
+    if category == "documents":
+        from backend.core.security import scan_roots
+
+        for r in scan_roots():
+            if os.path.isdir(r):
+                return r
     return os.path.abspath(os.path.expanduser(settings.JANIS_WORKSPACE))
 
 

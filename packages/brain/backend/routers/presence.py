@@ -15,9 +15,10 @@ logger = logging.getLogger("JANIS.Presence")
 
 TOUR_STEPS = [
     ("desktop", "widget", "Ciao. Sono JANIS. Ora sono sul tuo PC Windows."),
-        ("mac-mini", "window", "Mi sposto sul Mac Mini."),
-    ("pocket-ipad", "mobile", "Adesso sono sul tuo iPad."),
-    ("pocket-iphone", "mobile", "E infine sono sul tuo iPhone."),
+    ("mac-mini", "window", "Mi sposto sul Mac Mini."),
+    ("ipad-pro-2020", "mobile", "Adesso sono sul tuo iPad Pro."),
+    ("iphone-15-pro-max", "mobile", "Sono sul tuo iPhone 15 Pro Max."),
+    ("iphone-14-pro", "mobile", "Oppure sul tuo iPhone 14 Pro."),
 ]
 
 

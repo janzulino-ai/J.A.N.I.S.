@@ -1,0 +1,33 @@
+{
+  "id": "8859c1224ebd",
+  "created_at": "2026-07-14T20:02:46.018170+00:00",
+  "prompt": "Rispondi solo: OK",
+  "teacher_response": "OK",
+  "student_response": "OK",
+  "student_model": "gemma4:latest",
+  "teacher_model": "teacher",
+  "run_id": null,
+  "tags": [],
+  "judge_provider": "ollama",
+  "judge_error": null,
+  "audit": {
+    "reasoning_gap": {
+      "missed_logic": [],
+      "hallucinations": [],
+      "skipped_steps": []
+    },
+    "code_architecture": {
+      "elegance": "",
+      "modularity": "",
+      "critical_misses": []
+    },
+    "prompt_tuned": "",
+    "modelfile": {
+      "temperature": 0.62,
+      "top_p": 0.9,
+      "system_prompt": ""
+    },
+    "overall_score": 0
+  },
+  "quality_score": 0.0
+}

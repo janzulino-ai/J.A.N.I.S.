@@ -5,21 +5,43 @@
   let evolve = {};
   let hudPage = 0;
 
-  const BLOCKS = [
-    { id: "hardware", page: 0, col: 1, row: 1, colSpan: 1, rowSpan: 1, title: "HARDWARE LIVE", accent: "cyan" },
-    { id: "inventory", page: 0, col: 2, row: 1, colSpan: 1, rowSpan: 1, title: "INVENTARIO", accent: "gold" },
-    { id: "network", page: 0, col: 3, row: 1, colSpan: 1, rowSpan: 1, title: "RETE · LOAD", accent: "lime" },
-    { id: "disks", page: 0, col: 1, row: 2, colSpan: 1, rowSpan: 1, title: "DISCHI · BLOCK", accent: "gold" },
-    { id: "sidecars", page: 0, col: 2, row: 2, colSpan: 1, rowSpan: 1, title: "SIDECAR · STACK", accent: "lime" },
-    { id: "providers", page: 0, col: 3, row: 2, colSpan: 1, rowSpan: 1, title: "ROUTING · COSTI", accent: "gold" },
-    { id: "services", page: 0, col: 1, row: 3, colSpan: 1, rowSpan: 1, title: "SERVIZI · CANALI", accent: "lime" },
-    { id: "fleet", page: 0, col: 2, row: 3, colSpan: 1, rowSpan: 1, title: "FLOTTA · I/O", accent: "magenta" },
-    { id: "brain", page: 0, col: 3, row: 3, colSpan: 1, rowSpan: 1, title: "CERVELLO · TOOL", accent: "magenta" },
-    { id: "peripherals", page: 1, col: 1, row: 1, colSpan: 1, rowSpan: 2, title: "PERIFERICHE", accent: "magenta" },
-    { id: "perception", page: 1, col: 2, row: 1, colSpan: 1, rowSpan: 2, title: "VEDERE · SENTIRE", accent: "cyan" },
-    { id: "llm", page: 1, col: 3, row: 1, colSpan: 1, rowSpan: 1, title: "MODELLI LLM", accent: "gold" },
-    { id: "evolve", page: 1, col: 3, row: 2, colSpan: 1, rowSpan: 1, title: "AUTO-EVOLVE", accent: "lime" },
+  const LAYOUTS = [
+    { cols: 3, rows: 3, tag: "3×3", label: "OPS · MODULI" },
+    { cols: 3, rows: 3, tag: "3×3", label: "MIND · DUAL BRAIN" },
+    { cols: 4, rows: 4, tag: "4×4", label: "SCAN · GRAFICI" },
   ];
+
+  const BLOCKS = [
+    /* Pagina 0 — 3×3: pair-h, pair-v, tri inferiore */
+    { id: "hardware", page: 0, col: 1, row: 1, colSpan: 2, rowSpan: 1, island: "pair-h", title: "HARDWARE LIVE", accent: "cyan" },
+    { id: "network", page: 0, col: 3, row: 1, colSpan: 1, rowSpan: 1, island: "unit", title: "RETE · LOAD", accent: "lime" },
+    { id: "inventory", page: 0, col: 1, row: 2, colSpan: 1, rowSpan: 1, island: "tri", title: "INVENTARIO", accent: "gold" },
+    { id: "brain", page: 0, col: 2, row: 2, colSpan: 1, rowSpan: 2, island: "pair-v", title: "CERVELLO · TOOL", accent: "magenta" },
+    { id: "sidecars", page: 0, col: 3, row: 2, colSpan: 1, rowSpan: 1, island: "tri", title: "SIDECAR · STACK", accent: "lime" },
+    { id: "providers", page: 0, col: 1, row: 3, colSpan: 1, rowSpan: 1, island: "tri", title: "ROUTING · COSTI", accent: "gold" },
+    { id: "disks", page: 0, col: 3, row: 3, colSpan: 1, rowSpan: 1, island: "tri", title: "DISCHI · BLOCK", accent: "gold" },
+    /* Pagina 1 — 3×3: dual brain + ragionamento animato */
+    { id: "janis-brain", page: 1, col: 1, row: 1, colSpan: 1, rowSpan: 2, island: "pair-v", title: "JANIS BRAIN", accent: "magenta" },
+    { id: "cognition", page: 1, col: 2, row: 1, colSpan: 1, rowSpan: 2, island: "pair-v", title: "RAGIONAMENTO · FLUSSO", accent: "cyan" },
+    { id: "user-brain", page: 1, col: 3, row: 1, colSpan: 1, rowSpan: 2, island: "pair-v", title: "USER SECOND BRAIN", accent: "gold" },
+    { id: "peripherals", page: 1, col: 1, row: 3, colSpan: 1, rowSpan: 1, island: "tri", title: "PERIFERICHE", accent: "magenta" },
+    { id: "perception", page: 1, col: 2, row: 3, colSpan: 1, rowSpan: 1, island: "tri", title: "VEDERE · SENTIRE", accent: "cyan" },
+    { id: "services", page: 1, col: 3, row: 3, colSpan: 1, rowSpan: 1, island: "tri", title: "SERVIZI · SCOUT", accent: "lime" },
+    /* Pagina 2 — griglia 4×4 con pannelli grafici combinati */
+  ];
+
+  const SCAN_PANELS = [
+    { id: "chart-metrics", type: "panel", kind: "dual-area", col: 1, row: 1, colSpan: 2, rowSpan: 2, island: "quad", title: "CPU · RAM · SENSORI", accent: "cyan" },
+    { id: "chart-gpu", type: "panel", kind: "gpu", col: 3, row: 1, colSpan: 2, rowSpan: 1, island: "pair-h", title: "GPU · TEMP", accent: "gold" },
+    { id: "chart-status", type: "panel", kind: "status", col: 3, row: 2, colSpan: 2, rowSpan: 1, island: "pair-h", title: "STACK · API", accent: "lime" },
+    { id: "chart-network", type: "panel", kind: "wave", col: 1, row: 3, colSpan: 2, rowSpan: 1, island: "pair-h", title: "RETE · RX/TX", accent: "lime" },
+    { id: "chart-neural", type: "panel", kind: "dual-neural", col: 3, row: 3, colSpan: 2, rowSpan: 2, island: "quad", title: "FLUSSO NEURONI · DUAL BRAIN", accent: "magenta" },
+    { id: "chart-minis", type: "panel", kind: "minis", col: 1, row: 4, colSpan: 2, rowSpan: 1, island: "pair-h", title: "METRICHE · LIVE", accent: "cyan" },
+  ];
+
+  const METRIC_HISTORY = { cpu: [], ram: [], gpu: [], rx: [], tx: [] };
+  const HIST_MAX = 48;
+  let animTick = 0;
 
   const PAUSE_MS = 10 * 60 * 1000;
   let fullscreenId = null;
@@ -38,8 +60,48 @@
   let gaps = {};
   let winVm = {};
   let tools = [];
+  let toolsActive = [];
   let mcp = {};
   let reasoning = {};
+  let liveReasoningStep = null;
+
+  const viz = () => window.HudViz || {};
+
+  function effectiveLiveStep() {
+    return liveReasoningStep ?? reasoning.live_step ?? 0;
+  }
+
+  function updateLivePipeline(step) {
+    const idx = step ?? effectiveLiveStep();
+    gridEl.querySelectorAll(".pipeline .pipe-node").forEach((el, i) => {
+      el.classList.remove("live", "done");
+      if (i === idx) el.classList.add("live");
+      else if (i < idx) el.classList.add("done");
+    });
+    const st = document.body.dataset.brainState || "idle";
+    gridEl.querySelectorAll(".viz-neuron-orb, .neural-body").forEach((el) => {
+      el.classList.toggle("neural-active", st === "thinking" || st === "acting");
+      el.classList.toggle("neural-speaking", st === "speaking");
+    });
+    gridEl.querySelectorAll(".synapse-bridge, .synapse-wrap").forEach((el) => {
+      el.classList.toggle("synapse-hot", st === "acting");
+    });
+  }
+
+  function setLiveStep(step) {
+    liveReasoningStep = step;
+    updateLivePipeline(step);
+  }
+
+  window.JanisHudStage = { setLiveStep, updateLivePipeline, effectiveLiveStep };
+
+  window.addEventListener("janis:brain", (ev) => {
+    const msg = ev.detail;
+    if (msg && msg.type === "chat_end") {
+      liveReasoningStep = null;
+      setTimeout(() => updateLivePipeline(reasoning.live_step ?? 0), 800);
+    }
+  });
 
   const gridEl = document.getElementById("hud-grid");
   const dotsEl = document.getElementById("sheet-dots");
@@ -106,12 +168,33 @@
     gaps = d.gaps || {};
     winVm = d.win_vm || {};
     tools = d.tools || [];
+    toolsActive = d.tools_active || tools;
     mcp = d.mcp || {};
     reasoning = d.reasoning || {};
     perception = d.perception || {};
     peripherals = d.peripherals || inventory.peripherals || {};
     llmModels = d.llm_models || {};
     evolve = d.evolve || {};
+    pushMetricHistory();
+  }
+
+  function pushMetricHistory() {
+    const push = (k, v) => {
+      const arr = METRIC_HISTORY[k];
+      arr.push(Number(v) || 0);
+      if (arr.length > HIST_MAX) arr.shift();
+    };
+    push("cpu", metrics.cpu?.usage_pct);
+    push("ram", metrics.memory?.usage_pct);
+    push("gpu", metrics.gpu?.usage_pct);
+    push("rx", metrics.network?.rx_bytes);
+    push("tx", metrics.network?.tx_bytes);
+  }
+
+  function brainCounts() {
+    const userN = knowledge.graph_user_nodes ?? knowledge.user_memories ?? 0;
+    const janisN = knowledge.graph_janis_nodes ?? knowledge.janis_memories ?? 0;
+    return { userN, janisN, total: knowledge.graph_nodes ?? knowledge.memories ?? 0 };
   }
 
   function renderHardware() {
@@ -200,6 +283,10 @@
         ${sidecarRow("SCHEDULER", !!sched.running, `${sched.enabled_jobs || 0}/${sched.job_count || 0} job`)}
         ${sidecarRow("AUTONOMY", !!sched.autonomy_running, sched.autonomy_enabled ? "loop" : "off")}
       </div>
+      <div class="mini-head">FLOTTA · ${status.fleet?.nodes_online || 0}/${status.fleet?.nodes_total || 0}</div>
+      ${(status.fleet?.nodes || []).slice(0, 4).map((n) =>
+        statRow(n.node_id || n.hostname, n.online ? "LINK" : "GAP", n.online ? "lime" : "warn")
+      ).join("") || statRow("NODI", "—", "muted")}
     </div>`;
   }
 
@@ -270,6 +357,20 @@
       <div class="process-list">${skillHtml || statRow("CANALI", "—", "warn")}</div>
       <div class="mini-head">SCHEDULER</div>
       <div class="process-list">${jobHtml || statRow("JOBS", "—", "warn")}</div>
+      <div class="mini-head">FLOTTA · ${status.fleet?.nodes_online || 0}/${status.fleet?.nodes_total || 0}</div>
+      ${(status.fleet?.nodes || []).slice(0, 5).map((n) =>
+        `<div class="fleet-card ${n.online ? "online" : "offline"} compact">
+          <span class="fleet-icon">${n.online ? "◉" : "◎"}</span>
+          <div><div class="fleet-name">${esc(n.node_id || n.hostname)}</div>
+          <div class="fleet-info">${esc(n.os || "")} · ${n.online ? "LINK" : "GAP"}</div></div>
+        </div>`
+      ).join("") || statRow("NODI", "—", "warn")}
+      ${statRow("WIN-VM", winVm.available ? (winVm.state || "?").toUpperCase() : "N/D", winVm.state === "running" ? "lime" : "warn")}
+      <div class="mini-head">TECH SCOUT · ${scout.total ?? 0}</div>
+      ${(scout.recent || []).slice(0, 4).map((c) => statRow(c.name, `${c.status} · ${c.deployment || "local"}`, "cyan")).join("") || statRow("SCOUT", "—", "warn")}
+      ${statRow("LLM LAB", evolve.lab?.active_run ? "RUN" : (evolve.lab?.ready_train ? "READY" : "IDLE"), evolve.lab?.active_run ? "cyan" : "muted")}
+      ${statRow("IDENTITY", status.pocket_api?.identity_verify ? "API OK" : "—", "gold")}
+      ${statRow("EMERGENCY", status.pocket_api?.emergency_sos ? "SOS API" : "—", "warn")}
     </div>`;
   }
 
@@ -303,29 +404,67 @@
 
   function renderBrain() {
     const nodes = reasoning.pipeline || ["INPUT", "THINK", "TOOLS", "AGENTS", "OUT"];
-    const live = reasoning.live_step ?? 0;
-    const pipe = nodes.map((n, i) => {
-      const conn = i > 0 ? '<span class="pipe-connector"></span>' : "";
-      return `${conn}<span class="pipe-node ${i === live ? "live" : ""}">${n}</span>`;
-    }).join("");
+    const live = effectiveLiveStep();
+    const bc = brainCounts();
     const open = gaps.open || [];
     const gs = gaps.stats || {};
     return `<div class="block-body scroll-y">
-      <div class="mini-head">PIPELINE · ${reasoning.provider || "—"}</div>
-      <div class="pipeline-wrap compact"><div class="pipeline">${pipe}</div></div>
-      ${statRow("TOOLS", `${tools.length} registrati`, "lime")}
+      ${viz().pipelineAnim ? viz().pipelineAnim(nodes, live, reasoning.provider) : ""}
+      <div class="brain-dual-mini">${viz().dualBrainBridge ? viz().dualBrainBridge(bc.userN, bc.janisN, live) : ""}</div>
+      ${statRow("TOOLS", `${toolsActive.length}/${tools.length} attivi`, "lime")}
       ${statRow("MCP", `${(mcp.mcp_servers || []).length} server`, "cyan")}
       <div class="mini-head">TOOL REGISTRY</div>
-      ${tools.slice(0, 12).map((t) => statRow(t, "OK", "cyan")).join("")}
-      ${tools.length > 12 ? statRow("…", `+${tools.length - 12}`, "muted") : ""}
-      <div class="mini-head">MEMORIA · L${knowledge.level ?? "—"}</div>
-      ${statRow("MEM TOTAL", knowledge.memories ?? knowledge.count ?? 0, "gold")}
-      ${statRow("USER / JANIS", `${knowledge.user_memories ?? 0} / ${knowledge.janis_memories ?? 0}`, "magenta")}
-      ${statRow("SESSION MSG", status.session_messages ?? 0, "cyan")}
+      ${toolsActive.slice(0, 8).map((t) => statRow(t, "OK", "cyan")).join("")}
+      ${tools.length > toolsActive.length ? statRow("OFF", `+${tools.length - toolsActive.length} bloccati`, "warn") : ""}
+      ${statRow("GRAFO", `${bc.total} nodi · ${knowledge.graph_edges ?? 0} link`, "gold")}
       ${statRow("GAP APERTI", gs.open ?? open.length, gs.open ? "warn" : "lime")}
-      ${open.slice(0, 3).map((g) => statRow("GAP", String(g.description || g.id).slice(0, 36), "warn")).join("")}
       ${statRow("SCOUT", scout.total ?? 0, "gold")}
-      ${(scout.recent || []).slice(0, 3).map((c) => statRow(c.name, `${c.status} · ${c.deployment || "local"}`, "cyan")).join("")}
+    </div>`;
+  }
+
+  function renderJanisBrain() {
+    const bc = brainCounts();
+    const sample = (knowledge.graph_sample || []).filter((n) => n.source !== "user").slice(0, 4);
+    return `<div class="block-body">
+      ${viz().neuronOrb ? viz().neuronOrb(bc.janisN, "magenta", "NEURONI JANIS", "left") : ""}
+      ${statRow("MEMORIE", bc.janisN, "magenta")}
+      ${statRow("LIVELLO", `L${knowledge.level ?? "—"}`, "gold")}
+      ${statRow("INTERAZIONI", knowledge.janis_memories ?? 0, "cyan")}
+      <div class="mini-head">NODI RECENTI</div>
+      ${sample.map((n) => statRow("·", String(n.label || "").slice(0, 32), "magenta")).join("") || statRow("NODI", "—", "muted")}
+      ${statRow("AUTO-EVOLVE", evolve.autonomy?.enabled ? "ON" : "OFF", evolve.autonomy?.enabled ? "lime" : "warn")}
+    </div>`;
+  }
+
+  function renderUserBrain() {
+    const bc = brainCounts();
+    const sample = (knowledge.graph_sample || []).filter((n) => n.source === "user").slice(0, 4);
+    return `<div class="block-body">
+      ${viz().neuronOrb ? viz().neuronOrb(bc.userN, "gold", "NEURONI USER", "right") : ""}
+      ${statRow("MEMORIE", bc.userN, "gold")}
+      ${statRow("SESSION MSG", status.session_messages ?? 0, "cyan")}
+      ${statRow("FOLDER IDX", knowledge.folder_clusters ?? knowledge.indexed_folders ?? "—", "lime")}
+      <div class="mini-head">VAULT UTENTE</div>
+      ${sample.map((n) => statRow("·", String(n.label || "").slice(0, 32), "gold")).join("") || statRow("VAULT", "vuoto", "muted")}
+      ${statRow("CURSOR BRIDGE", status.paid_mode ? "PRO" : "LOCAL", status.paid_mode ? "warn" : "lime")}
+    </div>`;
+  }
+
+  function renderCognition() {
+    const nodes = reasoning.pipeline || ["INPUT", "THINK", "TOOLS", "AGENTS", "OUT"];
+    const live = effectiveLiveStep();
+    const bc = brainCounts();
+    const by = llmModels.by_tier || {};
+    return `<div class="block-body scroll-y">
+      ${viz().pipelineAnim ? viz().pipelineAnim(nodes, live, reasoning.provider) : ""}
+      <div class="synapse-wrap anim">${viz().dualBrainBridge ? viz().dualBrainBridge(bc.userN, bc.janisN, live) : ""}</div>
+      ${statRow("PROVIDER", reasoning.provider || "—", "cyan")}
+      ${statRow("TIER", reasoning.tier || "LOCAL", "lime")}
+      ${statRow("MODE", reasoning.mode || "—", "magenta")}
+      ${reasoning.cloud_blocked ? `<div class="warning-strip">CLOUD BLOCCATO · LOCAL FIRST</div>` : ""}
+      ${statRow("MODELLO", by.balanced || status.llm_provider?.ollama_model || "—", "gold")}
+      ${statRow("LIVE STEP", nodes[live] || "IDLE", "lime")}
+      ${statRow("WS CLIENTS", (status.connected_clients || []).length, "cyan")}
     </div>`;
   }
 
@@ -380,6 +519,9 @@
   function renderLlm() {
     const by = llmModels.by_tier || {};
     const results = llmModels.results || [];
+    const au = evolve.autonomy || {};
+    const sched = evolve.scheduler || status.scheduler || {};
+    const props = evolve.proposals || [];
     return `<div class="block-body scroll-y">
       ${statRow("ATTIVI", (llmModels.working || []).join(", ") || "—", "lime")}
       ${statRow("FAST", by.fast || "—", "lime")}
@@ -387,6 +529,12 @@
       ${statRow("CAPABLE", by.capable || "—", "magenta")}
       <div class="mini-head">PROBE LATENZA</div>
       ${results.map((r) => statRow(r.model, r.ok ? `${Math.round(r.latency_ms)}ms` : "FAIL", r.ok ? "cyan" : "warn")).join("") || statRow("PROBE", "—", "warn")}
+      <div class="mini-head">AUTO-EVOLVE</div>
+      ${statRow("GAP APERTI", evolve.gaps_open ?? 0, evolve.gaps_open ? "warn" : "lime")}
+      ${statRow("PROPOSTE", evolve.proposals_open ?? 0, "gold")}
+      ${statRow("AUTONOMY", au.enabled ? "ON" : "OFF", au.enabled ? "lime" : "warn")}
+      ${statRow("SCHEDULER", sched.running ? "RUN" : "STOP", sched.running ? "lime" : "warn")}
+      ${props.slice(0, 2).map((p) => statRow("PROP", String(p.title || p.id || "?").slice(0, 28), "gold")).join("")}
     </div>`;
   }
 
@@ -414,6 +562,88 @@
     </div>`;
   }
 
+  function renderScanPanelBody(p) {
+    const V = viz();
+    const bc = brainCounts();
+    const live = effectiveLiveStep();
+    animTick += 1;
+
+    if (p.kind === "dual-area") {
+      const cpu = Math.round(metrics.cpu?.usage_pct || 0);
+      const ram = Math.round(metrics.memory?.usage_pct || 0);
+      return `<div class="block-body chart-body">
+        <div class="chart-head"><span>CPU ${cpu}%</span><span>RAM ${ram}%</span></div>
+        ${V.dualArea ? V.dualArea(METRIC_HISTORY.cpu, METRIC_HISTORY.ram) : ""}
+        ${statRow("TEMP", metrics.cpu?.temp_c != null ? `${Math.round(metrics.cpu.temp_c)}°C` : "—", "warn")}
+        ${statRow("LOAD 1M", metrics.cpu?.load_avg?.["1m"] != null ? Number(metrics.cpu.load_avg["1m"]).toFixed(2) : "—", "gold")}
+      </div>`;
+    }
+    if (p.kind === "gpu") {
+      const gpu = Math.round(metrics.gpu?.usage_pct || 0);
+      return `<div class="block-body chart-body chart-row">
+        ${V.arcGauge ? V.arcGauge(gpu, "GPU", "gold") : ""}
+        ${V.arcGauge ? V.arcGauge(metrics.cpu?.temp_c != null ? Math.min(100, metrics.cpu.temp_c) : 0, "TEMP", "warn") : ""}
+        ${statRow("GPU", metrics.gpu?.name || "—", "gold")}
+      </div>`;
+    }
+    if (p.kind === "status") {
+      return `<div class="block-body chart-body">
+        ${V.miniCells ? V.miniCells([
+          { label: "OLL", val: status.ollama?.online ? "ON" : "OFF", tone: status.ollama?.online ? "lime" : "warn" },
+          { label: "BRN", val: metrics.sidecars?.brain !== false ? "OK" : "ERR", tone: "cyan" },
+          { label: "API", val: pollOk ? "LIVE" : "ERR", tone: pollOk ? "lime" : "warn" },
+          { label: "TIER", val: (reasoning.tier || "LOC").slice(0, 3), tone: "gold" },
+        ]) : ""}
+      </div>`;
+    }
+    if (p.kind === "wave") {
+      return `<div class="block-body chart-body">
+        ${V.waveform ? V.waveform(animTick, "lime") : ""}
+        ${statRow("RX", formatBytes(metrics.network?.rx_bytes), "cyan")}
+        ${statRow("TX", formatBytes(metrics.network?.tx_bytes), "lime")}
+      </div>`;
+    }
+    if (p.kind === "dual-neural") {
+      return `<div class="block-body chart-body neural-body">
+        ${V.dualBrainBridge ? V.dualBrainBridge(bc.userN, bc.janisN, live) : ""}
+        ${statRow("GRAFO", `${bc.total} nodi`, "magenta")}
+        ${statRow("LINK", `${knowledge.graph_edges ?? 0} edge`, "cyan")}
+      </div>`;
+    }
+    if (p.kind === "minis") {
+      return `<div class="block-body chart-body">
+        ${V.miniCells ? V.miniCells([
+          { label: "FLT", val: `${status.fleet?.nodes_online || 0}/${status.fleet?.nodes_total || 0}`, tone: "magenta" },
+          { label: "TL", val: String(toolsActive.length), tone: "gold" },
+          { label: "MEM", val: String(knowledge.memories ?? 0), tone: "gold" },
+          { label: "GAP", val: String(gaps.stats?.open ?? 0), tone: "warn" },
+          { label: "UP", val: formatUptime(metrics.uptime_sec).replace(" ", ""), tone: "cyan" },
+          { label: "LD", val: metrics.cpu?.load_avg?.["1m"] != null ? Number(metrics.cpu.load_avg["1m"]).toFixed(1) : "—", tone: "lime" },
+        ]) : ""}
+      </div>`;
+    }
+    return "";
+  }
+
+  function panelStyle(p) {
+    if (fullscreenId) return "display:none";
+    return `grid-column:${p.col} / span ${p.colSpan || 1};grid-row:${p.row} / span ${p.rowSpan || 1}`;
+  }
+
+  function renderScanPanel(p) {
+    const isl = islandClass(p);
+    return `<article class="hud-block scan-panel accent-${p.accent} ${isl}" data-id="${p.id}" style="${panelStyle(p)}" tabindex="0">
+      <div class="block-frame chart-frame">
+        ${islandCorners()}
+        <div class="block-scan"></div>
+        <span class="block-id">${p.id.slice(0, 3).toUpperCase()}</span>
+        <span class="island-tag">${isl.replace("island-", "").toUpperCase()}</span>
+        <header class="block-head compact"><span class="block-title">${p.title}</span></header>
+        ${renderScanPanelBody(p)}
+      </div>
+    </article>`;
+  }
+
   const RENDERERS = {
     hardware: renderHardware,
     inventory: renderInventory,
@@ -424,38 +654,122 @@
     services: renderServices,
     fleet: renderFleet,
     brain: renderBrain,
+    "janis-brain": renderJanisBrain,
+    cognition: renderCognition,
+    "user-brain": renderUserBrain,
     peripherals: renderPeripherals,
     perception: renderPerception,
     llm: renderLlm,
     evolve: renderEvolve,
   };
 
+  function currentLayout() {
+    return LAYOUTS[hudPage] || LAYOUTS[0];
+  }
+
+  function applyLayout() {
+    const lay = currentLayout();
+    gridEl.dataset.layout = String(lay.cols);
+    gridEl.style.gridTemplateColumns = `repeat(${lay.cols}, 1fr)`;
+    gridEl.style.gridTemplateRows = `repeat(${lay.rows}, minmax(0, 1fr))`;
+  }
+
   function visibleBlocks() {
     return BLOCKS.filter((b) => b.page === hudPage);
   }
 
+  function islandClass(b) {
+    const span = (b.colSpan || 1) * (b.rowSpan || 1);
+    if (b.island) return `island-${b.island}`;
+    if (span >= 4) return "island-quad";
+    if ((b.colSpan || 1) >= 2) return "island-pair-h";
+    if ((b.rowSpan || 1) >= 2) return "island-pair-v";
+    return "island-unit";
+  }
+
   function blockStyle(b) {
+    const lay = currentLayout();
     if (b.page !== hudPage && !fullscreenId) return "display:none";
-    if (!fullscreenId) return `grid-column:${b.col} / span ${b.colSpan};grid-row:${b.row} / span ${b.rowSpan}`;
-    if (fullscreenId === b.id) return "grid-column:1 / span 3;grid-row:1 / span 3";
+    if (!fullscreenId) {
+      return `grid-column:${b.col} / span ${b.colSpan || 1};grid-row:${b.row} / span ${b.rowSpan || 1}`;
+    }
+    if (fullscreenId === b.id) {
+      return `grid-column:1 / span ${lay.cols};grid-row:1 / span ${lay.rows}`;
+    }
     return "display:none";
   }
 
+  function scanCellStyle(t) {
+    if (fullscreenId) return "display:none";
+    return `grid-column:${t.col} / span ${t.colSpan || 1};grid-row:${t.row} / span ${t.rowSpan || 1}`;
+  }
+
+  function renderScanCell(t) {
+    return renderScanPanel(t);
+  }
+
+  function islandCorners() {
+    return `<span class="island-corner tl"></span><span class="island-corner tr"></span>
+      <span class="island-corner bl"></span><span class="island-corner br"></span>`;
+  }
+
+  let lastDotsPage = -1;
+
   function buildGrid() {
-    gridEl.innerHTML = visibleBlocks().map((b) => {
-      const isFs = fullscreenId === b.id;
-      return `<article class="hud-block accent-${b.accent} ${isFs ? "is-focus" : ""}" data-id="${b.id}" style="${blockStyle(b)}" tabindex="0">
-        <div class="block-frame">
-          <div class="block-scan"></div>
-          <span class="block-id">${b.id.slice(0, 3).toUpperCase()}</span>
-          <header class="block-head"><span class="block-title">${b.title}</span><span class="block-expand">${isFs ? "◈ EXP" : "⊞"}</span></header>
-          ${(RENDERERS[b.id] || (() => ""))()}
-        </div>
-      </article>`;
-    }).join("");
-    gridEl.querySelectorAll(".hud-block").forEach((el) => {
+    const scrolls = new Map();
+    gridEl.querySelectorAll(".scroll-y").forEach((el) => {
+      const id = el.closest(".hud-block")?.dataset.id;
+      if (id) scrolls.set(id, el.scrollTop);
+    });
+
+    applyLayout();
+    let html = "";
+
+    if (hudPage === 2 && !fullscreenId) {
+      html = SCAN_PANELS.map(renderScanPanel).join("");
+    } else if (hudPage === 2 && fullscreenId) {
+      const p = SCAN_PANELS.find((x) => x.id === fullscreenId);
+      const lay = currentLayout();
+      if (p) {
+        html = renderScanPanel({ ...p, col: 1, row: 1, colSpan: lay.cols, rowSpan: lay.rows, island: "quad" });
+      }
+    } else {
+      html = visibleBlocks().map((b) => {
+        const isFs = fullscreenId === b.id;
+        const isl = islandClass(b);
+        return `<article class="hud-block accent-${b.accent} ${isl} ${isFs ? "is-focus" : ""}" data-id="${b.id}" style="${blockStyle(b)}" tabindex="0">
+          <div class="block-frame">
+            ${islandCorners()}
+            <div class="block-scan"></div>
+            <span class="block-id">${b.id.slice(0, 3).toUpperCase()}</span>
+            <span class="island-tag">${isl.replace("island-", "").toUpperCase()}</span>
+            <header class="block-head"><span class="block-title">${b.title}</span><span class="block-expand">${isFs ? "◈ EXP" : "⊞"}</span></header>
+            ${(RENDERERS[b.id] || (() => ""))()}
+          </div>
+        </article>`;
+      }).join("");
+    }
+
+    gridEl.innerHTML = html;
+    gridEl.querySelectorAll(".scroll-y").forEach((el) => {
+      const id = el.closest(".hud-block")?.dataset.id;
+      if (id && scrolls.has(id)) el.scrollTop = scrolls.get(id);
+    });
+    gridEl.querySelectorAll(".hud-block[data-id]").forEach((el) => {
+      if (el.classList.contains("scan-cell")) return;
       el.addEventListener("click", (e) => { e.stopPropagation(); toggleFullscreen(el.dataset.id); });
     });
+    if (hudPage === 2) {
+      gridEl.querySelectorAll(".scan-panel").forEach((el) => {
+        el.addEventListener("click", (e) => { e.stopPropagation(); toggleFullscreen(el.dataset.id); });
+      });
+    }
+  }
+
+  function footLabel() {
+    const lay = currentLayout();
+    if (!pollOk) return `GRIGLIA ${lay.tag} · API ERR · ${pollErr}`;
+    return `GRIGLIA ${lay.tag} · ${lay.label} · POLL 5S`;
   }
 
   function toggleFullscreen(id) {
@@ -463,7 +777,7 @@
       fullscreenId = null;
       stage.classList.remove("grid-fullscreen");
       pauseBadge.classList.add("hidden");
-      footMeta.textContent = pollOk ? `PAG ${hudPage + 1}/2 · POLL 5S` : `ERR: ${pollErr}`;
+      footMeta.textContent = pollOk ? footLabel() : `ERR: ${pollErr}`;
     } else {
       fullscreenId = id;
       stage.classList.add("grid-fullscreen");
@@ -482,9 +796,8 @@
   }
 
   function renderDots() {
-    const pages = ["OPS", "I/O · PERCEZIONE"];
-    dotsEl.innerHTML = pages.map((label, i) =>
-      `<span class="dot ${i === hudPage ? "on" : ""}" data-page="${i}" title="${label}"></span>`
+    dotsEl.innerHTML = LAYOUTS.map((lay, i) =>
+      `<span class="dot ${i === hudPage ? "on" : ""}" data-page="${i}" title="${lay.tag} · ${lay.label}"></span>`
     ).join("");
     dotsEl.querySelectorAll(".dot").forEach((d) => {
       d.addEventListener("click", (e) => {
@@ -494,11 +807,10 @@
         stage.classList.remove("grid-fullscreen");
         buildGrid();
         renderDots();
-        footMeta.textContent = pollOk
-          ? `PAG ${hudPage + 1}/2 · ${pages[hudPage]} · POLL 5S`
-          : `API ERR · ${pollErr}`;
+        footMeta.textContent = footLabel();
       });
     });
+    lastDotsPage = hudPage;
   }
 
   function updateSysStatus() {
@@ -511,13 +823,15 @@
 
   function refresh() {
     buildGrid();
-    renderDots();
+    if (lastDotsPage !== hudPage) {
+      renderDots();
+      lastDotsPage = hudPage;
+    }
+    updateLivePipeline();
     updateSysStatus();
     if (clockEl) clockEl.textContent = new Date().toLocaleTimeString("it-IT", { hour12: false });
     if (!fullscreenId) {
-      footMeta.textContent = pollOk
-        ? `PAG ${hudPage + 1}/2 · LIVE · POLL 5S`
-        : `API ERR · ${pollErr}`;
+      footMeta.textContent = footLabel();
     }
   }
 

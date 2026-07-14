@@ -1,0 +1,19 @@
+<UserControl x:Class="JANIS.Desktop.Views.PluginsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Grid Background="{StaticResource BgDark}" Margin="12">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <TextBlock Grid.Row="0" Text="PLUGIN · TOOL ATTIVI" FontSize="16" FontWeight="Bold"
+               Foreground="{StaticResource AccentCyan}" Margin="0,0,0,8"/>
+    <TextBlock x:Name="InfoText" Grid.Row="1" TextWrapping="Wrap" Foreground="{StaticResource TextMuted}" Margin="0,0,0,8"/>
+    <TextBox x:Name="ToolsBox" Grid.Row="2" IsReadOnly="True" TextWrapping="Wrap"
+             VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11"
+             Background="#050A0E" Foreground="#C8E6F0" BorderBrush="{StaticResource BorderLine}"/>
+    <Button Content="Aggiorna" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,-36,0,0"
+            Padding="10,4" Click="Refresh_Click"/>
+  </Grid>
+</UserControl>

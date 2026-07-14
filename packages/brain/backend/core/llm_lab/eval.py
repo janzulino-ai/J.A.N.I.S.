@@ -66,6 +66,7 @@ async def evaluate_model(
     model: str,
     *,
     baseline: str | None = None,
+    audit: dict | None = None,
 ) -> dict[str, Any]:
     """Confronta modello candidato vs baseline su probe JANIS."""
     baseline = baseline or settings.LAB_EVAL_BASELINE or settings.OLLAMA_MODEL
@@ -100,7 +101,7 @@ async def evaluate_model(
     base_pct = round(100 * baseline_score / total, 1) if total else 0
     promote = candidate_score >= baseline_score and cand_pct >= settings.LAB_PROMOTE_MIN_SCORE
 
-    return {
+    result = {
         "ok": True,
         "model": model,
         "baseline": baseline,
@@ -113,6 +114,14 @@ async def evaluate_model(
         "promote_recommended": promote,
         "results": results,
     }
+    if audit:
+        from backend.core.llm_lab.audit import audit_quality_score
+
+        audit_score = audit_quality_score(audit)
+        result["audit_score"] = audit_score
+        if audit_score < settings.LAB_PROMOTE_MIN_SCORE:
+            result["promote_recommended"] = False
+    return result
 
 
 async def quick_probe(model: str) -> dict:

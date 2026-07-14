@@ -1,16 +1,73 @@
+# JANIS Fleet — registro nodi (coordinator + satelliti)
+# Aggiornato: 2026-07-14
+
+coordinator: linux-server
+brain_url: http://192.168.1.72:8001
+
+vpn:
+  provider: wireguard
+  server_node: linux-server
+  listen_port: 51820
+  subnet: 10.8.0.0/24
+  server_address: 10.8.0.1/24
+  lan_route: 192.168.1.0/24
+  note: accesso esterno senza esporre :8001 su WAN
+
 nodes:
+  - node_id: linux-server
+    host: 192.168.1.72
+    user: janis
+    role: coordinator
+    hardware: Samsung SSD 970 EVO Plus 500GB
+
+  - node_id: windows-pc
+    host: lan
+    os: windows11
+    role: worker
+    note: MSI MS-7D08 · i9-11900K · RTX 3080 Ti · UI + dev Cursor/WSL
+
   - node_id: mac-node
     host: mac-mini-di-janzu.local
+    lan_ip: 192.168.1.74
     user: janzu
     role: worker
+    hardware: Mac Mini M4
+
   - node_id: win-vm
     host: 127.0.0.1
     role: vm
     display: hdmi-rtx
     disk: /dev/nvme1n1
-  - node_id: pocket-iphone
+    note: Windows KVM sul server Linux
+
+  - node_id: zenbook
+    host: lan
+    os: windows11
+    role: mobile-worker
+    user: janis
+    vpn: true
+    hardware: ASUS Zenbook · Core Ultra 9 185H · 32GB
+
+  - node_id: iphone-15-pro-max
     host: lan
     role: mobile
+    surface: phone
+    app: janis-pocket
+    vpn: true
+    hardware: iPhone 15 Pro Max · A17 Pro
 
-coordinator: linux-server
-brain_url: http://127.0.0.1:8001
+  - node_id: iphone-14-pro
+    host: lan
+    role: mobile
+    surface: phone
+    app: janis-pocket
+    vpn: true
+    hardware: iPhone 14 Pro · A16
+
+  - node_id: ipad-pro-2020
+    host: lan
+    role: mobile
+    surface: tablet
+    app: janis-pocket
+    vpn: true
+    hardware: iPad Pro 12.9" 4th gen 2020 · A12Z · LiDAR

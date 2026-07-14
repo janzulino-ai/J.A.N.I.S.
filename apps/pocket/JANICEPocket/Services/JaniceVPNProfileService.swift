@@ -32,9 +32,9 @@ enum JaniceVPNProfileService {
 
     static func setupSteps(lanURL: String) -> [String] {
         [
-            "1. Router: abilita server WireGuard (UDP 51820)",
-            "2. Genera coppia chiavi client (wg genkey / wg pubkey)",
-            "3. Incolla config in app WireGuard iPhone",
+            "1. Server: sudo bash infra/vpn/setup-wireguard.sh (linux-server)",
+            "2. Copia client.conf del tuo device (iPhone 15 PM / 14 Pro / iPad Pro)",
+            "3. Incolla config in app WireGuard",
             "4. Connetti VPN → stesso URL LAN in Pocket",
             "5. Impostazioni Pocket → URL VPN: \(pocketServerURLHint(lanURL: lanURL))",
             "6. Attiva toggle «Usa server VPN» fuori casa",

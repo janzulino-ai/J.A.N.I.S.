@@ -7,7 +7,7 @@ from typing import Callable, Awaitable
 
 from backend.config import settings
 from backend.core.llm_router import chat as llm_chat, chat_stream as llm_chat_stream
-from backend.core.tools.registry import execute_tool, list_tools
+from backend.core.tools.registry import execute_tool, list_tools, list_active_tools, tool_allowed
 
 logger = logging.getLogger("JANIS.Brain")
 
@@ -673,7 +673,7 @@ async def process_message(
     increment_user_message()
 
     from backend.core.host_awareness import is_awareness_query
-    tools_list = ", ".join(list_tools())
+    tools_list = ", ".join(list_active_tools())
     system = _base_system_prompt() + f"\n\nStrumenti attivi: {tools_list}"
 
     # Snapshot compatto (non l'inventario completo — gemma4 su CPU impiega minuti)
@@ -858,6 +858,25 @@ async def process_message(
             last_tool_name = tool_name
             tool_args = parsed.get("args") or {}
             reason = parsed.get("reason", "")
+
+            if not tool_allowed(tool_name):
+                result = (
+                    f"Strumento '{tool_name}' non disponibile in modalità local-only "
+                    "(Cursor/cloud disabilitati). Usa terminal, read_file, write_file, remember, recall."
+                )
+                last_tool_result = result
+                await emit({"type": "state", "state": "ACTING"})
+                await emit({"type": "tool_start", "tool": tool_name, "args": tool_args, "reason": reason})
+                await emit({"type": "tool_end", "tool": tool_name, "result": result[:2000]})
+                messages.append({"role": "assistant", "content": raw})
+                messages.append({
+                    "role": "user",
+                    "content": (
+                        f"Risultato strumento '{tool_name}':\n{result}\n\n"
+                        'Continua. Usa un altro strumento o rispondi con {"final": "..."}.'
+                    ),
+                })
+                continue
 
             await emit({"type": "state", "state": "ACTING"})
             await emit({

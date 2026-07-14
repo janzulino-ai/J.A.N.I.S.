@@ -17,6 +17,16 @@ class LabTrainBody(BaseModel):
     force: bool = False
 
 
+class LabAuditBody(BaseModel):
+    prompt: str = Field(..., min_length=1)
+    teacher_response: str = Field(..., min_length=1)
+    student_response: str = Field(..., min_length=1)
+    student_model: str | None = None
+    teacher_model: str | None = None
+    run_id: str | None = None
+    tags: list[str] = Field(default_factory=list)
+
+
 @router.get("/api/lab/status")
 async def api_lab_status():
     from backend.core.llm_lab.status import lab_status
@@ -111,3 +121,38 @@ async def api_lab_eval(model: str = Query(..., min_length=1)):
     from backend.core.llm_lab.eval import evaluate_model
 
     return await evaluate_model(model)
+
+
+@router.get("/api/lab/audits")
+async def api_lab_audits(limit: int = Query(default=20, ge=1, le=100)):
+    from backend.core.llm_lab.audit import list_audits
+
+    return {"audits": list_audits(limit=limit)}
+
+
+@router.get("/api/lab/audits/{audit_id}")
+async def api_lab_audit(audit_id: str):
+    from backend.core.llm_lab.audit import load_audit
+
+    audit = load_audit(audit_id)
+    if not audit:
+        raise HTTPException(status_code=404, detail="Audit non trovato")
+    return audit
+
+
+@router.post("/api/lab/audit")
+async def api_lab_audit_run(body: LabAuditBody):
+    from backend.core.llm_lab.audit import audit_responses
+
+    result = await audit_responses(
+        prompt=body.prompt,
+        teacher_response=body.teacher_response,
+        student_response=body.student_response,
+        student_model=body.student_model,
+        teacher_model=body.teacher_model,
+        run_id=body.run_id,
+        tags=body.tags,
+    )
+    if not result.get("ok") and result.get("error") and not result.get("audit"):
+        raise HTTPException(status_code=502, detail=result.get("error"))
+    return result

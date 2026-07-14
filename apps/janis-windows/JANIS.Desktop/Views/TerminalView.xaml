@@ -1,0 +1,32 @@
+<UserControl x:Class="JANIS.Desktop.Views.TerminalView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Grid Background="{StaticResource BgDark}" Margin="8">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,6">
+      <TextBlock Text="SHELL" Foreground="{StaticResource AccentGreen}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+      <ComboBox x:Name="ShellCombo" Width="140" SelectedIndex="0">
+        <ComboBoxItem Content="WSL (brain)"/>
+        <ComboBoxItem Content="Windows PS"/>
+      </ComboBox>
+    </StackPanel>
+    <TextBox x:Name="OutputBox" Grid.Row="1" IsReadOnly="True" TextWrapping="Wrap"
+             VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="12"
+             Background="#050A0E" Foreground="#C8E6F0" BorderBrush="{StaticResource BorderLine}"/>
+    <Grid Grid.Row="2" Margin="0,6,0,0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <TextBox x:Name="InputBox" Grid.Column="0" FontFamily="Consolas"
+               Background="#111C26" Foreground="#E8F4FA" BorderBrush="{StaticResource BorderLine}"
+               KeyDown="InputBox_KeyDown"/>
+      <Button Grid.Column="1" Content="RUN" Margin="6,0,0,0" Padding="16,6"
+              Click="Run_Click" Background="#1A3040" Foreground="{StaticResource AccentCyan}" BorderBrush="{StaticResource BorderLine}"/>
+    </Grid>
+  </Grid>
+</UserControl>

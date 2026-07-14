@@ -1,4 +1,8 @@
 import Foundation
+#if os(iOS)
+import UIKit
+#endif
+import Darwin
 import UIKit
 
 enum JaniceAPIError: LocalizedError {
@@ -80,14 +84,39 @@ struct IOSBridgeCommand: Decodable {
 final class JaniceAPIClient {
     static let shared = JaniceAPIClient()
 
-    /// ID presenza univoco per iPhone / iPad.
+    /// ID fleet univoco per modello hardware (allineato a infra/fleet.yaml).
     static var deviceID: String {
         #if os(iOS)
-        return UIDevice.current.userInterfaceIdiom == .pad ? "pocket-ipad" : "pocket-iphone"
+        if let override = UserDefaults.standard.string(forKey: "janiceFleetDeviceID")?
+            .trimmingCharacters(in: .whitespacesAndNewlines), !override.isEmpty {
+            return override
+        }
+        switch machineIdentifier {
+        case "iPhone16,2":
+            return "iphone-15-pro-max"
+        case "iPhone15,2":
+            return "iphone-14-pro"
+        case "iPad8,11", "iPad8,12", "iPad8,9", "iPad8,10":
+            return "ipad-pro-2020"
+        default:
+            return UIDevice.current.userInterfaceIdiom == .pad ? "ipad-pro-2020" : "iphone-15-pro-max"
+        }
         #else
         return "pocket"
         #endif
     }
+
+    #if os(iOS)
+    private static var machineIdentifier: String {
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        return withUnsafePointer(to: &systemInfo.machine) {
+            $0.withMemoryRebound(to: CChar.self, capacity: 1) {
+                String(validatingUTF8: $0) ?? "unknown"
+            }
+        }
+    }
+    #endif
 
     private init() {}
 
