@@ -1,10 +1,10 @@
-# WireGuard VPN — JANIS Pocket fuori casa
+# WireGuard VPN — JANIS Pocket fuori casa (Mode A)
 
 ## Obiettivo
 
-Raggiungere `http://192.168.1.72:8001` da **iPhone 15 Pro Max**, **iPhone 14 Pro** e **iPad Pro 2020** fuori casa, più **Zenbook** Windows, senza esporre JANIS su Internet.
+Raggiungere `http://192.168.1.73:8001` da **iPhone 15 Pro Max**, **iPhone 14 Pro** e **iPad Pro 2020** fuori casa, più **Zenbook** Windows, senza esporre JANIS su Internet.
 
-Server VPN: **linux-server** (`infra/vpn/setup-wireguard.sh`).
+Server VPN: **windows-pc / WSL** (`infra/wsl/setup-wireguard.sh`).
 
 ## Peer fleet
 
@@ -15,13 +15,14 @@ Server VPN: **linux-server** (`infra/vpn/setup-wireguard.sh`).
 | ipad-pro-2020 | 10.8.0.12 | iPad Pro 12.9" 4ª gen 2020 |
 | zenbook | 10.8.0.20 | ASUS Zenbook |
 
-## Server (linux-server)
+## Server (windows-pc · WSL)
 
-1. `sudo bash infra/vpn/setup-wireguard.sh`
-2. Porta UDP: **51820**
-3. Subnet: `10.8.0.0/24`
-4. Route LAN: `192.168.1.0/24`
-5. Config client in `infra/vpn/peers/<node_id>/client.conf`
+1. `sudo bash infra/wsl/setup-wireguard.sh`
+2. Windows Admin: `infra/windows/setup-wireguard-forward.ps1`
+3. Porta UDP: **51820**
+4. Subnet: `10.8.0.0/24`
+5. Route LAN: `192.168.1.0/24`
+6. Config client in `infra/vpn/peers/<node_id>/client.conf`
 
 ## iPhone / iPad (client)
 
@@ -33,17 +34,19 @@ Pocket rileva automaticamente `device_id`: `iphone-15-pro-max`, `iphone-14-pro`,
 
 ## JANIS Pocket
 
-1. **URL LAN**: `http://192.168.1.72:8001` (invariato)
+1. **URL LAN**: `http://192.168.1.73:8001`
 2. **URL VPN**: stesso valore (dopo tunnel la LAN è raggiungibile)
 3. Toggle **Usa server VPN** quando sei fuori casa
 4. Token `X-JANIS-Token` se configurato sul brain
 
-## Template config (es. iPhone 15 Pro Max)
+## Template config (es. iPhone 14 Pro)
+
+Vedi `infra/vpn/peers/iphone-14-pro/client.conf.example`:
 
 ```ini
 [Interface]
 PrivateKey = <CLIENT_PRIVATE_KEY>
-Address = 10.8.0.10/32
+Address = 10.8.0.11/32
 DNS = 192.168.1.1
 
 [Peer]
@@ -56,13 +59,15 @@ PersistentKeepalive = 25
 ## Sicurezza
 
 - Non aprire porta 8001 su WAN
-- Solo UDP 51820 (WireGuard) verso server/router
+- Solo UDP 51820 (WireGuard) verso router → `192.168.1.73`
 - Usa DDNS se IP dinamico
-- Token obbligatorio per hub
+- Token obbligatorio per hub in produzione
 
 ## Test
 
 1. Wi‑Fi OFF, VPN ON
-2. Safari → `http://192.168.1.72:8001/api/status`
+2. Safari → `http://192.168.1.73:8001/api/status`
 3. Pocket → Salva e testa → **Online**
 4. Verifica presenza con `device_id` corretto in `/api/presence`
+
+Checklist completa: `docs/MOBILE-OPS.md`

@@ -1,12 +1,12 @@
 # JANIS Fleet — registro nodi (coordinator + satelliti)
-# Aggiornato: 2026-07-14
+# Aggiornato: 2026-07-14 · Mode A attivo (WSL brain su windows-pc)
 
-coordinator: linux-server
-brain_url: http://192.168.1.72:8001
+coordinator: windows-pc
+brain_url: http://192.168.1.73:8001
 
 vpn:
   provider: wireguard
-  server_node: linux-server
+  server_node: windows-pc
   listen_port: 51820
   subnet: 10.8.0.0/24
   server_address: 10.8.0.1/24
@@ -18,13 +18,15 @@ nodes:
     host: 192.168.1.72
     user: janis
     role: coordinator
+    status: deferred
     hardware: Samsung SSD 970 EVO Plus 500GB
 
   - node_id: windows-pc
-    host: lan
+    host: 192.168.1.73
     os: windows11
-    role: worker
-    note: MSI MS-7D08 · i9-11900K · RTX 3080 Ti · UI + dev Cursor/WSL
+    role: coordinator
+    wsl_brain: true
+    note: MSI MS-7D08 · i9-11900K · RTX 3080 Ti · brain WSL :8001 · UI Cursor
 
   - node_id: mac-node
     host: mac-mini-di-janzu.local

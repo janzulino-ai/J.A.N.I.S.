@@ -1,18 +1,24 @@
 # JANIS — Inventario dispositivi e piano deploy
 
-> Coordinatore: **linux-server** · brain `http://192.168.1.72:8001` · fleet fase 1
+> Coordinatore: **windows-pc** (Mode A) · brain `http://192.168.1.73:8001` · fleet fase 1
 
-## Hub
+## Hub (Mode A — attivo)
 
 | node_id | Dispositivo | Ruolo | Rete |
 |---------|-------------|-------|------|
-| **linux-server** | Samsung 970 EVO Plus · Debian 12 | Brain · Ollama · memoria · sidecar · kiosk HDMI | `192.168.1.72` · SSH `:22` |
+| **windows-pc** | MSI MS-7D08 · i9-11900K · RTX 3080 Ti · 16 GB | Brain WSL · Ollama Windows · UI Cursor | `192.168.1.73` · brain `:8001` |
+
+## Hub (Mode B — rinviato)
+
+| node_id | Dispositivo | Ruolo | Rete |
+|---------|-------------|-------|------|
+| **linux-server** | Samsung 970 EVO Plus · Debian 12 | Brain nativo · sidecar · kiosk HDMI | `192.168.1.72` · SSH `:22` |
 
 ## Satelliti / worker
 
 | node_id | Dispositivo | OS | Ruolo | Rete |
 |---------|-------------|-----|-------|------|
-| **windows-pc** | MSI MS-7D08 · i9-11900K · RTX 3080 Ti · 16 GB | Windows 11 | UI principale · dev Cursor/WSL | LAN |
+| **windows-pc** | MSI MS-7D08 · i9-11900K · RTX 3080 Ti · 16 GB | Windows 11 | Coordinator (Mode A) · dev Cursor/WSL | `192.168.1.73` |
 | **mac-node** | Mac Mini M4 · 256 GB + SSD 512 GB USB-C | macOS | Worker fleet · bridge WS · SSH | `192.168.1.74` · `mac-mini-di-janzu.local` |
 | **win-vm** | Windows guest KVM | Windows 11 | Worker · HDMI RTX · disco fisico | `127.0.0.1` sul server |
 | **zenbook** | ASUS Zenbook · Core Ultra 9 185H · 32 GB · 1 TB | Windows 11 Home | Worker mobile · dev portatile · NPU | LAN / VPN |
@@ -33,19 +39,20 @@ Ollama · Glances `:61208` · LiteLLM · Qdrant `:6333` · STT · scheduler · a
 
 ## VPN privata (accesso esterno)
 
-WireGuard sul **linux-server** (non porta 8001 su WAN):
+WireGuard sul **windows-pc / WSL** (non porta 8001 su WAN):
 
 | Parametro | Valore |
 |-----------|--------|
+| Hub LAN | `192.168.1.73` |
 | Subnet tunnel | `10.8.0.0/24` |
 | Server tunnel | `10.8.0.1` |
 | Porta UDP | `51820` |
 | Route client | `192.168.1.0/24` (LAN casa via tunnel) |
 | Peer mobile | iPhone 15 PM · iPhone 14 Pro · iPad Pro · Zenbook |
 
-Dopo VPN: stesso URL brain `http://192.168.1.72:8001` da tutti i client Pocket.
+Dopo VPN: stesso URL brain `http://192.168.1.73:8001` da tutti i client Pocket.
 
-Setup: `infra/vpn/README.md` · template Pocket: `apps/pocket/docs/WIREGUARD-VPN-SETUP.md`
+Setup: `infra/wsl/setup-wireguard.sh` · `infra/windows/install-wireguard-bridge.ps1` · template Pocket: `apps/pocket/docs/WIREGUARD-VPN-SETUP.md` · checklist: `docs/MOBILE-OPS.md`
 
 ## Piano install
 
@@ -83,7 +90,7 @@ Canvas piano: `canvases/janis-dual-mode-plan.canvas.tsx`
 | **P3** | HUD WS1 · Chromium kiosk | deferred |
 | **P4** | GRUB HyperFluent · dual boot | deferred |
 | **P5** | SSH + mount SSD2 condiviso | deferred |
-| **P6** | WireGuard · accesso esterno | deferred |
+| **P6** | WireGuard · accesso esterno | **Mode A: WSL hub** · Mode B deferred |
 | **P7** | TESTER USB boot | deferred |
 
 ## Dati condivisi (SSD2)

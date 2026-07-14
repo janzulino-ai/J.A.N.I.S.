@@ -40,6 +40,7 @@ from backend.routers.evolve import router as evolve_router
 from backend.routers.scout import router as scout_router
 from backend.routers.lab import router as lab_router
 from backend.routers.cursor_bridge import router as cursor_bridge_router
+from backend.routers.vpn import router as vpn_router
 
 # Registra strumenti
 import backend.core.tools  # noqa: F401
@@ -100,6 +101,7 @@ app.include_router(evolve_router)
 app.include_router(scout_router)
 app.include_router(lab_router)
 app.include_router(cursor_bridge_router)
+app.include_router(vpn_router)
 mount_kiosk_static(app)
 
 
