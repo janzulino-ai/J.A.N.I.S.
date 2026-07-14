@@ -31,6 +31,24 @@ class Settings(BaseSettings):
     # Budget API cloud (USD/giorno)
     API_DAILY_BUDGET_USD: float = Field(default=2.0)
 
+    # LiteLLM proxy (opzionale — infra/litellm/)
+    LITELLM_PROXY_URL: str = Field(default="", description="es. http://127.0.0.1:4000/v1")
+    LITELLM_MASTER_KEY: str = Field(default="sk-janis-local")
+
+    # Glances monitor (opzionale sidecar)
+    GLANCES_URL: str = Field(default="http://127.0.0.1:61208")
+
+    # Qdrant vector store (opzionale)
+    QDRANT_URL: str = Field(default="http://127.0.0.1:6333")
+
+    # Tech Scout — GitHub API (opzionale, aumenta rate limit)
+    GITHUB_TOKEN: str = Field(default="")
+
+    # Paid API keys aggiuntive
+    ANTHROPIC_API_KEY: str = Field(default="")
+    OPENAI_API_KEY: str = Field(default="")
+    GH_TOKEN: str = Field(default="")
+
     # Cartelle da conoscere — radici autorizzate (vault Obsidian-style)
     JANIS_MOVIES_PATH: str = Field(
         default_factory=lambda: os.path.join(os.path.expanduser("~"), "Videos"),
@@ -74,8 +92,18 @@ class Settings(BaseSettings):
     MAC_SSH_TIMEOUT_SEC: int = Field(default=12)
     MAC_SSH_SCAN_ROOT: str = Field(default="~/Documents")
 
+    # Monorepo — radice J.A.N.I.S. (vuoto = auto da packages/brain)
+    JANIS_MONOREPO_ROOT: str = Field(default="")
+
+    # win-vm — KVM su server Linux
+    WIN_VM_NAME: str = Field(default="win-vm")
+    WIN_VM_VNC_HOST: str = Field(default="127.0.0.1")
+    WIN_VM_VNC_PORT: int = Field(default=5900)
+    WIN_VM_VNC_PASS: str = Field(default="winvm01")
+
     # Fleet — token condiviso tra coordinatore e nodi bridge (WS /ws/fleet-node)
     MAC_BRIDGE_TOKEN: str = Field(default="")
+    FLEET_COORDINATOR: str = Field(default="linux")
 
     # Canali esterni (Telegram, WhatsApp bridge) — pattern OpenClaw
     CHANNELS_ENABLED: bool = Field(default=True)

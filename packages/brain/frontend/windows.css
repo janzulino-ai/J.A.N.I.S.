@@ -1,0 +1,49 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.win-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+}
+.win-head h1 { margin: 0; font-size: 1rem; font-weight: 600; }
+.win-actions { display: flex; gap: 8px; align-items: center; }
+.win-actions button {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.win-actions button:hover { background: #30363d; }
+.badge {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #30363d;
+}
+.badge.on { background: #238636; }
+.badge.off { background: #6e7681; }
+.vnc-screen {
+  flex: 1;
+  min-height: 60vh;
+  background: #000;
+  overflow: hidden;
+}
+.win-foot {
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  color: #8b949e;
+  border-top: 1px solid #30363d;
+}

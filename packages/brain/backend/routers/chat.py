@@ -42,6 +42,12 @@ async def status():
 
     stt = _probe_engines()
 
+    from backend.core.llm_usage import summary_today
+    from backend.core.llm_router import get_active_provider
+    from backend.core.paid_capabilities import list_capabilities
+    from backend.core.channels.skills_manifest import channel_skill_status
+
+    llm_prov = await get_active_provider()
     return {
         "service": "JANIS",
         "version": "2.0.0",
@@ -69,6 +75,10 @@ async def status():
             "emergency_sos": "/api/emergency/sos",
         },
         "orchestrator": cost_router.status(),
+        "llm_provider": llm_prov,
+        "llm_usage": summary_today(),
+        "paid_capabilities": list_capabilities(),
+        "channel_skills": channel_skill_status(),
         "active_client": manager.active,
         "connected_clients": list(manager.connections.keys()),
         "session_messages": len(get_session_history()),

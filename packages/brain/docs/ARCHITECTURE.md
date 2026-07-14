@@ -188,10 +188,17 @@ Endpoint: `GET /api/gaps`, `POST /api/gaps`, `POST /api/gaps/{id}/resolve`.
 
 ---
 
-## Phase 2 (pianificato)
+## Phase 2 (pianificato / in corso)
 
-Vedi anche `docs/LINUX.md` per porting Linux.
+Vedi anche `docs/LINUX.md`, `docs/ECOSYSTEM-OSS.md`.
 
+- [x] Cost router collegato a llm_router + log `llm_usage.json`
+- [x] LiteLLM sidecar (`infra/litellm/`)
+- [x] Glances + metriche host estese
+- [x] Qdrant + tool `semantic_recall`
+- [x] Tech Scout (discover/test/verify/promote)
+- [x] MCP bridge + channel skills manifest
+- [x] Paid capabilities catalog + `paid_cli_exec`
 - [ ] Click-through overlay (WS_EX_TRANSPARENT) su Windows
 - [ ] Whisper + sounddevice backend STT
 - [ ] Animazioni GLB skeletal (walk cycle reale vs bob patrol)

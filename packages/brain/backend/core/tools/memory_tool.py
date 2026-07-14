@@ -599,6 +599,11 @@ async def remember(args: dict) -> str:
     }
     entries.append(entry)
     _save(entries)
+    try:
+        from backend.core.qdrant_client import upsert_memory
+        await upsert_memory(text, metadata={"tags": tags, "source": "remember"})
+    except Exception:
+        pass
     return f"Memorizzato: {text[:100]}"
 
 
@@ -616,6 +621,27 @@ async def recall(args: dict) -> str:
     if not matches:
         return f"Nessun ricordo per: {query}"
     return "\n".join(f"- [{e['timestamp'][:10]}] {e['text']}" for e in matches[-10:])
+
+
+@register("semantic_recall")
+async def semantic_recall(args: dict) -> str:
+    """Ricerca semantica via Qdrant + embedding Ollama."""
+    query = (args.get("query") or "").strip()
+    if not query:
+        return "Query obbligatoria per semantic_recall."
+    from backend.core.qdrant_client import qdrant_available, search_memory
+
+    if not await qdrant_available():
+        return "Qdrant non raggiungibile — usa recall file-based o avvia infra/qdrant/start-qdrant.sh"
+    hits = await search_memory(query, limit=int(args.get("limit") or 5))
+    if not hits:
+        return f"Nessun match semantico per: {query}"
+    lines = []
+    for h in hits:
+        score = h.get("score")
+        sc = f" ({score:.2f})" if score is not None else ""
+        lines.append(f"-{sc} {h.get('text', '')[:300]}")
+    return "\n".join(lines)
 
 
 @register("memory_status")

@@ -7,7 +7,7 @@ nodes:
     host: 127.0.0.1
     role: vm
     display: hdmi-rtx
-    disk: /dev/nvme0n1
+    disk: /dev/nvme1n1
   - node_id: pocket-iphone
     host: lan
     role: mobile

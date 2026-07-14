@@ -1,0 +1,14 @@
+{
+  "policies": {
+    "DisableFirefoxAccounts": true,
+    "DisableFirefoxStudies": true,
+    "DisableTelemetry": true,
+    "DontCheckDefaultBrowser": true,
+    "NoDefaultBookmarks": true,
+    "OverrideFirstRunExperience": true,
+    "OfferToSaveLogins": false,
+    "PasswordManagerEnabled": false,
+    "Homepage": "http://127.0.0.1:8001/server",
+    "NewTabPage": false
+  }
+}

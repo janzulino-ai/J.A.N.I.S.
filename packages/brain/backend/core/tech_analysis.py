@@ -98,8 +98,8 @@ def janis_inventory() -> dict:
         docs = [f.name for f in sorted(docs_dir.glob("*.md"))]
 
     stubs = []
-    if "whatsapp_send" in tools:
-        stubs.append("whatsapp_send (stub)")
+    if "whatsapp_send" in tools and not getattr(settings, "WHATSAPP_BRIDGE_URL", ""):
+        stubs.append("whatsapp_send (bridge non configurato)")
 
     return {
         "tools": tools,

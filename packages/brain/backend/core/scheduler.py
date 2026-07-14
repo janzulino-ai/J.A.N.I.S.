@@ -33,6 +33,17 @@ def default_jobs() -> list[dict]:
             "channel": "",
             "chat_id": "",
         },
+        {
+            "id": "weekly-tech-scout",
+            "enabled": True,
+            "hour": 6,
+            "minute": 0,
+            "weekday": 0,
+            "action": "scout_discover",
+            "prompt": "[Tech Scout] Discovery watchlist + gap. Report max 10 righe.",
+            "channel": "",
+            "chat_id": "",
+        },
     ]
 
 
@@ -57,18 +68,35 @@ async def _run_job(job: dict) -> None:
     from backend.core.channels.manager import channel_manager
     from backend.core.channels.models import OutboundMessage
 
-    prompt = (job.get("prompt") or "").strip()
-    if not prompt:
-        return
-    logger.info("Scheduler job %s", job.get("id"))
-    try:
-        reply = await process_message(f"[Scheduler {job.get('id')}]\n{prompt}", stream_final=False)
-        ch = (job.get("channel") or "").strip()
-        cid = (job.get("chat_id") or "").strip()
-        if ch and cid and reply:
-            await channel_manager.send(OutboundMessage(channel=ch, chat_id=cid, text=reply[:3500]))
-    except Exception:
-        logger.exception("Job scheduler fallito")
+    action = (job.get("action") or "").strip()
+    if action == "scout_discover":
+        from backend.core.tech_scout.discover import discover_all
+        from backend.core.tech_scout.classifier import classify_candidate
+        logger.info("Scheduler scout_discover")
+        try:
+            result = await discover_all(sources=["watchlist", "github"])
+            for c in result.get("candidates") or []:
+                classify_candidate(c)
+            prompt = (job.get("prompt") or "") + f"\nTrovati {result.get('count', 0)} candidati."
+            reply = await process_message(prompt, stream_final=False)
+        except Exception:
+            logger.exception("Scout job fallito")
+            return
+    else:
+        prompt = (job.get("prompt") or "").strip()
+        if not prompt:
+            return
+        logger.info("Scheduler job %s", job.get("id"))
+        try:
+            reply = await process_message(f"[Scheduler {job.get('id')}]\n{prompt}", stream_final=False)
+        except Exception:
+            logger.exception("Job scheduler fallito")
+            return
+
+    ch = (job.get("channel") or "").strip()
+    cid = (job.get("chat_id") or "").strip()
+    if ch and cid and reply:
+        await channel_manager.send(OutboundMessage(channel=ch, chat_id=cid, text=reply[:3500]))
 
 
 async def _autonomy_loop() -> None:
@@ -99,6 +127,9 @@ async def _tick_loop() -> None:
                 if last_run.get(jid) == key_min:
                     continue
                 if now.hour == int(job.get("hour", -1)) and now.minute == int(job.get("minute", -1)):
+                    wd = job.get("weekday")
+                    if wd is not None and now.weekday() != int(wd):
+                        continue
                     last_run[jid] = key_min
                     await _run_job(job)
         except asyncio.CancelledError:

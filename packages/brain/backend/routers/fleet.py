@@ -49,7 +49,7 @@ async def ws_fleet_node(
         await websocket.send_json({
             "type": "hello_ack",
             "node_id": rec.node_id,
-            "coordinator": "windows",
+            "coordinator": settings.FLEET_COORDINATOR,
             "message": "Registrato sul coordinatore Fleet",
         })
 
@@ -78,7 +78,7 @@ async def ws_fleet_node(
                 await websocket.send_json({
                     "type": "hello_ack",
                     "node_id": rec.node_id,
-                    "coordinator": "windows",
+                    "coordinator": settings.FLEET_COORDINATOR,
                 })
                 continue
 

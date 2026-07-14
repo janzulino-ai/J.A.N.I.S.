@@ -48,7 +48,7 @@ def test_fleet_ws_register_and_heartbeat(client):
         hello_ack = ws.receive_json()
         assert hello_ack["type"] == "hello_ack"
         assert hello_ack["node_id"] == "test-mac"
-        assert hello_ack["coordinator"] == "windows"
+        assert hello_ack["coordinator"] == "linux"
 
         ws.send_json({
             "type": "hello",

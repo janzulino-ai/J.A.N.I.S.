@@ -10,3 +10,7 @@ data/memory/
 data/pocket/
 data/identity/
 data/emergency/
+workspaces/sandbox/**
+workspaces/runtime/**
+!workspaces/**/.gitkeep
+!workspaces/**/README.md

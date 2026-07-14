@@ -1,7 +1,14 @@
 import asyncio
+import os
 import platform
 import shutil
 from backend.core.tools.registry import register
+
+
+def _primary_disk_path() -> str:
+    if platform.system() == "Windows":
+        return "C:\\"
+    return os.path.expanduser("~")
 
 
 @register("system_info")
@@ -14,7 +21,6 @@ async def system_info(_args: dict) -> str:
         f"Arch: {platform.machine()}",
     ]
 
-    # GPU NVIDIA via nvidia-smi se disponibile
     try:
         proc = await asyncio.create_subprocess_exec(
             "nvidia-smi", "--query-gpu=name,memory.total,driver_version",
@@ -29,6 +35,21 @@ async def system_info(_args: dict) -> str:
     except Exception:
         pass
 
-    total, used, free = shutil.disk_usage("C:\\")
-    lines.append(f"Disco C: {free // (1024**3)} GB liberi / {total // (1024**3)} GB totali")
+    try:
+        import psutil
+        for part in psutil.disk_partitions(all=False):
+            try:
+                usage = psutil.disk_usage(part.mountpoint)
+                lines.append(
+                    f"Disco {part.mountpoint}: {usage.free // (1024**3)} GB liberi / "
+                    f"{usage.total // (1024**3)} GB totali ({usage.percent}% usato)"
+                )
+            except PermissionError:
+                continue
+    except Exception:
+        disk_path = _primary_disk_path()
+        total, used, free = shutil.disk_usage(disk_path)
+        label = disk_path.rstrip("\\/")
+        lines.append(f"Disco {label}: {free // (1024**3)} GB liberi / {total // (1024**3)} GB totali")
+
     return "\n".join(lines)

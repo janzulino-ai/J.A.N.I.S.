@@ -22,6 +22,7 @@ echo "=== venv + dipendenze ==="
 ssh "$REMOTE" "BRAIN_DIR='$BRAIN_DIR' bash -s" <<'REMOTE_VENV'
 set -euo pipefail
 BRAIN="$BRAIN_DIR"
+LEGACY="/home/janis/JANICE"
 if [ -f "$LEGACY/.env" ] || [ -f "$BRAIN/.env" ]; then
   touch "$BRAIN/.env"
   [ -f "$LEGACY/.env" ] && [ ! -s "$BRAIN/.env" ] && cp "$LEGACY/.env" "$BRAIN/.env"
@@ -37,6 +38,9 @@ python3.12 -m venv "$BRAIN/.venv" 2>/dev/null || python3 -m venv "$BRAIN/.venv"
 "$BRAIN/.venv/bin/pip" install -q -U pip
 "$BRAIN/.venv/bin/pip" install -q -r "$BRAIN/requirements.txt"
 "$BRAIN/.venv/bin/python" -m py_compile \
+  "$BRAIN/backend/routers/host_metrics.py" \
+  "$BRAIN/backend/routers/scout.py" \
+  "$BRAIN/backend/core/llm_router.py" \
   "$BRAIN/backend/routers/pocket_extended.py" \
   "$BRAIN/backend/routers/identity.py" \
   "$BRAIN/backend/routers/emergency.py" \
@@ -46,20 +50,27 @@ REMOTE_VENV
 echo "=== systemd + kiosk tty ==="
 ssh "$REMOTE" "JANIS_HOME=/home/janis BRAIN_DIR='$BRAIN_DIR' bash '$REMOTE_ROOT/infra/kiosk/setup-janis-tty.sh'"
 
-echo "=== stop JANICE legacy, avvia janis ==="
-ssh "$REMOTE" bash -s <<'EOF'
+echo "=== sidecar + systemd user ==="
+ssh "$REMOTE" "REMOTE_ROOT='$REMOTE_ROOT' BRAIN_DIR='$BRAIN_DIR' JANIS_HOME=/home/janis bash -s" <<'REMOTE_SIDECAR'
 set -euo pipefail
-pkill -f 'uvicorn backend.main:app' 2>/dev/null || true
-sleep 1
+ROOT="$REMOTE_ROOT"
+BRAIN="$BRAIN_DIR"
+bash "$ROOT/infra/sidecars/install-sidecars.sh"
+bash "$ROOT/infra/sidecars/setup-systemd-user.sh"
+REMOTE_SIDECAR
+
+echo "=== linger (always-on user services) ==="
+ssh "$REMOTE" 'sudo loginctl enable-linger janis 2>/dev/null && echo linger=OK || echo linger=SKIP'
+
+echo "=== verifica finale ==="
+ssh "$REMOTE" bash -s <<'EOF'
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
-systemctl --user daemon-reload
-systemctl --user enable janis
-systemctl --user restart janis
-sleep 2
-systemctl --user is-active janis
-curl -sf http://127.0.0.1:8001/api/status | head -c 200
-echo
-curl -sf -o /dev/null -w '/server → %{http_code}\n' http://127.0.0.1:8001/server
+for s in janis-glances janis-litellm janis-qdrant janis; do
+  printf "%-18s %s\n" "$s" "$(systemctl --user is-active "$s" 2>/dev/null)"
+done
+curl -sf http://127.0.0.1:8001/api/status | python3 -c "import sys,json;d=json.load(sys.stdin);print('brain',d.get('service'),'llm',d.get('llm_provider',{}).get('active'))"
+curl -sf http://127.0.0.1:8001/api/host/metrics | python3 -c "import sys,json;d=json.load(sys.stdin);print('glances',d.get('glances'),'disk',len(d.get('disk',[])))"
+curl -sf http://127.0.0.1:6333/collections >/dev/null && echo qdrant OK || echo qdrant OFF
 EOF
 
 echo "=== Deploy completato ==="

@@ -1,0 +1,13 @@
+[Unit]
+Description=JANIS Glances monitor
+After=network.target
+
+[Service]
+Type=simple
+Environment=JANIS_BRAIN=/home/janis/projects/J.A.N.I.S./packages/brain
+ExecStart=/home/janis/projects/J.A.N.I.S./infra/glances/start-glances.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

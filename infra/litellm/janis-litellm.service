@@ -1,0 +1,15 @@
+[Unit]
+Description=JANIS LiteLLM proxy
+After=network.target ollama.service
+
+[Service]
+Type=simple
+User=janis
+WorkingDirectory=/home/janis/projects/J.A.N.I.S.
+EnvironmentFile=-/home/janis/projects/J.A.N.I.S./packages/brain/.env
+ExecStart=/home/janis/projects/J.A.N.I.S./infra/litellm/start-litellm.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

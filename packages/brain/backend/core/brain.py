@@ -484,7 +484,7 @@ async def _answer_whatsapp_if_asked(
     emit: EventCallback,
     stream_final: bool,
 ) -> str | None:
-    """Risposta onesta e breve su WhatsApp / gruppi — senza allucinare invii."""
+    """Risposta onesta su WhatsApp — verifica bridge reale."""
     lower = user_text.lower()
     if "whatsapp" not in lower:
         return None
@@ -494,25 +494,31 @@ async def _answer_whatsapp_if_asked(
     )):
         return None
 
+    from backend.config import settings
+    bridge_ok = bool((settings.WHATSAPP_BRIDGE_URL or "").strip())
+
     group = any(k in lower for k in ("gruppo", "group"))
-    if group:
+    if bridge_ok:
         spoken = (
-            "Oggi non sono ancora dentro un gruppo WhatsApp: il collegamento non è attivo. "
-            "Per farlo servirebbe un numero dedicato, un bridge che riceva i messaggi del gruppo "
-            "e una regola su quando devo rispondere, per esempio solo se mi menzioni. "
-            "Posso progettarlo e implementarlo con autodev se vuoi andare avanti."
+            "WhatsApp è collegato via bridge Node. "
+            "Posso inviare con lo strumento whatsapp_send se mi dai destinatario e testo."
+        )
+        if group:
+            spoken += " Per i gruppi serve l'id gruppo e di solito una menzione."
+    elif group:
+        spoken = (
+            "WhatsApp bridge non attivo. Per i gruppi servono bridge Node (whatsapp-web.js), "
+            "WHATSAPP_BRIDGE_URL in .env e regole menzione."
         )
     else:
         spoken = (
-            "WhatsApp al momento non è collegato: lo strumento c'è ma manca la configurazione "
-            "del bridge verso l'API o un client sul server. "
-            "Dimmi se vuoi che lo implementiamo come prossimo task."
+            "WhatsApp: tool whatsapp_send presente ma bridge non configurato. "
+            "Imposta WHATSAPP_BRIDGE_URL e avvia packages/brain/bridge/whatsapp/bridge.mjs"
         )
 
     detail = (
-        "\n\n---\nStato attuale: `whatsapp_send` è uno stub (nessun messaggio reale parte). "
-        "Opzioni tipiche: WhatsApp Business Cloud API (ufficiale, webhook) oppure bridge Baileys "
-        "su un processo dedicato. Per i gruppi serve anche gestire menzioni e id gruppo."
+        f"\n\n---\nBridge: {'OK ' + settings.WHATSAPP_BRIDGE_URL if bridge_ok else 'non configurato'}. "
+        "Vedi docs/CHANNELS.md."
     )
     return await _deliver_final(spoken + detail, emit, stream_final)
 

@@ -3,44 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>J.A.N.I.S. Kiosk — JARVIS Preview</title>
-  <link rel="stylesheet" href="static/server-infographic.css?v=jarvis01">
+  <title>J.A.N.I.S. Kiosk — HUD Preview</title>
+  <link rel="stylesheet" href="static/server-infographic.css?v=hudgrid03">
 </head>
 <body class="res-fhd">
   <div class="hud-bg-grid"></div>
   <div class="hud-scanline"></div>
+  <div class="hud-bg-schematic" aria-hidden="true"></div>
 
-  <div id="server-stage" class="glass-frame">
+  <div id="server-stage" class="hud-frame">
     <span class="hud-corner tl"></span>
     <span class="hud-corner tr"></span>
     <span class="hud-corner bl"></span>
     <span class="hud-corner br"></span>
 
-    <div class="reactor-ring" aria-hidden="true">
-      <svg viewBox="0 0 400 400">
-        <circle cx="200" cy="200" r="180" class="ring-outer"/>
-        <circle cx="200" cy="200" r="140" class="ring-mid"/>
-        <circle cx="200" cy="200" r="100" class="ring-inner"/>
-      </svg>
-    </div>
-
     <header class="hud-head">
       <div class="head-left">
         <span class="logo">J.A.N.I.S.</span>
-        <span class="sys-pill"><span class="pulse-dot"></span>ONLINE</span>
+        <span class="sys-pill"><span class="pulse-dot"></span><span id="sys-status">ONLINE</span></span>
       </div>
       <span class="acronym">Just Another Neuralgic Improving Server</span>
       <div class="head-right">
-        <span class="hud-tag">PREVIEW</span>
+        <span class="hud-tag">PREVIEW · MOCK</span>
         <span id="hud-clock" class="hud-clock"></span>
       </div>
     </header>
 
-    <main id="sheet-container"></main>
+    <div id="hud-grid" class="hud-grid" role="grid"></div>
 
     <footer class="hud-foot">
       <span id="sheet-dots" class="sheet-dots"></span>
-      <span class="foot-meta">CAROUSEL · 5 MODULES</span>
+      <span class="foot-meta" id="foot-meta">GRID 3×3 · CLICK BLOCCO = FULLSCREEN</span>
       <span id="pause-badge" class="pause-badge hidden">◆ PAUSA 10 MIN</span>
     </footer>
   </div>
@@ -51,12 +44,30 @@
       if (url === "/api/host/metrics") {
         return Promise.resolve({
           json: () => Promise.resolve({
-            hostname: "janis",
+            hostname: "janis-server",
             platform: "Linux",
-            uptime_sec: 86412,
-            cpu: { usage_pct: 23, temp_c: 58 },
-            memory: { usage_pct: 41 },
-            gpu: { usage_pct: 12 },
+            uptime_sec: 172800,
+            cpu: { usage_pct: 31, temp_c: 62 },
+            memory: { usage_pct: 48 },
+            gpu: { usage_pct: 18 },
+          }),
+        });
+      }
+      if (url === "/api/host/hardware") {
+        return Promise.resolve({
+          json: () => Promise.resolve({
+            summary: "AMD Ryzen · Linux",
+            cpu: { model: "AMD Ryzen 9", arch: "x86_64" },
+            ram_gb: 32,
+          }),
+        });
+      }
+      if (url === "/api/knowledge") {
+        return Promise.resolve({
+          json: () => Promise.resolve({
+            total_memories: 142,
+            knowledge_folders: 6,
+            open_gaps: 2,
           }),
         });
       }
@@ -65,22 +76,49 @@
           json: () => Promise.resolve({
             service: "JANIS",
             version: "2.0.0",
-            session_messages: 14,
-            connected_clients: ["pocket-iphone"],
+            brain_version: 5,
+            reasoning_provider: "ollama",
+            paid_mode: false,
+            session_messages: 28,
+            active_client: "pocket-iphone",
+            connected_clients: ["pocket-iphone", "client-web"],
+            ollama: { online: true, model: "gemma4:latest", models: ["gemma4:latest", "nomic-embed-text"] },
+            orchestrator: {
+              daily_budget_usd: 2,
+              spent_today_usd: 0.12,
+              remaining_usd: 1.88,
+              default_tier: "LOCAL",
+              mode: "LOCAL",
+              active: false,
+            },
+            stt: { ready: true, engine: "faster-whisper" },
+            mac_node: { ok: true, detail: "mac-mini SSH" },
+            presence: { devices: [{ device_id: "pocket-iphone", surface: "mobile" }] },
+            pocket_api: {
+              telemetry: "/api/pocket/telemetry",
+              vision: "/api/pocket/vision",
+              push_register: "/api/pocket/push/register",
+              stt: "/api/stt",
+              identity_verify: "/api/identity/verify",
+              emergency_sos: "/api/emergency/sos",
+            },
             fleet: {
               nodes: [
-                { node_id: "mac-node", online: false, info: "SSH offline" },
-                { node_id: "win-vm", online: true, info: "VM HDMI RTX" },
-                { node_id: "pocket", online: true, info: "iPhone 15 Pro Max" },
+                { node_id: "mac-node", online: true, info: "SSH · Documents" },
+                { node_id: "win-vm", online: true, info: "KVM · VNC :5900" },
+                { node_id: "pocket-iphone", online: true, info: "iPhone · v3.1" },
               ],
-              nodes_online: 2,
+              nodes_online: 3,
+              nodes_total: 3,
             },
+            channels: { telegram: false },
+            scheduler: true,
           }),
         });
       }
       return _fetch(url);
     };
   </script>
-  <script src="static/server-stage.js?v=jarvis01"></script>
+  <script src="static/server-stage.js?v=hudgrid03"></script>
 </body>
 </html>

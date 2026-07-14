@@ -64,12 +64,25 @@ class CostRouter:
         self._save()
         logger.info("API spend oggi: $%.4f / $%.2f", self.spent_today_usd, self.daily_budget_usd)
 
+    def cloud_budget_available(self) -> bool:
+        return self._budget_ok(0.001)
+
+    def can_use_provider(self, provider: str) -> bool:
+        p = (provider or "").lower()
+        if p in ("ollama", "local"):
+            return True
+        return self.cloud_budget_available()
+
     def status(self) -> dict:
+        remaining = max(0, self.daily_budget_usd - self.spent_today_usd)
         return {
             "daily_budget_usd": self.daily_budget_usd,
             "spent_today_usd": round(self.spent_today_usd, 4),
-            "remaining_usd": round(max(0, self.daily_budget_usd - self.spent_today_usd), 4),
+            "remaining_usd": round(remaining, 4),
             "default_tier": TIER_LOCAL,
+            "cloud_blocked": remaining <= 0,
+            "active": remaining > 0,
+            "mode": TIER_LOCAL if remaining <= 0 else TIER_CHEAP,
         }
 
 

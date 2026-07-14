@@ -13,6 +13,9 @@ Vedi [docs/OFFICIAL-REPO.md](docs/OFFICIAL-REPO.md)
 | `packages/brain/` | Hub FastAPI su **server Linux** |
 | `packages/kiosk/` | HUD HDMI `/server` |
 | `packages/client-web/` | Client 3 colonne |
+| `packages/orchestrator/` | Doc orchestrazione + evolve |
+| `infra/win-vm/` | KVM Windows VM |
+| `workspaces/` | Auto-evoluzione JANIS |
 | `apps/pocket/` | iOS corpo sensoriale |
 
 ## Avvio (server Linux)

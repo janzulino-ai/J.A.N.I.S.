@@ -32,6 +32,9 @@ from backend.routers.identity import router as identity_router
 from backend.routers.emergency import router as emergency_router
 from backend.routers.host_metrics import router as host_metrics_router
 from backend.routers.kiosk import router as kiosk_router, mount_kiosk_static
+from backend.routers.windows import router as windows_router
+from backend.routers.evolve import router as evolve_router
+from backend.routers.scout import router as scout_router
 
 # Registra strumenti
 import backend.core.tools  # noqa: F401
@@ -84,6 +87,9 @@ app.include_router(identity_router)
 app.include_router(emergency_router)
 app.include_router(host_metrics_router)
 app.include_router(kiosk_router)
+app.include_router(windows_router)
+app.include_router(evolve_router)
+app.include_router(scout_router)
 mount_kiosk_static(app)
 
 
@@ -176,6 +182,9 @@ async def startup():
     provider = await get_active_provider()
     logger.info("JANIS online — provider: %s, modello: %s", provider.get("active"), settings.OLLAMA_MODEL)
     logger.info("Workspace: %s", settings.JANIS_WORKSPACE)
+    from backend.core.evolve_paths import ensure_workspace_dirs
+    paths = ensure_workspace_dirs()
+    logger.info("Monorepo evolve: %s", paths.get("evolve"))
     logger.info("Web proxy attivo: /api/web/proxy, /api/web/check")
     from backend.core.tech_analysis import seed_baseline_research
     from backend.core.cursor_win_patch import apply_cursor_sdk_patches

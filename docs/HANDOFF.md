@@ -14,6 +14,27 @@ Solo **J.A.N.I.S.** — `~/Documents/J.A.N.I.S./` (Mac), `~/projects/J.A.N.I.S./
 
 HUD hud17 sul vecchio `~/projects/JANIS` — ricostruito in `packages/kiosk/`.
 
+## win-vm Windows (ricostruito)
+
+Stack in monorepo:
+
+- `infra/win-vm/` — script KVM (detect, create, fix VNC, inventory, hybrid GPU)
+- Brain: `/windows`, `/ws/vnc`, `/api/win-vm/*`
+- Disco WIN: `nvme1n1` / partizione `nvme1n1p3` (~930 GB NTFS)
+
+Setup sul server:
+
+```bash
+sudo bash infra/win-vm/run-pending-setup.sh
+```
+
+## Auto-evoluzione
+
+- `workspaces/` — cartelle scrivibili da JANIS
+- `packages/orchestrator/` — doc orchestrazione
+- API: `/api/evolve/*`, `/api/gaps/*`
+- Vedi `docs/EVOLUTION.md`
+
 ## Deploy server
 
 ```bash

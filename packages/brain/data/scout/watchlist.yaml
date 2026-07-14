@@ -1,0 +1,24 @@
+- name: litellm
+  source: github
+  url: https://github.com/BerriAI/litellm
+  topics: [llm, gateway, cost]
+- name: qdrant
+  source: github
+  url: https://github.com/qdrant/qdrant
+  topics: [vector, memory]
+- name: langfuse
+  source: github
+  url: https://github.com/langfuse/langfuse
+  topics: [observability, llm]
+- name: glances
+  source: github
+  url: https://github.com/nicolargo/glances
+  topics: [monitoring]
+- name: openclaw
+  source: github
+  url: https://github.com/openclaw/openclaw
+  topics: [channels, agent]
+- name: mcp
+  source: github
+  url: https://github.com/modelcontextprotocol/servers
+  topics: [mcp, plugin]

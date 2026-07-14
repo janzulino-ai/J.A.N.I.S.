@@ -1,38 +1,28 @@
 {
   "active_project": "fleet",
-  "phase": 0,
-  "phase_label": "test",
+  "phase": 1,
+  "phase_label": "coordinator linux-server",
   "decisions": {
+    "coordinator": {
+      "answer": "linux",
+      "at": "2026-07-13T00:00:00+00:00",
+      "note": "brain su server Linux; Windows solo win-vm KVM"
+    },
+    "network": {
+      "answer": "lan",
+      "at": "2026-06-21T12:51:33+00:00",
+      "note": "sync chat utente"
+    },
+    "power_model": {
+      "answer": "mac_always_on",
+      "at": "2026-06-21T12:51:33+00:00",
+      "note": "sync chat utente"
+    },
     "first_tool": {
-      "answer": "browser",
-      "at": "2026-06-21T14:23:15+00:00",
-      "note": ""
+      "answer": "terminal",
+      "at": "2026-06-21T12:51:33+00:00",
+      "note": "sync chat utente"
     }
   },
-  "open_questions": [
-    {
-      "id": "coordinator",
-      "question": "Quale macchina fa da coordinatore (cervello + memoria)? Mac Mini o Windows?",
-      "options": [
-        "mac-mini",
-        "windows"
-      ]
-    },
-    {
-      "id": "network",
-      "question": "Rete tra i PC: solo LAN di casa o Tailscale?",
-      "options": [
-        "lan",
-        "tailscale"
-      ]
-    },
-    {
-      "id": "power_model",
-      "question": "Modello accensione: entrambi sempre accesi insieme, o Mac Mini always-on?",
-      "options": [
-        "both_together",
-        "mac_always_on"
-      ]
-    }
-  ]
+  "open_questions": []
 }

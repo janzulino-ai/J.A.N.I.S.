@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JANIS — Windows VM</title>
+  <link rel="stylesheet" href="/static/windows.css?v=1">
+</head>
+<body>
+  <header class="win-head">
+    <h1>win-vm</h1>
+    <div class="win-actions">
+      <button id="btn-start">Avvia</button>
+      <button id="btn-stop">Stop</button>
+      <button id="btn-reboot">Reboot</button>
+      <span id="vm-state" class="badge">—</span>
+    </div>
+  </header>
+  <main id="screen" class="vnc-screen"></main>
+  <footer class="win-foot">
+    <span id="status-line">Connessione VNC…</span>
+  </footer>
+  <script type="module" src="/static/windows.js?v=1"></script>
+</body>
+</html>
