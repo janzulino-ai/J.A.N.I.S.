@@ -184,11 +184,26 @@ async def host_metrics():
 
 @router.get("/api/host/hardware")
 async def host_hardware():
+    from backend.core.host_inventory import load_inventory
+    live = load_inventory()
     return {
-        "summary": f"{platform.processor() or platform.machine()} · {platform.system()}",
-        "cpu": {"model": platform.processor(), "arch": platform.machine()},
-        "ram_gb": _ram_gb(),
+        "summary": f"{live.get('cpu', {}).get('model') or platform.processor() or platform.machine()} · {platform.system()}",
+        "cpu": {"model": live.get("cpu", {}).get("model"), "arch": platform.machine(), "cores": live.get("cpu", {}).get("cores_logical")},
+        "ram_gb": live.get("memory_gb") or _ram_gb(),
+        "gpu": live.get("gpu") or [],
+        "disks": live.get("disks") or [],
+        "network": live.get("network") or [],
     }
+
+
+@router.get("/api/host/inventory")
+async def host_inventory(refresh: bool = False):
+    from backend.core.host_inventory import load_inventory, probe_host, save_inventory
+    if refresh:
+        inv = probe_host()
+        save_inventory(inv)
+        return {"ok": True, "refreshed": True, "inventory": inv}
+    return {"ok": True, "inventory": load_inventory()}
 
 
 def _ram_gb() -> float | None:
