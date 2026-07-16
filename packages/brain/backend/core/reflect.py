@@ -86,6 +86,20 @@ def add_proposal(title: str, detail: str, ptype: str, priority: str) -> dict:
     }
     items.append(entry)
     _save_proposals(items)
+    # W7c: proposta → ticket board (kind da type)
+    try:
+        from backend.core.orchestrator.board import create_ticket
+
+        kind_map = {"code": "code", "tool": "code", "ux": "safe", "docs": "safe", "research": "research"}
+        create_ticket(
+            f"[reflect] {title.strip()}",
+            kind=kind_map.get((ptype or "").lower(), "safe"),
+            priority=2 if (priority or "").lower() == "high" else 5,
+            detail=(detail or "")[:2000],
+            assignee="brain-local",
+        )
+    except Exception:
+        logger.debug("reflect→ticket skip", exc_info=True)
     return entry
 
 

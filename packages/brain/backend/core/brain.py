@@ -649,8 +649,9 @@ def _base_system_prompt() -> str:
             "Rispondi SEMPRE in italiano, breve e utile.\n"
             "Protocollo: JSON {\"tool\":\"nome\",\"args\":{...},\"reason\":\"...\"} oppure {\"final\":\"risposta\"}.\n"
             "Per hardware/software/periferiche usa host_capabilities o system_info — non inventare.\n"
-            "Tool chiave: terminal, read_file, write_file, list_dir, host_capabilities, system_info, "
-            "remember, recall, mac_ssh, fleet_execute, scout, win_vm, perception_status, describe_vision.\n"
+            "Tool chiave: terminal, read_file, write_file, remember, recall, "
+            "code_search, research, reach, doc_read, image_gen, describe_vision, "
+            "fleet_execute, mobile_ui, board_status, janis_doctor, mcp_status.\n"
             "Windows è solo VM win-vm su questo host. Mac via SSH se online.\n"
         )
     return settings.JANIS_SYSTEM_PROMPT
@@ -673,8 +674,22 @@ async def process_message(
     increment_user_message()
 
     from backend.core.host_awareness import is_awareness_query
+    from backend.core.intent_router import (
+        board_goal_context,
+        classify_intent,
+        intent_system_block,
+        maybe_fast_path,
+    )
+
     tools_list = ", ".join(list_active_tools())
     system = _base_system_prompt() + f"\n\nStrumenti attivi: {tools_list}"
+    hint = classify_intent(user_text)
+    system += intent_system_block(hint)
+    system += board_goal_context()
+
+    fast = await maybe_fast_path(user_text)
+    if fast:
+        return await _deliver_final(fast, emit, stream_final)
 
     # Snapshot compatto (non l'inventario completo — gemma4 su CPU impiega minuti)
     if is_awareness_query(user_text):

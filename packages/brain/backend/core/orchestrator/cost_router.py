@@ -73,8 +73,45 @@ class CostRouter:
             return True
         return self.cloud_budget_available()
 
+    def can_use_agent(self, agent_id: str, estimate_usd: float = 0.01) -> bool:
+        """Hard-stop per agente orchestrator + budget globale cloud."""
+        try:
+            from backend.core.orchestrator.board import agent_budget_ok
+
+            if not agent_budget_ok(agent_id, estimate_usd):
+                return False
+        except Exception:
+            pass
+        if estimate_usd <= 0:
+            return True
+        return self._budget_ok(estimate_usd)
+
+    def record_agent_spend(self, agent_id: str, usd: float) -> None:
+        self.record_spend(usd)
+        try:
+            from backend.core.orchestrator.board import record_agent_spend
+
+            record_agent_spend(agent_id, usd)
+        except Exception:
+            logger.debug("record_agent_spend skip", exc_info=True)
+
     def status(self) -> dict:
         remaining = max(0, self.daily_budget_usd - self.spent_today_usd)
+        agents = []
+        try:
+            from backend.core.orchestrator.board import load_agents
+
+            agents = [
+                {
+                    "id": a.get("id"),
+                    "status": a.get("status"),
+                    "spent_today_usd": a.get("spent_today_usd"),
+                    "daily_budget_usd": a.get("daily_budget_usd"),
+                }
+                for a in load_agents()
+            ]
+        except Exception:
+            pass
         return {
             "daily_budget_usd": self.daily_budget_usd,
             "spent_today_usd": round(self.spent_today_usd, 4),
@@ -83,6 +120,7 @@ class CostRouter:
             "cloud_blocked": remaining <= 0,
             "active": remaining > 0,
             "mode": TIER_LOCAL if remaining <= 0 else TIER_CHEAP,
+            "agents": agents,
         }
 
 

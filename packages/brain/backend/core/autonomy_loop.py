@@ -50,6 +50,24 @@ async def run_autonomy_tick() -> dict:
             if settings.AUTONOMY_AUTODEV_ENABLED and high:
                 report["actions"].append("autodev_skipped_needs_approval")
 
+        # W7c: gap high → ticket safe/code gated
+        try:
+            from backend.core.orchestrator.board import create_ticket
+
+            n = 0
+            for g in high[:5]:
+                create_ticket(
+                    f"[gap] {g.get('tool') or g.get('id') or 'capability'}",
+                    kind="code" if "code" in str(g.get("category", "")).lower() else "safe",
+                    priority=2,
+                    detail=str(g)[:2000],
+                )
+                n += 1
+            if n:
+                report["actions"].append(f"tickets_from_gaps:{n}")
+        except Exception:
+            logger.exception("gap→ticket")
+
     if settings.LAB_ENABLED:
         try:
             from backend.core.llm_lab.train import run_full_cycle

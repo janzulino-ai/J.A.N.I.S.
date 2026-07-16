@@ -1,4 +1,4 @@
-"""Orchestrazione costi e routing provider."""
+"""Orchestrazione costi, board ticket, routing provider."""
 
 from backend.core.orchestrator.cost_router import CostRouter, cost_router
 

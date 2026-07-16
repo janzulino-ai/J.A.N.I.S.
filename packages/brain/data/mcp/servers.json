@@ -2,28 +2,49 @@
   {
     "name": "filesystem",
     "command": "npx",
-    "args": [
-      "-y",
-      "@modelcontextprotocol/server-filesystem",
-      "/tmp"
-    ]
+    "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"],
+    "enabled": false
   },
   {
-    "name": "git",
-    "command": "npx",
-    "args": [
-      "-y",
-      "@modelcontextprotocol/server-git",
-      "--repository",
-      "."
-    ]
+    "name": "codebase-memory",
+    "command": "codebase-memory-mcp",
+    "args": [],
+    "enabled": true,
+    "note": "DeusData W6b"
   },
   {
-    "name": "fetch",
-    "command": "npx",
-    "args": [
-      "-y",
-      "@modelcontextprotocol/server-fetch"
-    ]
+    "name": "docling",
+    "command": "docling-mcp",
+    "args": [],
+    "enabled": true,
+    "note": "W6f read"
+  },
+  {
+    "name": "officecli",
+    "command": "officecli",
+    "args": ["mcp"],
+    "enabled": true,
+    "note": "W6f edit"
+  },
+  {
+    "name": "vision",
+    "command": "vision-mcp",
+    "args": [],
+    "enabled": true,
+    "note": "W6i"
+  },
+  {
+    "name": "research",
+    "command": "ii-researcher-mcp",
+    "args": [],
+    "enabled": true,
+    "note": "W6h"
+  },
+  {
+    "name": "mobile",
+    "command": "mobile-mcp",
+    "args": [],
+    "enabled": true,
+    "note": "W6j — prefer Mac node"
   }
 ]

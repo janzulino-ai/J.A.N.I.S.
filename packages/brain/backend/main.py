@@ -41,6 +41,7 @@ from backend.routers.scout import router as scout_router
 from backend.routers.lab import router as lab_router
 from backend.routers.cursor_bridge import router as cursor_bridge_router
 from backend.routers.vpn import router as vpn_router
+from backend.routers.orchestrator import router as orchestrator_router
 
 # Registra strumenti
 import backend.core.tools  # noqa: F401
@@ -102,6 +103,7 @@ app.include_router(scout_router)
 app.include_router(lab_router)
 app.include_router(cursor_bridge_router)
 app.include_router(vpn_router)
+app.include_router(orchestrator_router)
 mount_kiosk_static(app)
 
 
@@ -233,9 +235,11 @@ async def startup():
 async def shutdown():
     from backend.core.channels.telegram import stop_telegram_polling
     from backend.core.scheduler import stop_scheduler
+    from backend.core.mcp_client import close_all_sessions
 
     await stop_telegram_polling()
     await stop_scheduler()
+    await close_all_sessions()
 
 
 if __name__ == "__main__":

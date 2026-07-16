@@ -59,6 +59,12 @@ async def build_dashboard(*, refresh_inventory: bool = False) -> dict:
     stt = _probe_engines()
     llm_prov = await get_active_provider()
     orch = cost_router.status()
+    try:
+        from backend.core.orchestrator.board import board_status
+
+        orch = {**orch, "board": board_status()}
+    except Exception:
+        orch = {**orch, "board": None}
     usage = summary_today()
     skills = channel_skill_status()
     gaps_s = gap_stats()

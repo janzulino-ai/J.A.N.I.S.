@@ -284,6 +284,19 @@ async def audit_responses(
         "quality_score": quality,
     }
     path = _save_audit(record)
+    # W7c: audit debole → ticket lab/safe
+    try:
+        if quality < float(getattr(settings, "LAB_PROMOTE_MIN_SCORE", 60)):
+            from backend.core.orchestrator.board import create_ticket
+
+            create_ticket(
+                f"[lab-audit] quality={quality:.0f} id={audit_id}",
+                kind="lab",
+                priority=3,
+                detail=f"prompt={prompt[:400]}\nscore={quality}\npath={path}",
+            )
+    except Exception:
+        logger.debug("lab audit→ticket skip", exc_info=True)
     return {
         "ok": judge_error is None,
         "audit_id": audit_id,

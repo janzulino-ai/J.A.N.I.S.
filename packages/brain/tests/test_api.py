@@ -26,6 +26,15 @@ def test_status(client):
     assert r.json()["service"] == "JANIS"
 
 
+def test_orchestrator_status(client):
+    r = client.get("/api/orchestrator/status")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["ok"] is True
+    assert data["autonomy_level"] in ("L0", "L1", "L2", "L3")
+    assert "agents" in data
+
+
 def test_settings_get(client):
     r = client.get("/api/settings")
     assert r.status_code == 200

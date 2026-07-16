@@ -25,11 +25,22 @@ def _jobs_path() -> Path:
 def default_jobs() -> list[dict]:
     return [
         {
+            "id": "heartbeat-orchestrator",
+            "enabled": True,
+            "hour": -1,
+            "minute": -1,
+            "every_minutes": 30,
+            "action": "heartbeat",
+            "agent_id": "brain-local",
+            "channel": "",
+            "chat_id": "",
+        },
+        {
             "id": "morning-status",
             "enabled": True,
             "hour": 8,
             "minute": 0,
-            "prompt": "Breve briefing: stato sistema, nodi fleet, proposte aperte. Max 5 righe.",
+            "prompt": "Breve briefing: stato sistema, nodi fleet, proposte aperte, board ticket. Max 5 righe.",
             "channel": "",
             "chat_id": "",
         },
@@ -63,6 +74,35 @@ def default_jobs() -> list[dict]:
             "channel": "",
             "chat_id": "",
         },
+        {
+            "id": "doctor-hourly",
+            "enabled": True,
+            "hour": -1,
+            "minute": -1,
+            "every_minutes": 60,
+            "action": "doctor",
+            "heal": True,
+            "channel": "",
+            "chat_id": "",
+        },
+        {
+            "id": "nightly-sense-act",
+            "enabled": True,
+            "hour": 2,
+            "minute": 30,
+            "action": "sense_act",
+            "channel": "",
+            "chat_id": "",
+        },
+        {
+            "id": "evening-digest",
+            "enabled": True,
+            "hour": 20,
+            "minute": 0,
+            "action": "digest_notify",
+            "channel": "",
+            "chat_id": "",
+        },
     ]
 
 
@@ -73,7 +113,19 @@ def load_jobs() -> list[dict]:
         f.write_text(json.dumps(jobs, ensure_ascii=False, indent=2), encoding="utf-8")
         return jobs
     try:
-        return json.loads(f.read_text(encoding="utf-8"))
+        jobs = json.loads(f.read_text(encoding="utf-8"))
+        if not isinstance(jobs, list):
+            return default_jobs()
+        by_id = {j.get("id"): j for j in jobs if isinstance(j, dict) and j.get("id")}
+        changed = False
+        for d in default_jobs():
+            did = d.get("id")
+            if did and did not in by_id:
+                jobs.append(d)
+                changed = True
+        if changed:
+            save_jobs(jobs)
+        return jobs
     except Exception:
         return default_jobs()
 
@@ -88,7 +140,72 @@ async def _run_job(job: dict) -> None:
     from backend.core.channels.models import OutboundMessage
 
     action = (job.get("action") or "").strip()
-    if action == "scout_discover":
+    if action == "heartbeat":
+        if not getattr(settings, "HEARTBEAT_ENABLED", True):
+            return
+        from backend.core.orchestrator.board import run_heartbeat
+
+        agent_id = (job.get("agent_id") or "brain-local").strip()
+        logger.info("Scheduler heartbeat agent=%s", agent_id)
+        try:
+            result = await run_heartbeat(agent_id)
+            reply = f"[Heartbeat] {result}"
+        except Exception:
+            logger.exception("Heartbeat job fallito")
+            return
+    elif action == "doctor":
+        from backend.core.doctor import run_doctor
+
+        heal = bool(job.get("heal")) and getattr(settings, "DOCTOR_HEAL_ENABLED", True)
+        logger.info("Scheduler doctor heal=%s", heal)
+        try:
+            report = await run_doctor(heal=heal)
+            reply = f"[Doctor] summary={report.get('summary')} fail={report.get('required_fail')}"
+        except Exception:
+            logger.exception("Doctor job fallito")
+            return
+    elif action == "sense_act":
+        # W7c: ticket research/index safe + un heartbeat
+        from backend.core.orchestrator.board import create_ticket, run_heartbeat, board_status
+
+        logger.info("Scheduler sense_act")
+        try:
+            st = board_status()
+            if (st.get("tickets") or {}).get("open", 0) < 3:
+                create_ticket(
+                    "[sense] doctor + board check",
+                    kind="safe",
+                    priority=4,
+                    detail="Nightly sense: janis_doctor + board_status",
+                )
+                create_ticket(
+                    "[sense] research watchlist tech",
+                    kind="research",
+                    priority=5,
+                    detail="Usa tool research su un topic dalla scout watchlist se disponibile",
+                )
+            result = await run_heartbeat("brain-local")
+            reply = f"[SenseAct] {result}"
+        except Exception:
+            logger.exception("Sense_act fallito")
+            return
+    elif action == "digest_notify":
+        from backend.core.orchestrator.board import board_status
+        from backend.core.pocket_notify import notify_digest
+
+        logger.info("Scheduler digest_notify")
+        try:
+            st = board_status()
+            summary = (
+                f"autonomy={st.get('autonomy_level')} tickets={st.get('tickets')} "
+                f"goals_open={st.get('goals_open')}"
+            )
+            notify_digest(summary)
+            reply = f"[Digest] {summary}"
+        except Exception:
+            logger.exception("Digest notify fallito")
+            return
+    elif action == "scout_discover":
         from backend.core.tech_scout.discover import discover_all
         from backend.core.tech_scout.classifier import classify_candidate
         logger.info("Scheduler scout_discover")
@@ -162,14 +279,25 @@ async def _autonomy_loop() -> None:
 
 async def _tick_loop() -> None:
     last_run: dict[str, str] = {}
+    last_interval: dict[str, float] = {}
     while True:
         try:
             now = datetime.now(timezone.utc)
             key_min = now.strftime("%Y-%m-%d-%H:%M")
+            now_ts = now.timestamp()
             for job in load_jobs():
                 if not job.get("enabled"):
                     continue
                 jid = job.get("id") or "?"
+                every = job.get("every_minutes")
+                if every is not None and int(every) > 0:
+                    if jid not in last_interval:
+                        last_interval[jid] = now_ts  # primo giro: aspetta un intervallo pieno
+                        continue
+                    if now_ts - last_interval[jid] >= int(every) * 60:
+                        last_interval[jid] = now_ts
+                        await _run_job(job)
+                    continue
                 if last_run.get(jid) == key_min:
                     continue
                 if now.hour == int(job.get("hour", -1)) and now.minute == int(job.get("minute", -1)):

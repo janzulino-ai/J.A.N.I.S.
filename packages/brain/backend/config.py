@@ -127,6 +127,18 @@ class Settings(BaseSettings):
 
     SCHEDULER_ENABLED: bool = Field(default=True)
 
+    # MCP client stdio (W6a)
+    MCP_ENABLED: bool = Field(default=True, description="Client MCP reale verso servers.json")
+    MCP_CALL_TIMEOUT_SEC: float = Field(default=120.0)
+    HEARTBEAT_ENABLED: bool = Field(default=True, description="Job scheduler heartbeat orchestrator")
+
+    # Sidecar media / research (W6g–W6h)
+    COMFYUI_URL: str = Field(default="http://127.0.0.1:8188", description="ComfyUI locale")
+    COMFYUI_CHECKPOINT: str = Field(default="v1-5-pruned-emaonly.safetensors")
+    SEARXNG_URL: str = Field(default="http://127.0.0.1:8080", description="SearXNG meta-search")
+    APNS_KEY_PATH: str = Field(default="", description="Chiave APNs opzionale per push reale")
+    DOCTOR_HEAL_ENABLED: bool = Field(default=True, description="janis_doctor può auto-heal Ollama")
+
     # Device mobile (Pocket) — header X-JANIS-Token; vuoto = nessun auth in LAN dev
     JANIS_DEVICE_TOKEN: str = Field(default="")
 

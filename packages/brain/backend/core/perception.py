@@ -75,12 +75,36 @@ async def describe_image(
     image_base64: str | None = None,
     context: str = "",
 ) -> str:
+    # W6i: prova vision-mcp prima (OCR/video agentic)
+    if path or image_base64:
+        try:
+            from backend.core.sidecar_call import call_mcp, pick_mcp_tool
+            from backend.core.mcp_client import get_session
+
+            tools = await (await get_session("vision")).list_tools()
+            name = pick_mcp_tool(tools, "describe", "analyze", "ocr", "vision", "describe_image")
+            if name:
+                out = await call_mcp(
+                    "vision",
+                    name,
+                    {
+                        "path": path or "",
+                        "image_base64": image_base64 or "",
+                        "prompt": context or "Descrivi in italiano",
+                    },
+                )
+                if out and not out.startswith("MCP error"):
+                    return out
+        except Exception:
+            logger.debug("vision-mcp skip", exc_info=True)
+
     vision_models = await list_vision_models()
     if not vision_models:
         return (
             "Visione locale non disponibile: nessun modello Ollama vision installato.\n"
             "Sul server: ollama pull llava:7b (o moondream)\n"
-            "Oppure invia frame da Pocket → POST /api/pocket/vision"
+            "Oppure invia frame da Pocket → POST /api/pocket/vision\n"
+            "Sidecar: vision-mcp in servers.json"
         )
 
     b64 = image_base64

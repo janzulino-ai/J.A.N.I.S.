@@ -137,10 +137,28 @@ notify, speak, stop_speak, open_url, get_location, get_heading, get_battery, get
 | 422 | Payload malformato |
 | 503 | Hub offline |
 
+## Orchestrator (W6–W7)
+
+| Method | Path | Note |
+|--------|------|------|
+| GET | `/api/orchestrator/status` | board + autonomy + agents |
+| GET | `/api/orchestrator/tickets?status=` | lista |
+| POST | `/api/orchestrator/tickets` | `{title,detail,kind,priority,assignee}` |
+| POST | `/api/orchestrator/tickets/{id}/claim` | claim |
+| POST | `/api/orchestrator/tickets/{id}/done` | `{result,status}` |
+| POST | `/api/orchestrator/heartbeat?agent_id=` | claim+run |
+| POST | `/api/orchestrator/autonomy` | `{level: L0\|L1\|L2\|L3}` |
+| GET | `/api/orchestrator/approvals` | pending gates |
+| POST | `/api/orchestrator/approvals/{id}/decide` | `{approve,note}` |
+| POST | `/api/orchestrator/notify?title=&body=` | Pocket digest/notify |
+
+Notify path: ios_bridge `notify` + outbox `data/pocket/notify_outbox/` (+ APNs se `APNS_KEY_PATH`).
+
 ## Checklist server DoD
 
 - [ ] Tutti gli endpoint rispondono 2xx in produzione
 - [ ] WS rispetta session_id
 - [ ] ios_bridge pending/complete funzionante
-- [ ] push register + invio APNs verso iphone-15-pro-max, iphone-14-pro, ipad-pro-2020
+- [x] push register + notify bridge/outbox (APNs reale opzionale con chiave)
 - [ ] identity in chat usata per personalizzazione risposta
+- [x] orchestrator status/heartbeat/approvals
