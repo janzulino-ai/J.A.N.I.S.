@@ -1,5 +1,6 @@
 import logging
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 import uvicorn
@@ -57,10 +58,73 @@ MONOREPO_ROOT = Path(__file__).resolve().parents[3]
 CLIENT_WEB_DIR = MONOREPO_ROOT / "packages" / "client-web"
 CLIENT_STATIC = CLIENT_WEB_DIR / "static"
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if not os.path.isabs(settings.MEMORY_DIR):
+        settings.MEMORY_DIR = os.path.join(settings.JANIS_PROJECT_DIR, "data", "memory")
+    os.makedirs(settings.MEMORY_DIR, exist_ok=True)
+    from backend.core.ollama_service import ensure_ollama_running
+    from backend.core.llm_router import get_active_provider
+
+    if not await ensure_ollama_running():
+        logger.warning("Ollama offline — la chat non funzionerà finché non è avviato")
+    provider = await get_active_provider()
+    logger.info(
+        "JANIS online — provider: %s, modello: %s",
+        provider.get("active"),
+        settings.OLLAMA_MODEL,
+    )
+    import asyncio
+    from backend.core.ollama_model_router import probe_all_models
+
+    async def _probe_models_bg():
+        try:
+            result = await probe_all_models(force=True)
+            logger.info(
+                "Ollama probe: %s modelli OK — fast=%s balanced=%s capable=%s",
+                len(result.get("working") or []),
+                (result.get("by_tier") or {}).get("fast"),
+                (result.get("by_tier") or {}).get("balanced"),
+                (result.get("by_tier") or {}).get("capable"),
+            )
+        except Exception:
+            logger.exception("Probe modelli Ollama fallito")
+
+    asyncio.create_task(_probe_models_bg(), name="janis-ollama-probe")
+    logger.info("Workspace: %s", settings.JANIS_WORKSPACE)
+    from backend.core.evolve_paths import ensure_workspace_dirs
+
+    paths = ensure_workspace_dirs()
+    logger.info("Monorepo evolve: %s", paths.get("evolve"))
+    logger.info("Web proxy attivo: /api/web/proxy, /api/web/check")
+    from backend.core.tech_analysis import seed_baseline_research
+    from backend.core.cursor_win_patch import apply_cursor_sdk_patches
+
+    apply_cursor_sdk_patches()
+    seeded = seed_baseline_research()
+    if seeded:
+        logger.info("Roadmap seed: analisi OpenClaw/Odysseus caricata")
+    from backend.core.channels.telegram import start_telegram_polling
+    from backend.core.scheduler import start_scheduler
+
+    await start_telegram_polling()
+    await start_scheduler()
+    yield
+    from backend.core.channels.telegram import stop_telegram_polling
+    from backend.core.scheduler import stop_scheduler
+    from backend.core.mcp_client import close_all_sessions
+
+    await stop_telegram_polling()
+    await stop_scheduler()
+    await close_all_sessions()
+
+
 app = FastAPI(
     title="JANIS",
     description="Just Another Neuralgic Improving Server",
     version="2.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -182,64 +246,6 @@ async def dev_no_cache_static(request, call_next):
     ):
         response.headers["Cache-Control"] = "no-store, must-revalidate"
     return response
-
-
-@app.on_event("startup")
-async def startup():
-    if not os.path.isabs(settings.MEMORY_DIR):
-        settings.MEMORY_DIR = os.path.join(settings.JANIS_PROJECT_DIR, "data", "memory")
-    os.makedirs(settings.MEMORY_DIR, exist_ok=True)
-    from backend.core.ollama_service import ensure_ollama_running
-    from backend.core.llm_router import get_active_provider
-    if not await ensure_ollama_running():
-        logger.warning("Ollama offline — la chat non funzionerà finché non è avviato")
-    provider = await get_active_provider()
-    logger.info("JANIS online — provider: %s, modello: %s", provider.get("active"), settings.OLLAMA_MODEL)
-    import asyncio
-    from backend.core.ollama_model_router import probe_all_models
-
-    async def _probe_models_bg():
-        try:
-            result = await probe_all_models(force=True)
-            logger.info(
-                "Ollama probe: %s modelli OK — fast=%s balanced=%s capable=%s",
-                len(result.get("working") or []),
-                (result.get("by_tier") or {}).get("fast"),
-                (result.get("by_tier") or {}).get("balanced"),
-                (result.get("by_tier") or {}).get("capable"),
-            )
-        except Exception:
-            logger.exception("Probe modelli Ollama fallito")
-
-    asyncio.create_task(_probe_models_bg(), name="janis-ollama-probe")
-    logger.info("Workspace: %s", settings.JANIS_WORKSPACE)
-    from backend.core.evolve_paths import ensure_workspace_dirs
-    paths = ensure_workspace_dirs()
-    logger.info("Monorepo evolve: %s", paths.get("evolve"))
-    logger.info("Web proxy attivo: /api/web/proxy, /api/web/check")
-    from backend.core.tech_analysis import seed_baseline_research
-    from backend.core.cursor_win_patch import apply_cursor_sdk_patches
-
-    apply_cursor_sdk_patches()
-    seeded = seed_baseline_research()
-    if seeded:
-        logger.info("Roadmap seed: analisi OpenClaw/Odysseus caricata")
-    from backend.core.channels.telegram import start_telegram_polling
-    from backend.core.scheduler import start_scheduler
-
-    await start_telegram_polling()
-    await start_scheduler()
-
-
-@app.on_event("shutdown")
-async def shutdown():
-    from backend.core.channels.telegram import stop_telegram_polling
-    from backend.core.scheduler import stop_scheduler
-    from backend.core.mcp_client import close_all_sessions
-
-    await stop_telegram_polling()
-    await stop_scheduler()
-    await close_all_sessions()
 
 
 if __name__ == "__main__":

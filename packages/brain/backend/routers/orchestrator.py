@@ -4,7 +4,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from backend.core.orchestrator import board as board_mod
+from backend.core.orchestrator import board as board_mod  # submodule board.py
 
 router = APIRouter(tags=["orchestrator"])
 
@@ -122,9 +122,14 @@ async def orch_decide_approval(approval_id: str, body: ApprovalDecideBody):
     return {"ok": True, "approval": a}
 
 
+class NotifyBody(BaseModel):
+    title: str = "JANIS"
+    body: str = "ping"
+
+
 @router.post("/api/orchestrator/notify")
-async def orch_notify(title: str = "JANIS", body: str = ""):
+async def orch_notify(payload: NotifyBody):
     from backend.core.pocket_notify import notify_all
 
-    results = notify_all(title, body or "ping", {"type": "manual"})
+    results = notify_all(payload.title, payload.body or "ping", {"type": "manual"})
     return {"ok": True, "results": results}

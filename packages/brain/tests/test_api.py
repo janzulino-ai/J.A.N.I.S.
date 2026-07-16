@@ -35,6 +35,24 @@ def test_orchestrator_status(client):
     assert "agents" in data
 
 
+def test_orchestrator_ticket_and_approvals(client):
+    r = client.post(
+        "/api/orchestrator/tickets",
+        json={"title": "API smoke ticket", "kind": "safe", "priority": 3},
+    )
+    assert r.status_code == 200
+    tid = r.json()["ticket"]["id"]
+    r2 = client.get("/api/orchestrator/tickets", params={"status": "open"})
+    assert r2.status_code == 200
+    assert any(t["id"] == tid for t in r2.json()["tickets"])
+    r3 = client.get("/api/orchestrator/approvals")
+    assert r3.status_code == 200
+    assert r3.json()["ok"] is True
+    r4 = client.post("/api/orchestrator/notify", json={"title": "t", "body": "b"})
+    assert r4.status_code == 200
+    assert r4.json()["ok"] is True
+
+
 def test_settings_get(client):
     r = client.get("/api/settings")
     assert r.status_code == 200

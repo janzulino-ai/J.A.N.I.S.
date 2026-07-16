@@ -36,10 +36,34 @@ async def ticket_claim(args: dict) -> str:
     from backend.core.orchestrator.board import claim_ticket
 
     agent = args.get("agent_id") or args.get("assignee") or "brain-local"
-    t = claim_ticket(agent)
+    tid = (args.get("ticket_id") or args.get("id") or "").strip() or None
+    t = claim_ticket(agent, ticket_id=tid)
     if not t:
         return "Nessun ticket open claimabile"
     return json.dumps(t, ensure_ascii=False, indent=2)
+
+
+@register("approvals_status")
+async def approvals_status(_args: dict) -> str:
+    from backend.core.approval import status as approval_status
+
+    return json.dumps(approval_status(), ensure_ascii=False, indent=2)
+
+
+@register("approval_decide")
+async def approval_decide(args: dict) -> str:
+    from backend.core.approval import decide_approval
+
+    aid = (args.get("approval_id") or args.get("id") or "").strip()
+    if not aid:
+        return "approval_id obbligatorio"
+    approve = args.get("approve", True)
+    if isinstance(approve, str):
+        approve = approve.lower() not in ("0", "false", "no", "reject")
+    a = decide_approval(aid, approve=bool(approve), note=args.get("note") or "")
+    if not a:
+        return f"Approval {aid} non trovata"
+    return json.dumps(a, ensure_ascii=False, indent=2)
 
 
 @register("ticket_done")

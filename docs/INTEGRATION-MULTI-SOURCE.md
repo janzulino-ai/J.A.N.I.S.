@@ -146,7 +146,8 @@ APNS_KEY_PATH=   # opzionale push reale
 6. `vision-mcp`  
 7. `mobile-mcp` sul Mac Mini  
 
-Verifica: tool `janis_doctor` o `GET` checks via chat «janis doctor».
+Verifica: tool `janis_doctor` o chat «janis doctor».  
+Install host: [`SIDECARS-INSTALL.md`](SIDECARS-INSTALL.md).
 
 ## Autonomia default: **L2 Bounded**
 
