@@ -109,6 +109,13 @@ public partial class AgentView : UserControl
                     buf += tx.GetString();
                     if (_streamMsg != null) _streamMsg.Text = buf;
                 }
+                if (t == "media_image" && ev.TryGetProperty("url", out var iu))
+                {
+                    var url = iu.GetString();
+                    if (_streamMsg != null && !string.IsNullOrWhiteSpace(url))
+                        _streamMsg.ImageUrl = url;
+                    Append("media", url ?? "", "image");
+                }
                 if (t == "state" && ev.TryGetProperty("state", out var st))
                     Append("sys", st.GetString() ?? "", "state");
                 if (t == "tool_start")

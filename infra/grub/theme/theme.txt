@@ -1,0 +1,20 @@
+# JANIS GRUB theme (minimale — HyperFluent assets opzionali dopo)
+desktop-image: "background.png"
+title-text: "JANIS"
+title-color: "#e8e8e8"
+message-color: "#cccccc"
+terminal-font: "Unifont Regular 16"
+
++ boot_menu {
+  left = 15%
+  top = 30%
+  width = 70%
+  height = 40%
+  item_font = "Unifont Regular 16"
+  item_color = "#dddddd"
+  selected_item_color = "#ffffff"
+  selected_item_pixmap_style = "selected_*.png"
+  item_height = 28
+  item_padding = 4
+  item_spacing = 6
+}

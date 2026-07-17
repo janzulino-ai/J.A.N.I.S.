@@ -1,70 +1,142 @@
 <UserControl x:Class="JANIS.Desktop.Views.AgentView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Grid Background="{StaticResource BgDark}" Margin="8">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="Auto"/>
-    </Grid.RowDefinitions>
+  <UserControl.Resources>
+    <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+  </UserControl.Resources>
 
-    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
-      <TextBlock Text="AGENT" FontSize="16" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" VerticalAlignment="Center"/>
-      <TextBlock x:Name="CursorStatus" Margin="16,0,0,0" Foreground="{StaticResource AccentGreen}" VerticalAlignment="Center" FontSize="11"/>
-    </StackPanel>
+  <Grid Margin="0">
+    <Grid.Background>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#050B12" Offset="0"/>
+        <GradientStop Color="#0A1A28" Offset="0.45"/>
+        <GradientStop Color="#061018" Offset="1"/>
+      </LinearGradientBrush>
+    </Grid.Background>
 
-    <Border Grid.Row="1" BorderBrush="{StaticResource BorderLine}" BorderThickness="1" Padding="8" Margin="0,0,0,8" Background="{StaticResource Panel}">
-      <StackPanel>
-        <TextBlock Text="Cursor API (una volta)" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,4"/>
-        <StackPanel Orientation="Horizontal">
-          <PasswordBox x:Name="CursorKeyBox" Width="220" Margin="0,0,8,0"/>
-          <TextBox x:Name="CursorModelBox" Width="140" Text="composer-2.5" Margin="0,0,8,0"
-                   ToolTip="Modello Cursor"/>
-          <Button Content="Salva + abilita PRO" Click="EnableCursor_Click" Padding="10,4"/>
-        </StackPanel>
-        <TextBlock Text="Modalità: JANIS = tool locali + Ollama · Cursor Agent = modifica codice · Cursor Chat = solo LLM Cursor"
-                   TextWrapping="Wrap" Foreground="{StaticResource TextMuted}" FontSize="10" Margin="0,6,0,0"/>
-      </StackPanel>
-    </Border>
+    <!-- Griglia HUD sottile -->
+    <Rectangle Opacity="0.12" IsHitTestVisible="False">
+      <Rectangle.Fill>
+        <DrawingBrush TileMode="Tile" Viewport="0,0,40,40" ViewportUnits="Absolute">
+          <DrawingBrush.Drawing>
+            <GeometryDrawing Brush="Transparent">
+              <GeometryDrawing.Pen>
+                <Pen Brush="#3DE0FF" Thickness="0.5"/>
+              </GeometryDrawing.Pen>
+              <GeometryDrawing.Geometry>
+                <GeometryGroup>
+                  <LineGeometry StartPoint="0,0" EndPoint="40,0"/>
+                  <LineGeometry StartPoint="0,0" EndPoint="0,40"/>
+                </GeometryGroup>
+              </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+          </DrawingBrush.Drawing>
+        </DrawingBrush>
+      </Rectangle.Fill>
+    </Rectangle>
 
-    <ScrollViewer x:Name="MsgScroll" Grid.Row="2" VerticalScrollBarVisibility="Auto">
-      <ItemsControl x:Name="MsgList">
-        <ItemsControl.ItemTemplate>
-          <DataTemplate>
-            <Border Margin="0,4" Padding="8" Background="#111C26" BorderBrush="{StaticResource BorderLine}" BorderThickness="1">
-              <StackPanel>
-                <TextBlock Text="{Binding Role}" FontWeight="Bold" FontSize="10" Foreground="{StaticResource AccentCyan}"/>
-                <TextBlock Text="{Binding Text}" TextWrapping="Wrap" Foreground="#E8F4FA" Margin="0,4,0,0"/>
-              </StackPanel>
-            </Border>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-    </ScrollViewer>
-
-    <Grid Grid.Row="3" Margin="0,8,0,0">
+    <Grid Margin="14">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
-      <ComboBox x:Name="ModeCombo" Grid.Row="0" Margin="0,0,0,6" SelectedIndex="0">
-        <ComboBoxItem Content="JANIS — locale + tool (consigliato)"/>
-        <ComboBoxItem Content="Cursor Agent — scrive codice nel repo"/>
-        <ComboBoxItem Content="Cursor Chat — ragionamento Cursor"/>
-      </ComboBox>
-      <Grid Grid.Row="1">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <TextBox x:Name="InputBox" AcceptsReturn="True" MinHeight="48" MaxHeight="120"
-                 TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
-                 Background="#111C26" Foreground="#E8F4FA" BorderBrush="{StaticResource BorderLine}"
-                 KeyDown="InputBox_KeyDown"/>
-        <Button x:Name="SendBtn" Grid.Column="1" Content="INVIA" Margin="8,0,0,0" Padding="20,12"
-                Click="Send_Click" Background="#1A3040" Foreground="{StaticResource AccentCyan}"/>
-      </Grid>
+
+      <!-- Header -->
+      <Border Grid.Row="0" Margin="0,0,0,12" Padding="12,10"
+              BorderBrush="{StaticResource BorderGlow}" BorderThickness="1"
+              Background="#8008121C">
+        <DockPanel>
+          <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+            <TextBlock Text="◈ AGENT LINK" FontSize="15" FontWeight="Bold"
+                       Foreground="{StaticResource AccentCyan}"
+                       FontFamily="Consolas" VerticalAlignment="Center"/>
+            <TextBlock Text="  ·  NEURAL INTERFACE" FontSize="10" Margin="8,0,0,0"
+                       Foreground="{StaticResource TextMuted}" VerticalAlignment="Center"
+                       FontFamily="Consolas"/>
+          </StackPanel>
+          <TextBlock x:Name="CursorStatus" DockPanel.Dock="Right"
+                     HorizontalAlignment="Right" VerticalAlignment="Center"
+                     Foreground="{StaticResource AccentGreen}" FontSize="11"
+                     FontFamily="Consolas" Text="SCAN…"/>
+        </DockPanel>
+      </Border>
+
+      <!-- Cursor API strip -->
+      <Border Grid.Row="1" BorderBrush="{StaticResource BorderLine}" BorderThickness="1"
+              Padding="12" Margin="0,0,0,10" Background="#990B1622">
+        <StackPanel>
+          <TextBlock Text="CURSOR UPLINK  //  optional PRO" Foreground="{StaticResource AccentAmber}"
+                     FontSize="10" FontFamily="Consolas" Margin="0,0,0,8"/>
+          <StackPanel Orientation="Horizontal">
+            <PasswordBox x:Name="CursorKeyBox" Width="240" Margin="0,0,8,0"
+                         ToolTip="CURSOR_API_KEY"/>
+            <TextBox x:Name="CursorModelBox" Width="150" Text="composer-2.5" Margin="0,0,8,0"
+                     ToolTip="Modello Cursor"/>
+            <Button Content="ENGAGE PRO" Click="EnableCursor_Click" Padding="12,6"/>
+          </StackPanel>
+          <TextBlock TextWrapping="Wrap" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,8,0,0"
+                     Text="JANIS = tool locali + Ollama   ·   Cursor Agent = codice nel repo   ·   Cursor Chat = solo LLM"/>
+        </StackPanel>
+      </Border>
+
+      <!-- Messages -->
+      <Border Grid.Row="2" BorderBrush="{StaticResource BorderLine}" BorderThickness="1"
+              Background="#CC02060C" Padding="4">
+        <ScrollViewer x:Name="MsgScroll" VerticalScrollBarVisibility="Auto" Padding="6">
+          <ItemsControl x:Name="MsgList">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Margin="0,0,0,8" Padding="12,10"
+                        Background="#99122030" BorderBrush="#2A4A5C" BorderThickness="1">
+                  <StackPanel>
+                    <TextBlock Text="{Binding Role}" FontWeight="Bold" FontSize="10"
+                               Foreground="{StaticResource AccentCyan}" FontFamily="Consolas"/>
+                    <TextBlock Text="{Binding Text}" TextWrapping="Wrap"
+                               Foreground="{StaticResource TextPrimary}" Margin="0,6,0,0"
+                               FontSize="13" LineHeight="20"/>
+                    <Border Margin="0,10,0,0" BorderBrush="{StaticResource BorderGlow}" BorderThickness="1"
+                            Visibility="{Binding HasImage, Converter={StaticResource BoolToVis}}"
+                            Background="#0808121C" Padding="4">
+                      <Image Source="{Binding ImageUrl}" MaxHeight="320" Stretch="Uniform"/>
+                    </Border>
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </Border>
+
+      <!-- Composer -->
+      <Border Grid.Row="3" Margin="0,10,0,0" Padding="10"
+              BorderBrush="{StaticResource AccentCyan}" BorderThickness="1"
+              Background="#990B1622">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+          <ComboBox x:Name="ModeCombo" Grid.Row="0" Margin="0,0,0,8" SelectedIndex="0">
+            <ComboBoxItem Content="JANIS — locale + tool (consigliato)"/>
+            <ComboBoxItem Content="Cursor Agent — scrive codice nel repo"/>
+            <ComboBoxItem Content="Cursor Chat — ragionamento Cursor"/>
+          </ComboBox>
+          <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="InputBox" AcceptsReturn="True" MinHeight="56" MaxHeight="140"
+                     TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                     KeyDown="InputBox_KeyDown"/>
+            <Button x:Name="SendBtn" Grid.Column="1" Content="TRANSMIT" Margin="10,0,0,0"
+                    Padding="22,14" Click="Send_Click"
+                    Background="#1A4060" FontFamily="Consolas" FontWeight="Bold"/>
+          </Grid>
+        </Grid>
+      </Border>
     </Grid>
   </Grid>
 </UserControl>

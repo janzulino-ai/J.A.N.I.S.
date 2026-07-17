@@ -38,8 +38,11 @@ class _McpSession:
     async def start(self) -> None:
         if self.proc and self.proc.returncode is None:
             return
-        cmd = shutil.which(self.command) or self.command
+        cmd = _resolve_command(self.command) or shutil.which(self.command) or self.command
         env = {**os.environ, **self.env}
+        # Assicura ~/.local/bin nel PATH del subprocess
+        local_bin = os.path.join(os.path.expanduser("~"), ".local", "bin")
+        env["PATH"] = local_bin + os.pathsep + env.get("PATH", "")
         self.proc = await asyncio.create_subprocess_exec(
             cmd,
             *self.args,
@@ -214,18 +217,36 @@ async def close_all_sessions() -> None:
             _sessions.pop(name, None)
 
 
+def _resolve_command(cmd: str) -> str | None:
+    if not cmd:
+        return None
+    found = shutil.which(cmd)
+    if found:
+        return found
+    if os.path.isfile(cmd):
+        return cmd
+    home = os.path.expanduser("~")
+    for candidate in (
+        os.path.join(home, ".local", "bin", cmd),
+        os.path.join(home, "janis-venv", "bin", cmd),
+    ):
+        if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
+            return candidate
+    return None
+
+
 async def mcp_server_status() -> list[dict[str, Any]]:
     """Stato server dichiarati: online se command trovato; tool list se sessione attiva."""
     out: list[dict[str, Any]] = []
     for s in load_mcp_servers():
         name = (s.get("name") or "?").strip()
         cmd = (s.get("command") or "").strip()
-        resolved = shutil.which(cmd) if cmd else None
+        resolved = _resolve_command(cmd)
         entry: dict[str, Any] = {
             "name": name,
             "command": cmd,
             "args": s.get("args") or [],
-            "command_found": bool(resolved) or (bool(cmd) and os.path.isfile(cmd)),
+            "command_found": bool(resolved),
             "session_active": name in _sessions
             and _sessions[name].proc is not None
             and _sessions[name].proc.returncode is None,

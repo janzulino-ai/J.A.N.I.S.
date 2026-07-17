@@ -1,0 +1,11 @@
+{
+  "prompt_id": "1175edb4-c30c-4921-8f27-962998f83106",
+  "prompt": "A stormy sea, dramatic waves, dark clouds, high contrast, cinematic lighting",
+  "checkpoint": "v1-5-pruned-emaonly.safetensors",
+  "comfy": "http://192.168.128.1:8188",
+  "width": 512,
+  "height": 512,
+  "images": [
+    "/home/agenz/projects/J.A.N.I.S./packages/brain/data/media/images/janis_00003_.png"
+  ]
+}

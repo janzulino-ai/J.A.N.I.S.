@@ -74,24 +74,25 @@ Setup: `infra/wsl/README.md` · `scripts/setup-wsl-brain.sh` · **App Windows:**
 
 | Modalità | Descrizione | Stato |
 |----------|-------------|-------|
-| **A · WSL + Windows** | Brain WSL · Ollama Windows · app desktop · HUD browser | **attiva** |
-| **B · Debian SSD2** | Brain nativo · Ollama locale · i3/bspwm · kiosk HDMI | **fase 2** |
+| **A · WSL + Windows** | Brain WSL · Ollama Windows · app desktop · HUD · sidecar capability | **attiva** — install: [`SIDECARS-INSTALL.md`](SIDECARS-INSTALL.md) |
+| **B · Debian SSD2** | Brain nativo · Ollama locale · i3/bspwm · kiosk HDMI | **ISO/USB ready · disk install gated** |
 
-Canvas piano: `canvases/janis-dual-mode-plan.canvas.tsx`
+Canvas piano: `canvases/janis-dual-mode-plan.canvas.tsx`  
+Gate wipe SSD2: [`MODE-B-SSD2-GATE.md`](MODE-B-SSD2-GATE.md) · TESTER: [`TESTER/README.md`](../TESTER/README.md)
 
-### Debian nativo — dopo sprint (rinviato)
+### Debian nativo — fasi
 
 | Fase | Contenuto | Stato |
 |------|-----------|-------|
-| **P0** | Debian 12 netinst · SSD2 LVM · NVIDIA X11 | deferred |
-| **P1a** | i3 + i3status + rofi + Alacritty + lightdm | deferred |
+| **P0** | Debian 12 netinst · SSD2 LVM · NVIDIA X11 | **gated** (conferma utente) |
+| **P1a** | i3 + i3status + rofi + Alacritty + lightdm | in rootfs `packages.list` |
 | **P1b** | bspwm + sxhkd + polybar (upgrade) | deferred |
-| **P2** | `install-server.sh` · systemd user nativo | deferred |
+| **P2** | `install-server.sh` · systemd user nativo | ready post-OS |
 | **P3** | HUD WS1 · Chromium kiosk | deferred |
-| **P4** | GRUB HyperFluent · dual boot | deferred |
+| **P4** | GRUB HyperFluent · dual boot | tema minimo in `infra/grub/theme/` |
 | **P5** | SSH + mount SSD2 condiviso | deferred |
 | **P6** | WireGuard · accesso esterno | **Mode A: WSL hub** · Mode B deferred |
-| **P7** | TESTER USB boot | deferred |
+| **P7** | TESTER USB boot | **scripts ready** (`build-iso.sh` + `write-usb.sh`) |
 
 ## Dati condivisi (SSD2)
 

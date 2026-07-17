@@ -1,287 +1,383 @@
-/* JANIS — Marvel glass: trasparenza opaca, profondità cinematografica */
+/* JANIS — Sci-fi HUD theme (contrasto alto, griglia, scan) */
 
 :root {
-    --glass-bg: rgba(10, 18, 36, 0.38);
-    --glass-bg-deep: rgba(4, 10, 22, 0.45);
-    --glass-border: rgba(100, 190, 255, 0.24);
-    --glass-border-glow: rgba(0, 212, 255, 0.42);
-    --glass-highlight: rgba(255, 255, 255, 0.07);
-    --glass-shine: rgba(255, 255, 255, 0.04);
-    --marvel-gold: rgba(255, 196, 72, 0.55);
-    --marvel-gold-dim: rgba(255, 180, 60, 0.22);
-    --glass-blur: 24px;
-    --glass-saturate: 165%;
-    --hud-cyan: #5ee4ff;
-    --hud-text: rgba(220, 240, 255, 0.92);
+    --glass-bg: rgba(6, 14, 28, 0.82);
+    --glass-bg-deep: rgba(2, 8, 18, 0.9);
+    --glass-border: rgba(61, 224, 255, 0.28);
+    --glass-border-glow: rgba(61, 224, 255, 0.55);
+    --glass-highlight: rgba(255, 255, 255, 0.06);
+    --marvel-gold: rgba(255, 184, 77, 0.75);
+    --marvel-gold-dim: rgba(255, 180, 60, 0.28);
+    --glass-blur: 18px;
+    --glass-saturate: 140%;
+    --hud-cyan: #3de0ff;
+    --hud-green: #3dff9a;
+    --hud-amber: #ffb84d;
+    --hud-text: #e8f4fa;
+    --hud-muted: #8aadc0;
+    --hud-danger: #ff5a5a;
+    --font-hud: "Rajdhani", "Segoe UI", system-ui, sans-serif;
+    --font-display: "Orbitron", "Consolas", monospace;
 }
 
-/* Sfondo workspace — profondità tipo HUD Avengers */
-html, body.mode-ide {
+html, body.mode-ide,
+body.mode-window,
+body.mode-browser {
+    font-family: var(--font-hud) !important;
+    color: var(--hud-text) !important;
     background:
-        radial-gradient(ellipse 90% 55% at 50% -15%, rgba(0, 90, 160, 0.28) 0%, transparent 55%),
-        radial-gradient(ellipse 45% 35% at 95% 85%, rgba(200, 60, 30, 0.07) 0%, transparent 50%),
-        radial-gradient(ellipse 40% 30% at 5% 70%, rgba(0, 120, 200, 0.06) 0%, transparent 45%),
-        linear-gradient(168deg, #020508 0%, #0a1628 38%, #060c16 100%) !important;
+        radial-gradient(ellipse 100% 60% at 50% -10%, rgba(0, 100, 160, 0.35) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 40% at 100% 100%, rgba(0, 80, 120, 0.18) 0%, transparent 50%),
+        radial-gradient(ellipse 35% 35% at 0% 80%, rgba(0, 140, 100, 0.08) 0%, transparent 45%),
+        linear-gradient(168deg, #020508 0%, #071422 42%, #040a14 100%) !important;
+}
+
+body.mode-ide::before,
+body.mode-window::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.22;
+    background-image:
+        linear-gradient(rgba(61, 224, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(61, 224, 255, 0.045) 1px, transparent 1px);
+    background-size: 48px 48px;
+}
+
+body.mode-ide::after,
+body.mode-window::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.04;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.35) 2px,
+        rgba(0, 0, 0, 0.35) 4px
+    );
 }
 
 body.shell-float .agent-zone {
     background:
-        radial-gradient(circle at 50% 45%, rgba(0, 60, 110, 0.12) 0%, transparent 55%),
+        radial-gradient(circle at 50% 40%, rgba(0, 70, 120, 0.16) 0%, transparent 55%),
         transparent;
 }
 
-body.shell-float .agent-zone::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.35;
-    background-image:
-        linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 75%);
+/* Brand / titoli */
+.logo,
+.sidebar-brand .logo,
+.dock-brand .logo,
+.chat-title {
+    font-family: var(--font-display) !important;
+    letter-spacing: 0.28em !important;
+    color: var(--hud-cyan) !important;
+    text-shadow: 0 0 18px rgba(61, 224, 255, 0.35);
 }
 
 /* ── Finestre flottanti ── */
 #panel-layer .panel {
     background: linear-gradient(
         155deg,
-        rgba(14, 28, 52, 0.72) 0%,
-        rgba(6, 14, 28, 0.78) 48%,
-        rgba(4, 10, 22, 0.82) 100%
+        rgba(10, 22, 40, 0.92) 0%,
+        rgba(4, 12, 24, 0.94) 50%,
+        rgba(2, 8, 18, 0.96) 100%
     );
     border: 1px solid var(--glass-border);
-    border-radius: 12px;
+    border-radius: 4px;
     box-shadow:
-        0 28px 56px rgba(0, 0, 0, 0.52),
-        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-        0 1px 0 var(--glass-highlight) inset,
-        0 0 48px rgba(0, 160, 255, 0.1);
+        0 20px 48px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(61, 224, 255, 0.08) inset,
+        0 0 32px rgba(0, 140, 200, 0.12);
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    color: var(--hud-text);
 }
 
-#panel-layer .panel::after {
+#panel-layer .panel::before {
     content: "";
     position: absolute;
     inset: 0;
-    border-radius: inherit;
     pointer-events: none;
-    box-shadow: inset 0 0 80px rgba(0, 100, 180, 0.04);
+    border-radius: inherit;
+    box-shadow:
+        inset 12px 0 0 -11px var(--hud-cyan),
+        inset -12px 0 0 -11px var(--hud-cyan),
+        inset 0 12px 0 -11px var(--hud-cyan),
+        inset 0 -12px 0 -11px var(--hud-cyan);
+    opacity: 0.55;
 }
 
 #panel-layer .panel-header {
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.08) 0%,
-        rgba(0, 180, 255, 0.06) 100%
-    );
-    border-bottom: 1px solid rgba(0, 212, 255, 0.18);
-    position: relative;
-}
-
-#panel-layer .panel-header::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 16px;
-    right: 16px;
-    height: 1px;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        var(--marvel-gold-dim),
-        rgba(0, 212, 255, 0.45),
-        var(--marvel-gold-dim),
-        transparent
-    );
-    opacity: 0.85;
+    background: linear-gradient(180deg, rgba(61, 224, 255, 0.1) 0%, rgba(0, 40, 70, 0.35) 100%);
+    border-bottom: 1px solid rgba(61, 224, 255, 0.22);
 }
 
 #panel-layer .panel-title {
     color: var(--hud-cyan);
+    font-family: var(--font-display);
     font-weight: 600;
-    letter-spacing: 1.2px;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     font-size: 10px;
-    text-shadow: 0 0 12px rgba(0, 212, 255, 0.35);
+    text-shadow: 0 0 12px rgba(61, 224, 255, 0.4);
 }
 
 #panel-layer .panel-body {
-    background: rgba(4, 12, 24, 0.45);
-    color: var(--hud-text);
+    background: rgba(2, 8, 16, 0.55);
+    color: var(--hud-text) !important;
 }
 
 #panel-layer .panel-btn {
+    color: var(--hud-text);
     border: 1px solid transparent;
     transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
 }
 
 #panel-layer .panel-btn:hover {
-    border-color: rgba(0, 212, 255, 0.35);
-    background: rgba(0, 212, 255, 0.12);
-    box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+    border-color: rgba(61, 224, 255, 0.45);
+    background: rgba(61, 224, 255, 0.12);
+    box-shadow: 0 0 12px rgba(61, 224, 255, 0.2);
+    color: var(--hud-cyan);
 }
 
 #panel-layer .panel.dragging {
     box-shadow:
-        0 32px 64px rgba(0, 0, 0, 0.55),
+        0 28px 56px rgba(0, 0, 0, 0.6),
         0 0 0 1px var(--glass-border-glow),
-        0 0 60px rgba(0, 200, 255, 0.18);
+        0 0 48px rgba(61, 224, 255, 0.2);
 }
 
-#panel-layer .panel-resize-handle.se {
-    background: linear-gradient(135deg, transparent 52%, rgba(255, 196, 72, 0.35) 52%);
-}
-
-/* Chat flottante */
+/* Chat */
 .panel-chat-ui .chat-header {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 80, 140, 0.12));
-    border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+    background: linear-gradient(180deg, rgba(61, 224, 255, 0.08), rgba(0, 40, 70, 0.25));
+    border-bottom: 1px solid rgba(61, 224, 255, 0.2);
 }
 
-.panel-chat-ui .chat-messages {
-    background: rgba(2, 8, 18, 0.35);
+.panel-chat-ui .chat-messages,
+.chat-messages {
+    background: rgba(2, 6, 14, 0.55) !important;
+    color: var(--hud-text) !important;
 }
 
-.panel-chat-ui .chat-line {
-    background: rgba(8, 20, 40, 0.55);
-    border: 1px solid rgba(100, 180, 255, 0.12);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+.panel-chat-ui .chat-line,
+.chat-messages .chat-line {
+    background: rgba(10, 24, 40, 0.75) !important;
+    border: 1px solid rgba(61, 224, 255, 0.16) !important;
+    border-radius: 2px !important;
+    color: var(--hud-text) !important;
     white-space: pre-wrap;
     word-break: break-word;
-    overflow-wrap: anywhere;
 }
 
-.panel-chat-ui .chat-line.chat-user {
-    background: rgba(0, 60, 120, 0.35);
-    border-color: rgba(0, 136, 255, 0.25);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+.panel-chat-ui .chat-line.chat-user,
+.chat-messages .chat-user {
+    background: rgba(0, 60, 100, 0.4) !important;
+    border-color: rgba(61, 224, 255, 0.35) !important;
+    color: #9fdfff !important;
 }
 
-.panel-chat-ui .chat-line.chat-janis {
-    background: rgba(12, 24, 48, 0.5);
-    border-color: rgba(255, 196, 72, 0.15);
+.panel-chat-ui .chat-line.chat-janis,
+.chat-messages .chat-janis {
+    background: rgba(12, 28, 40, 0.7) !important;
+    border-color: rgba(255, 184, 77, 0.28) !important;
+    color: #f0e6c8 !important;
 }
 
-.panel-chat-ui .chat-composer {
-    background: rgba(4, 12, 24, 0.65);
-    border-top: 1px solid rgba(0, 212, 255, 0.15);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+.chat-messages .chat-line.chat-media a {
+    color: var(--hud-cyan) !important;
 }
 
-.panel-chat-ui #cmd-input {
-    background: rgba(0, 8, 20, 0.55);
-    border: 1px solid rgba(0, 212, 255, 0.22);
-    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.25);
+.panel-chat-ui .chat-composer,
+.chat-composer {
+    background: rgba(4, 12, 22, 0.85) !important;
+    border-top: 1px solid rgba(61, 224, 255, 0.22) !important;
 }
 
-.panel-chat-ui #cmd-input:focus {
-    border-color: rgba(0, 212, 255, 0.5);
-    box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.12), inset 0 1px 4px rgba(0, 0, 0, 0.2);
+.panel-chat-ui #cmd-input,
+.chat-composer .composer-row #cmd-input,
+#cmd-input {
+    background: rgba(2, 10, 20, 0.92) !important;
+    border: 1px solid rgba(61, 224, 255, 0.35) !important;
+    color: var(--hud-text) !important;
+    caret-color: var(--hud-cyan) !important;
+    border-radius: 2px !important;
+    box-shadow: inset 0 0 20px rgba(0, 40, 70, 0.35);
 }
 
-/* Terminal — vetro scuro denser */
+.panel-chat-ui #cmd-input::placeholder,
+#cmd-input::placeholder {
+    color: var(--hud-muted) !important;
+    opacity: 0.85;
+}
+
+.panel-chat-ui #cmd-input:focus,
+.chat-composer .composer-row #cmd-input:focus,
+#cmd-input:focus {
+    border-color: var(--hud-cyan) !important;
+    box-shadow: 0 0 0 1px rgba(61, 224, 255, 0.25), inset 0 0 20px rgba(0, 60, 100, 0.25) !important;
+    outline: none;
+}
+
+.chat-composer .agent-select,
+.chat-composer .mic-select,
+.pro-select {
+    background: rgba(2, 10, 20, 0.95) !important;
+    color: var(--hud-text) !important;
+    border: 1px solid rgba(61, 224, 255, 0.3) !important;
+    border-radius: 2px !important;
+}
+
+.chat-composer .agent-select option,
+.chat-composer .mic-select option {
+    background: #0a1828;
+    color: var(--hud-text);
+}
+
+/* Terminal */
 .panel-terminal {
-    background: rgba(2, 6, 14, 0.72) !important;
-    border-top: 1px solid rgba(0, 212, 255, 0.08);
-    color: rgba(140, 220, 255, 0.88);
-    text-shadow: 0 0 1px rgba(0, 200, 255, 0.2);
+    background: rgba(2, 6, 12, 0.9) !important;
+    border-top: 1px solid rgba(61, 224, 255, 0.12);
+    color: #9fdfff !important;
+    font-family: "Consolas", "Cascadia Mono", monospace !important;
+    text-shadow: 0 0 1px rgba(61, 224, 255, 0.25);
 }
 
-/* Agenti / controlli */
+/* Controlli / nav */
 .controls-panel-body .agent-card,
 .controls-panel-body .agent-tab {
-    background: linear-gradient(160deg, rgba(12, 24, 44, 0.65), rgba(6, 14, 28, 0.75));
-    border: 1px solid rgba(100, 180, 255, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+    background: linear-gradient(160deg, rgba(12, 28, 48, 0.85), rgba(6, 14, 28, 0.9));
+    border: 1px solid rgba(61, 224, 255, 0.22);
+    border-radius: 2px;
+    color: var(--hud-text);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .controls-panel-body .agent-card:hover,
 .controls-panel-body .agent-tab:hover {
-    border-color: rgba(0, 212, 255, 0.45);
-    box-shadow: 0 0 16px rgba(0, 180, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border-color: var(--hud-cyan);
+    box-shadow: 0 0 16px rgba(61, 224, 255, 0.18);
+    color: var(--hud-cyan);
 }
 
 .controls-panel-body .agent-card.active,
 .controls-panel-body .agent-tab.active {
     border-color: var(--marvel-gold);
-    box-shadow:
-        0 0 20px rgba(255, 180, 60, 0.2),
-        inset 0 0 20px rgba(255, 160, 0, 0.06);
+    box-shadow: 0 0 18px rgba(255, 184, 77, 0.22);
 }
 
-.panel-nav-body .nav-item {
-    background: rgba(8, 18, 36, 0.5);
-    border: 1px solid rgba(100, 180, 255, 0.15);
-    border-radius: 8px;
-    color: var(--hud-text);
-    transition: all 0.15s;
+.panel-nav-body .nav-item,
+.sidebar-nav .nav-item {
+    background: rgba(8, 18, 32, 0.7) !important;
+    border: 1px solid rgba(61, 224, 255, 0.16) !important;
+    border-radius: 2px !important;
+    color: var(--hud-text) !important;
 }
 
-.panel-nav-body .nav-item:hover {
-    border-color: rgba(0, 212, 255, 0.4);
-    background: rgba(0, 80, 140, 0.25);
+.panel-nav-body .nav-item:hover,
+.sidebar-nav .nav-item:hover {
+    border-color: var(--hud-cyan) !important;
+    background: rgba(0, 70, 110, 0.35) !important;
+    color: var(--hud-cyan) !important;
 }
 
-.panel-nav-body .nav-item.active {
-    border-color: var(--marvel-gold);
-    background: rgba(255, 160, 40, 0.1);
-    box-shadow: 0 0 14px rgba(255, 180, 60, 0.15);
+.panel-nav-body .nav-item.active,
+.sidebar-nav .nav-item.active {
+    border-color: var(--marvel-gold) !important;
+    background: rgba(255, 160, 40, 0.12) !important;
+    color: var(--hud-amber) !important;
 }
 
-/* Brain panel */
-.panel-page-body #brain-viewport {
-    background: radial-gradient(ellipse at 50% 40%, rgba(0, 50, 100, 0.35), rgba(2, 6, 14, 0.85));
-    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+.sidebar {
+    background: linear-gradient(180deg, rgba(4, 12, 22, 0.98), rgba(2, 6, 14, 0.99)) !important;
+    border-right: 1px solid rgba(61, 224, 255, 0.2) !important;
+    color: var(--hud-text) !important;
 }
 
-/* Badge / stato — pillola HUD */
+.chat-column {
+    background: rgba(4, 10, 18, 0.96) !important;
+    border-right: 1px solid rgba(61, 224, 255, 0.18) !important;
+}
+
 .badge {
-    background: rgba(8, 16, 32, 0.65);
-    border: 1px solid rgba(0, 212, 255, 0.28);
-    backdrop-filter: blur(8px);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    background: rgba(6, 14, 28, 0.85);
+    border: 1px solid rgba(61, 224, 255, 0.3);
+    border-radius: 2px;
+    color: var(--hud-text);
+    font-family: var(--font-display);
+    letter-spacing: 0.12em;
 }
 
-.conn-label.online {
-    text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+.conn-label.online,
+.conn-dot.online {
+    color: var(--hud-green);
+    text-shadow: 0 0 8px rgba(61, 255, 154, 0.45);
 }
 
 .float-layout-btn {
-    background: linear-gradient(160deg, rgba(12, 24, 44, 0.7), rgba(6, 12, 24, 0.8));
-    border: 1px solid rgba(100, 180, 255, 0.25);
-    backdrop-filter: blur(10px);
+    background: linear-gradient(160deg, rgba(12, 24, 44, 0.85), rgba(6, 12, 24, 0.9));
+    border: 1px solid rgba(61, 224, 255, 0.28);
+    border-radius: 2px;
+    color: var(--hud-text);
 }
 
 .float-layout-btn.active {
     border-color: var(--marvel-gold);
-    box-shadow: 0 0 14px rgba(255, 180, 60, 0.2);
+    box-shadow: 0 0 14px rgba(255, 184, 77, 0.22);
+    color: var(--hud-amber);
 }
 
-/* PRO toggle — accento oro Marvel */
 .pro-toggle {
-    background: linear-gradient(160deg, rgba(24, 18, 8, 0.65), rgba(12, 10, 6, 0.75));
-    backdrop-filter: blur(10px);
+    background: linear-gradient(160deg, rgba(28, 20, 8, 0.85), rgba(12, 10, 6, 0.9));
+    border-radius: 2px;
+    color: #ffe0a0;
 }
 
-/* Pagine float */
 .page-float-body {
-    background: rgba(4, 12, 24, 0.4);
+    background: rgba(4, 12, 22, 0.55);
+    color: var(--hud-text);
 }
 
 .page-float-body h3 {
     color: var(--hud-cyan);
-    letter-spacing: 1px;
+    font-family: var(--font-display);
+    letter-spacing: 0.14em;
     font-size: 11px;
     text-transform: uppercase;
-    border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+    border-bottom: 1px solid rgba(61, 224, 255, 0.2);
     padding-bottom: 6px;
     margin-bottom: 10px;
+}
+
+/* Immagini media in chat */
+.chat-line.chat-media img {
+    border: 1px solid rgba(61, 224, 255, 0.35);
+    box-shadow: 0 0 24px rgba(0, 100, 160, 0.25);
+}
+
+.panel-image a {
+    color: var(--hud-cyan) !important;
+}
+
+/* Input / button globali HUD */
+body.mode-ide input,
+body.mode-ide textarea,
+body.mode-ide select,
+body.mode-window input,
+body.mode-window textarea,
+body.mode-window select {
+    color: var(--hud-text) !important;
+    background-color: rgba(2, 10, 20, 0.92) !important;
+    border-color: rgba(61, 224, 255, 0.3) !important;
+    caret-color: var(--hud-cyan);
+}
+
+body.mode-ide button,
+body.mode-window button {
+    color: var(--hud-cyan);
 }

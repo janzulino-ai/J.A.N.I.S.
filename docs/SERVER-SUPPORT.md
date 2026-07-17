@@ -69,12 +69,17 @@ sudo update-grub
 
 ## TESTER USB installer
 
-Build **da Mac o server Linux** (non da Windows):
+Build **da Linux o WSL2 con sudo** (non da Windows puro):
 
 ```bash
 cd TESTER
-bash build-usb.sh    # crea immagine su chiavetta
+sudo BUILD_FORCE=1 bash build-base.sh
+sudo bash verify-rootfs.sh
+sudo bash build-iso.sh                 # → out/janis-tester.iso
+sudo bash write-usb.sh /dev/sdX        # digita WRITE
 ```
+
+Dettagli: [`TESTER/README.md`](../TESTER/README.md). Wipe SSD2: solo dopo conferma — [`MODE-B-SSD2-GATE.md`](MODE-B-SSD2-GATE.md).
 
 ## Quando chiedere supporto
 

@@ -19,7 +19,8 @@ sudo apt install grub2-common grub-pc-bin
 
 ## Asset
 
-- `backgrounds/janis.png` — default
+- `theme/theme.txt` — tema minimo usato da `TESTER/build-iso.sh`
+- `backgrounds/janis.png` — default (opzionale HyperFluent)
 - `backgrounds/linux.png`, `windows.png`, `apple.png` — al focus voce menu
 
 ## Riferimento

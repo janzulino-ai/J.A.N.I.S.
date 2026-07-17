@@ -98,6 +98,13 @@ async def build_dashboard(*, refresh_inventory: bool = False) -> dict:
     open_proposals = [p for p in proposals if p.get("status") == "open"]
     evolve_paths = ensure_workspace_dirs()
 
+    try:
+        from backend.core.capabilities import build_fabric
+
+        fabric = await build_fabric(wave=1)
+    except Exception:
+        fabric = {"ok": False, "capabilities": [], "summary": "red"}
+
     from backend.core.knowledge_graph import build_knowledge_graph
 
     kg = build_knowledge_graph(limit=48)
@@ -194,6 +201,7 @@ async def build_dashboard(*, refresh_inventory: bool = False) -> dict:
         "win_vm": win,
         "tools": list_tools(),
         "tools_active": list_active_tools(),
+        "capabilities": fabric,
         "mcp": mcp,
         "reasoning": {
             "provider": (rt.reasoning_provider or "ollama").upper(),

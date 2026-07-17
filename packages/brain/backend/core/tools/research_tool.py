@@ -1,107 +1,49 @@
-"""Ricerca attendibile + Agent-Reach (W6h)."""
+"""Ricerca attendibile locale: SearXNG + Ollama (+ reach opzionale)."""
 from __future__ import annotations
 
 import json
 import logging
-from urllib.parse import quote
 
 import httpx
 
-from backend.config import settings
-from backend.core.sidecar_call import call_mcp, missing_sidecar, pick_mcp_tool, run_cli
+from backend.core.local_research import run_local_research, searx_base
+from backend.core.sidecar_call import call_mcp, missing_sidecar, run_cli
 from backend.core.tools.registry import register
 
 logger = logging.getLogger("JANIS.Research")
 
 
-def _searx_url() -> str:
-    return (getattr(settings, "SEARXNG_URL", None) or "http://127.0.0.1:8080").rstrip("/")
-
-
-async def _searx_search(query: str, *, limit: int = 8) -> list[dict]:
-    url = f"{_searx_url()}/search?q={quote(query)}&format=json"
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        r = await client.get(url)
-        r.raise_for_status()
-        results = (r.json() or {}).get("results") or []
-        out = []
-        for item in results[:limit]:
-            out.append(
-                {
-                    "title": item.get("title"),
-                    "url": item.get("url"),
-                    "content": (item.get("content") or "")[:400],
-                    "engine": item.get("engine"),
-                }
-            )
-        return out
-
-
-async def _remember_research(query: str, report: str, citations: list[dict]) -> None:
-    try:
-        from backend.core.tools.memory_tool import remember
-
-        cites = "; ".join(f"{c.get('title')}: {c.get('url')}" for c in citations[:6] if c.get("url"))
-        text = f"[research] {query}\n{report[:1500]}\nCitazioni: {cites}"
-        await remember({"text": text, "tags": "research,autonomy"})
-    except Exception:
-        logger.debug("remember research skip", exc_info=True)
-
-
 @register("research")
 async def research(args: dict) -> str:
-    """Deep research con citazioni. args: query, save=true"""
+    """
+    Deep research locale (no iscrizione).
+    args: query, save=true, fetch_pages=4
+    Pipeline: SearXNG → fetch pagine → sintesi Ollama con citazioni.
+    """
     query = (args.get("query") or args.get("q") or args.get("topic") or "").strip()
     if not query:
         return "query obbligatoria"
     save = str(args.get("save", "true")).lower() not in ("0", "false", "no")
+    fetch_pages = int(args.get("fetch_pages") or 4)
 
-    # 1) ii-researcher MCP
     try:
-        from backend.core.mcp_client import get_session
-
-        tools = await (await get_session("research")).list_tools()
-        name = pick_mcp_tool(tools, "research", "deep_research", "search", "run", "ii_research")
-        if name:
-            out = await call_mcp("research", name, {"query": query, "q": query, "topic": query})
-            if out:
-                if save:
-                    await _remember_research(query, out, [])
-                return out[:12000]
-    except Exception:
-        pass
-
-    # 2) CLI ii-researcher / gpt-researcher
-    for cmd, cli_args in (
-        ("ii-researcher", [query]),
-        ("gpt-researcher", ["--query", query]),
-    ):
-        code, out, err = await run_cli(cmd, cli_args, timeout=300)
-        if code == 0 and out.strip():
-            if save:
-                await _remember_research(query, out, [])
-            return out[:12000]
-
-    # 3) SearXNG meta-search (sempre utile)
-    try:
-        hits = await _searx_search(query)
-        if hits:
-            lines = [f"Research (SearXNG) — {query}", ""]
-            for i, h in enumerate(hits, 1):
-                lines.append(f"{i}. {h.get('title')}")
-                lines.append(f"   {h.get('url')}")
-                if h.get("content"):
-                    lines.append(f"   {h['content']}")
-            report = "\n".join(lines)
-            if save:
-                await _remember_research(query, report, hits)
-            return report
+        result = await run_local_research(query, fetch_pages=fetch_pages, save=save)
+        if result.get("ok") and result.get("report"):
+            header = f"[mode={result.get('mode')}]\n"
+            return (header + result["report"])[:12000]
+        err = result.get("error") or "research fallita"
+        logger.info("local research: %s", err)
     except Exception as e:
-        logger.info("SearXNG fail: %s", e)
+        logger.info("local research exception: %s", e)
+        err = str(e)
 
     return (
-        missing_sidecar("research", "SearXNG su SEARXNG_URL + ii-researcher-mcp")
-        + f"\nSEARXNG_URL={_searx_url()}"
+        missing_sidecar(
+            "research-local",
+            "Avvia SearXNG (docker compose infra/sidecars/docker-compose.searxng.yml) "
+            "e Ollama; poi configure-sidecar-urls.sh",
+        )
+        + f"\nSEARXNG_URL={searx_base()}\ndettaglio: {err}"
     )
 
 
@@ -114,7 +56,6 @@ async def reach(args: dict) -> str:
     if not url and not query:
         return "url o query obbligatori"
 
-    # MCP se presente
     out = await call_mcp(
         "agent-reach",
         "fetch",
@@ -123,7 +64,6 @@ async def reach(args: dict) -> str:
     if out:
         return out[:12000]
 
-    # CLI Agent-Reach
     cli_args: list[str] = []
     if url:
         cli_args = ["fetch", url]
@@ -143,7 +83,7 @@ async def reach(args: dict) -> str:
 
     return missing_sidecar(
         "agent-reach",
-        "https://github.com/Panniantong/Agent-Reach — install CLI, solo read",
+        "https://github.com/Panniantong/Agent-Reach — install CLI, solo read (opzionale)",
     )
 
 
@@ -152,14 +92,26 @@ async def research_status(_args: dict) -> str:
     searx_ok = False
     try:
         async with httpx.AsyncClient(timeout=4.0) as client:
-            r = await client.get(f"{_searx_url()}/")
+            r = await client.get(f"{searx_base()}/")
             searx_ok = r.status_code < 500
+    except Exception:
+        pass
+    ollama_ok = False
+    try:
+        from backend.config import settings
+
+        async with httpx.AsyncClient(timeout=4.0) as client:
+            r = await client.get(f"{settings.OLLAMA_BASE_URL.rstrip('/')}/api/tags")
+            ollama_ok = r.status_code < 500
     except Exception:
         pass
     return json.dumps(
         {
-            "searxng_url": _searx_url(),
+            "pipeline": "searxng+ollama (locale, no signup)",
+            "searxng_url": searx_base(),
             "searxng_online": searx_ok,
+            "ollama_online": ollama_ok,
+            "note": "ii-researcher upstream richiede Tavily/SerpAPI — non usato di default",
             "tools": ["research", "reach"],
         },
         ensure_ascii=False,

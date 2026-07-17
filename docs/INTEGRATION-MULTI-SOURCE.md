@@ -157,4 +157,5 @@ Install host: [`SIDECARS-INSTALL.md`](SIDECARS-INSTALL.md).
 
 ## Fuori scope (invariato)
 
-- Deploy Paperclip full · post social · fork DeusData · Mode B Debian
+- Deploy Paperclip full · post social · fork DeusData  
+- Wipe SSD2 Mode B (gate: [`MODE-B-SSD2-GATE.md`](MODE-B-SSD2-GATE.md); ISO/USB scripts in `TESTER/`)

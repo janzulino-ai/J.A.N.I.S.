@@ -7,7 +7,7 @@ public static class JanisPaths
 
     public static string BrainUrl { get; set; } = "http://127.0.0.1:8001";
 
-    public static string HudUrl => $"{BrainUrl.TrimEnd('/')}/server?v=hudcli08";
+    public static string HudUrl => $"{BrainUrl.TrimEnd('/')}/server?v=hudcli09";
 
     public static string ChatWsUrl => BrainUrl.Replace("http://", "ws://").Replace("https://", "wss://").TrimEnd('/') + "/ws/janis?device_id=janis-desktop";
 

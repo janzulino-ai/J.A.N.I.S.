@@ -43,6 +43,8 @@ from backend.routers.lab import router as lab_router
 from backend.routers.cursor_bridge import router as cursor_bridge_router
 from backend.routers.vpn import router as vpn_router
 from backend.routers.orchestrator import router as orchestrator_router
+from backend.routers.media import router as media_router
+from backend.routers.capabilities import router as capabilities_router
 
 # Registra strumenti
 import backend.core.tools  # noqa: F401
@@ -168,6 +170,8 @@ app.include_router(lab_router)
 app.include_router(cursor_bridge_router)
 app.include_router(vpn_router)
 app.include_router(orchestrator_router)
+app.include_router(media_router)
+app.include_router(capabilities_router)
 mount_kiosk_static(app)
 
 

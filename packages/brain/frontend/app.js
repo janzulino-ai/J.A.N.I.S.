@@ -664,6 +664,9 @@
                         if (chatBuffer.trim()) {
                             if (!hadStream) {
                                 window.JanisPanel.appendChat(chatBuffer.trim(), "janis");
+                            } else {
+                                const urls = window.JanisPanel.extractMediaUrls?.(chatBuffer) || [];
+                                for (const url of urls) window.JanisPanel.appendChatImage?.(url);
                             }
                             logVerbose("CHAT", "<<< " + chatBuffer.trim().slice(0, 200));
                             const toSpeak = (data.tts_text || "").trim() || chatBuffer.trim();
@@ -673,6 +676,15 @@
                             }
                         }
                         chatBuffer = "";
+                        break;
+                    }
+                    case "media_image": {
+                        const url = data.url || "";
+                        if (url) {
+                            window.JanisPanel.appendChatImage?.(url, data.caption || "immagine generata");
+                            logVerbose("MEDIA", "immagine: " + url, "ok");
+                            logDock("Immagine pronta — apri il link in chat", "ok");
+                        }
                         break;
                     }
                     case "knowledge_update":

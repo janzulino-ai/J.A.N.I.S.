@@ -38,15 +38,29 @@ async def _call_first(candidates: tuple[str, ...], arguments: dict) -> str:
 
 @register("code_search")
 async def code_search(args: dict) -> str:
-    """Cerca nel grafo codice. args: query, path opz."""
+    """Cerca nel grafo codice. args: query, path opz. Fallback nativo ripgrep/pathlib."""
     q = (args.get("query") or args.get("q") or "").strip()
     if not q:
         return "query obbligatoria"
     path = (args.get("path") or args.get("root") or settings.JANIS_WORKSPACE or "").strip()
-    return await _call_first(
-        ("search", "code_search", "semantic_search", "query", "find"),
-        {"query": q, "path": path, "root": path},
-    )
+    # Prova DeusData MCP prima
+    tools = await _tools()
+    if tools:
+        mcp_out = await _call_first(
+            ("search", "code_search", "semantic_search", "query", "find"),
+            {"query": q, "path": path, "root": path},
+        )
+        if (
+            mcp_out
+            and "Sidecar '" not in mcp_out
+            and "MCP tool non trovato" not in mcp_out
+            and not mcp_out.lstrip().startswith("usage:")
+        ):
+            return mcp_out
+
+    from backend.core.native_fallbacks import native_code_search
+
+    return await native_code_search(q, root=path or None)
 
 
 @register("code_index")

@@ -133,3 +133,11 @@ async def orch_notify(payload: NotifyBody):
 
     results = notify_all(payload.title, payload.body or "ping", {"type": "manual"})
     return {"ok": True, "results": results}
+
+
+@router.get("/api/doctor")
+async def api_doctor(heal: bool = False):
+    from backend.core.doctor import run_doctor
+
+    report = await run_doctor(heal=heal)
+    return {"ok": report.get("ok", False), **report}

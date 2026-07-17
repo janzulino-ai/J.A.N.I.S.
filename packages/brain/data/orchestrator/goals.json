@@ -1,0 +1,12 @@
+{
+  "mission": "JANIS hub locale: senso, creazione, ricerca, dispositivi — autonomia L2 bounded",
+  "autonomy_level": "L2",
+  "goals": [
+    {
+      "id": "g-integration",
+      "title": "Integrare MCP + orchestrator W6",
+      "status": "open",
+      "priority": 1
+    }
+  ]
+}

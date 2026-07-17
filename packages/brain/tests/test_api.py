@@ -35,6 +35,15 @@ def test_orchestrator_status(client):
     assert "agents" in data
 
 
+def test_doctor_api(client):
+    r = client.get("/api/doctor")
+    assert r.status_code == 200
+    data = r.json()
+    assert "summary" in data
+    assert data["summary"] in ("verde", "giallo", "rosso")
+    assert "checks" in data
+
+
 def test_orchestrator_ticket_and_approvals(client):
     r = client.post(
         "/api/orchestrator/tickets",

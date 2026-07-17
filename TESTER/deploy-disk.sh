@@ -88,7 +88,7 @@ elif [ "$LAYOUT" = "lvm" ]; then
   parted -s "$DISK" mklabel gpt
   parted -s "$DISK" mkpart EFI fat32 1MiB 513MiB
   parted -s "$DISK" set 1 esp on
-  parted -s "$DISK" mkpart boot ext32 513MiB 2561MiB
+  parted -s "$DISK" mkpart boot ext4 513MiB 2561MiB
   parted -s "$DISK" mkpart lvm 2561MiB 100%
   partprobe "$DISK"
   sleep 1
