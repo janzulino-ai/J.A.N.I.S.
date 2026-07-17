@@ -45,11 +45,24 @@ flowchart LR
 
 Checklist in [`infra/grub/README.md`](../infra/grub/README.md).
 
+### Design token: un solo background base
+
+**`infra/grub/theme/background.png` è la base visuale di tutto il sistema Live Distro.**
+
+| Superficie | Uso del background |
+|------------|-------------------|
+| **GRUB** | Immagine desktop così com’è |
+| **Neuron splash / kiosk** | Stesso asset sotto i neuroni |
+| **Wizard setup** | Stesso base; sopra HUD risorse + chat + overlay |
+| **HUD runtime** | Stesso base (o layer blur/vignette), non un altro mood |
+
+Regole: palette/griglia del PNG GRUB = contratto UI; varianti solo come **layer**; riferimento **1920×1080**; cambiando il PNG GRUB si aggiorna l’identità di tutto il boot→desktop.
+
 | File | Spec |
 |------|------|
-| `theme/background.png` | 1920×1080, dark `#050B12`, accent cyan `#3DE0FF`, griglia HUD sottile, brand J.A.N.I.S. |
+| `theme/background.png` | 1920×1080 · `#050B12` · cyan `#3DE0FF` · griglia HUD · **master background** |
 | `theme/selected_c.png` (o set selected_*) | Barra selezione menu |
-| `theme/theme.txt` | già presente — title JANIS, colori chiari su scuro |
+| `theme/theme.txt` | title JANIS, colori chiari su scuro |
 | Menu entries | Safe Live · Chat-ready · NVIDIA Live · info install · next disk |
 
 Niente animazione nel GRUB: profondità solo via PNG (glow, scanline finti nel bitmap).
