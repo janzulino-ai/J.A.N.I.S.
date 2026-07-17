@@ -9,6 +9,10 @@ Spec prodotto: [`docs/LIVE-DISTRO.md`](../../docs/LIVE-DISTRO.md) · canvas: `ca
 **`theme/background.png` = master background del sistema Live Distro**  
 (GRUB → splash neuroni → wizard → HUD). Stessa base ovunque; solo layer sopra, non un altro tema.
 
+**Menu = finestra sovrapposta** allo sfondo (come i panel del wizard):  
+`theme.txt` → `boot_menu` a destra (~52%/22%/40%/56%); cornice vetro/cyan disegnata nel PNG.  
+Non usare menu full-bleed.
+
 ## Requisiti server / build ISO
 
 ```bash
@@ -21,9 +25,9 @@ Usato da [`TESTER/build-iso.sh`](../../TESTER/build-iso.sh) (copia `theme/` nell
 
 | File | Stato | Spec |
 |------|-------|------|
-| `theme/theme.txt` | presente | title JANIS, menu 15%/30%, Unifont |
-| `theme/background.png` | **placeholder presente** (griglia HUD) — sostituibile con asset artistico | 1920×1080 · `#050B12` · accent `#3DE0FF` · no testo menu nel PNG |
-| `theme/selected_c.png` | **placeholder presente** | barra selezione ~800×28 |
+| `theme/theme.txt` | presente | `boot_menu` finestra overlay (non full-bleed), Unifont |
+| `theme/background.png` | placeholder + **pannello menu** a destra | 1920×1080 master · griglia · cornice overlay allineata a `boot_menu` |
+| `theme/selected_c.png` | placeholder | barra selezione ~720×32 dentro la finestra |
 | `backgrounds/janis.png` | opzionale | variante brand |
 | `backgrounds/linux.png` | opzionale | HyperFluent focus voce menu |
 

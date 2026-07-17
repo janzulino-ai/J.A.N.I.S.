@@ -1,20 +1,23 @@
-# JANIS GRUB theme — Live Distro HUD (statico; neuroni = post-boot kiosk)
+# JANIS GRUB — master background fullscreen; menu = finestra sovrapposta
+# Neuroni / wizard = post-boot kiosk (stesso background.png come base)
 desktop-image: "background.png"
-title-text: "J.A.N.I.S. Live"
+title-text: ""
 title-color: "#3DE0FF"
 message-color: "#8AADC0"
 terminal-font: "Unifont Regular 16"
 
+# Finestra menu: riquadro centrale-destro sopra lo sfondo (non full-bleed)
 + boot_menu {
-  left = 12%
-  top = 28%
-  width = 76%
-  height = 45%
+  left = 52%
+  top = 22%
+  width = 40%
+  height = 56%
   item_font = "Unifont Regular 16"
   item_color = "#C8E6F0"
   selected_item_color = "#E8F4FA"
   selected_item_pixmap_style = "selected_*.png"
-  item_height = 28
-  item_padding = 4
-  item_spacing = 8
+  item_height = 32
+  item_padding = 8
+  item_spacing = 10
+  item_icon_space = 8
 }

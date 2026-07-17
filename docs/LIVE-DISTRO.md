@@ -51,21 +51,33 @@ Checklist in [`infra/grub/README.md`](../infra/grub/README.md).
 
 | Superficie | Uso del background |
 |------------|-------------------|
-| **GRUB** | Immagine desktop così com’è |
+| **GRUB** | Full-bleed master; **menu = finestra sovrapposta** (non full-screen) |
 | **Neuron splash / kiosk** | Stesso asset sotto i neuroni |
 | **Wizard setup** | Stesso base; sopra HUD risorse + chat + overlay |
 | **HUD runtime** | Stesso base (o layer blur/vignette), non un altro mood |
 
 Regole: palette/griglia del PNG GRUB = contratto UI; varianti solo come **layer**; riferimento **1920×1080**; cambiando il PNG GRUB si aggiorna l’identità di tutto il boot→desktop.
 
+### Menu GRUB = finestra overlay
+
+Come i pannelli del wizard/HUD: lo sfondo resta la scena; le scelte boot stanno in un **riquadro** sopra.
+
+| Pezzo | Spec |
+|-------|------|
+| Scena | `background.png` full 1920×1080 (griglia HUD, brand a sinistra) |
+| Finestra menu | `boot_menu` in `theme.txt`: ~`left=52% top=22% width=40% height=56%` |
+| Cornice | Disegnata nel PNG (vetro scuro + bordo cyan) allineata al riquadro menu |
+| Selezione | `selected_c.png` barra item dentro la finestra |
+| Runtime UI | Stesso pattern: background master + finestre `janis-panel` sovrapposte |
+
 | File | Spec |
 |------|------|
-| `theme/background.png` | 1920×1080 · `#050B12` · cyan `#3DE0FF` · griglia HUD · **master background** |
-| `theme/selected_c.png` (o set selected_*) | Barra selezione menu |
-| `theme/theme.txt` | title JANIS, colori chiari su scuro |
+| `theme/background.png` | Master 1920×1080 + zona pannello menu a destra |
+| `theme/selected_c.png` | Barra selezione nella finestra |
+| `theme/theme.txt` | `boot_menu` dimensioni finestra (non full-bleed) |
 | Menu entries | Safe Live · Chat-ready · NVIDIA Live · info install · next disk |
 
-Niente animazione nel GRUB: profondità solo via PNG (glow, scanline finti nel bitmap).
+Niente animazione nel GRUB: profondità solo via PNG.
 
 ---
 

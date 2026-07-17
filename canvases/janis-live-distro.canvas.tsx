@@ -67,9 +67,9 @@ export default function JanisLiveDistroCanvas() {
           <CardBody>
             <Stack gap={6}>
               <Text>background.png 1920×1080 = base di TUTTO il sistema</Text>
-              <Text>Stesso asset: GRUB → splash → wizard → HUD</Text>
-              <Text>selected_*.png + theme.txt in infra/grub/theme/</Text>
-              <Text tone="secondary">Solo layer sopra (neuroni, risorse) — non un altro mood</Text>
+              <Text>Menu = finestra sovrapposta (boot_menu ~40% destra)</Text>
+              <Text>Stesso pattern: splash/wizard/HUD = base + overlay</Text>
+              <Text tone="secondary">theme.txt + cornice nel PNG — non menu full-bleed</Text>
             </Stack>
           </CardBody>
         </Card>
@@ -92,7 +92,12 @@ export default function JanisLiveDistroCanvas() {
       <Table
         headers={["Fase", "UI", "Tech", "Note"]}
         rows={[
-          ["GRUB", "Menu stilizzato + sfondo PNG", "infra/grub + build-iso.sh", "No Three.js"],
+          [
+            "GRUB",
+            "Master BG + menu finestra overlay",
+            "theme.txt boot_menu + background.png",
+            "No Three.js",
+          ],
           [
             "Kernel + live-boot",
             "Plymouth / quiet splash",
