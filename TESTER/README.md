@@ -2,6 +2,14 @@
 
 Installer / rescue bootabile per macchina destinazione (Mode B).
 
+**Live Distro (prodotto):** specifica completa in [`docs/LIVE-DISTRO.md`](../docs/LIVE-DISTRO.md) · canvas [`canvases/janis-live-distro.canvas.tsx`](../canvases/janis-live-distro.canvas.tsx).
+
+| Hardware | Valore |
+|----------|--------|
+| RAM minimo | **16 GB** |
+| RAM consigliati | **32 GB** |
+| USB | **32 GB** per profilo (fino a 4 ISO: Safe / Chat-ready / NVIDIA / Media) |
+
 ## Flusso build (Linux o WSL2 con sudo)
 
 ```bash
@@ -32,7 +40,10 @@ sudo bash write-usb.sh /dev/sdX         # digita WRITE — distruttivo per la ch
 2. **info install** — ricorda `deploy-disk.sh` / netinst  
 3. **Boot next disk**
 
-UI Textual completa (scan HW, progresso OSS) = follow-up; non richiesta per ISO bootabile MVP.
+Target Live Distro (dopo `live-boot`): GRUB grafico statico → **neuron splash** kiosk → wizard chat/voce.  
+Neuroni **non** in GRUB — vedi `docs/LIVE-DISTRO.md`.
+
+UI Textual scenografica (risorse HUD + overlay) = wizard post-boot; ISO MVP bootabile non la richiede per il primo `build-iso.sh`.
 
 ## Mode B gate SSD2
 

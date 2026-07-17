@@ -2,10 +2,14 @@
 
 Dopo che l’ISO/USB TESTER è pronta, l’install sul disco hub **non** è automatica.
 
+Live Distro (boot scenografico, wizard, matrix ISO): [`LIVE-DISTRO.md`](LIVE-DISTRO.md) · canvas `canvases/janis-live-distro.canvas.tsx`.  
+RAM live: **min 16 GB · consigliati 32 GB**. USB profilo: **32 GB**.
+
 ## Prerequisiti
 
 - [ ] Mode A sidecar verificati (`janis doctor` non rosso) — [`SIDECARS-INSTALL.md`](SIDECARS-INSTALL.md)
 - [ ] `TESTER/out/janis-tester.iso` costruita e USB di test bootabile
+- [ ] Host test con ≥ 16 GB RAM (32 GB consigliati)
 - [ ] Backup / conferma che il target è il **secondo** NVMe (non Windows)
 
 ## Percorso consigliato (MVP P0)

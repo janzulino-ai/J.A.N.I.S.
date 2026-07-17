@@ -1,20 +1,20 @@
-# JANIS GRUB theme (minimale — HyperFluent assets opzionali dopo)
+# JANIS GRUB theme — Live Distro HUD (statico; neuroni = post-boot kiosk)
 desktop-image: "background.png"
-title-text: "JANIS"
-title-color: "#e8e8e8"
-message-color: "#cccccc"
+title-text: "J.A.N.I.S. Live"
+title-color: "#3DE0FF"
+message-color: "#8AADC0"
 terminal-font: "Unifont Regular 16"
 
 + boot_menu {
-  left = 15%
-  top = 30%
-  width = 70%
-  height = 40%
+  left = 12%
+  top = 28%
+  width = 76%
+  height = 45%
   item_font = "Unifont Regular 16"
-  item_color = "#dddddd"
-  selected_item_color = "#ffffff"
+  item_color = "#C8E6F0"
+  selected_item_color = "#E8F4FA"
   selected_item_pixmap_style = "selected_*.png"
   item_height = 28
   item_padding = 4
-  item_spacing = 6
+  item_spacing = 8
 }

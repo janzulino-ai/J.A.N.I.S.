@@ -133,7 +133,9 @@ TTS: toggle 🔊; risposte lette ad alta voce quando attivo.
 - [x] Autostart HUD Chromium kiosk + voice-ready audio
 - [x] `scripts/mode-b-bootstrap.sh` (no wipe)
 - [x] Docs A→B
+- [x] Spec Live Distro + canvas (`docs/LIVE-DISTRO.md`, `canvases/janis-live-distro.canvas.tsx`) — RAM 16/32, ISO matrix ×4, GRUB statico → neuron splash → wizard
 - [ ] ISO build eseguita su host Linux (script pronti)
+- [ ] live-boot + neuron splash `phase=boot` + wizard HUD risorse
 - [ ] Wipe SSD2 solo con conferma utente esplicita
 
 ---

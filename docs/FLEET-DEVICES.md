@@ -77,8 +77,10 @@ Setup: `infra/wsl/README.md` · `scripts/setup-wsl-brain.sh` · **App Windows:**
 | **A · WSL + Windows** | Brain WSL · Ollama Windows · app desktop · HUD · sidecar capability | **attiva** — install: [`SIDECARS-INSTALL.md`](SIDECARS-INSTALL.md) |
 | **B · Debian SSD2** | Brain nativo · Ollama locale · i3/bspwm · kiosk HDMI | **ISO/USB ready · disk install gated** |
 
-Canvas piano: `canvases/janis-dual-mode-plan.canvas.tsx`  
-Gate wipe SSD2: [`MODE-B-SSD2-GATE.md`](MODE-B-SSD2-GATE.md) · TESTER: [`TESTER/README.md`](../TESTER/README.md)
+Canvas dual-mode: `canvases/janis-dual-mode-plan.canvas.tsx`  
+Canvas Live Distro: [`canvases/janis-live-distro.canvas.tsx`](../canvases/janis-live-distro.canvas.tsx) · [`LIVE-DISTRO.md`](LIVE-DISTRO.md)  
+Gate wipe SSD2: [`MODE-B-SSD2-GATE.md`](MODE-B-SSD2-GATE.md) · TESTER: [`TESTER/README.md`](../TESTER/README.md)  
+Live RAM: **min 16 GB · consigliati 32 GB** · USB **32 GB** × fino a 4 profili ISO
 
 ### Debian nativo — fasi
 

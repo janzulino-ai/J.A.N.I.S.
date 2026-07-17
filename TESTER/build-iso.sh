@@ -42,9 +42,9 @@ mkdir -p "$ISO_DIR/boot/grub/themes/janis"
 if [ -d "$THEME_SRC" ]; then
   cp -r "$THEME_SRC/"* "$ISO_DIR/boot/grub/themes/janis/" 2>/dev/null || true
 fi
-# Placeholder background se manca PNG
-if [ ! -f "$ISO_DIR/boot/grub/themes/janis/background.png" ]; then
-  # file vuoto ok per theme; GRUB ignora se invalido
+# background.png prodotto in infra/grub/theme/ (HUD placeholder o asset artistico)
+if [ ! -s "$ISO_DIR/boot/grub/themes/janis/background.png" ]; then
+  echo "WARN: background.png assente/vuoto — vedi infra/grub/README.md checklist"
   : > "$ISO_DIR/boot/grub/themes/janis/background.png"
 fi
 
@@ -56,15 +56,16 @@ insmod gfxterm
 terminal_output gfxterm
 set theme=/boot/grub/themes/janis/theme.txt
 
-menuentry "JANIS Tester — Live/Rescue (try)" {
+menuentry "JANIS Safe Live / Rescue" {
   linux /live/vmlinuz boot=live components quiet splash
   initrd /live/initrd.img
 }
-menuentry "JANIS Tester — info install" {
-  echo "Install path: usa deploy-disk.sh su disco target (WIPE richiesto)"
-  echo "Oppure Debian 12 netinst + scripts/install-server.sh (Mode B MVP)"
-  echo "Vedi docs/FLEET-DEVICES.md — gate SSD2"
-  sleep 8
+menuentry "JANIS — info Live Distro / install" {
+  echo "Live Distro: docs/LIVE-DISTRO.md — RAM min 16GB, consigliati 32GB"
+  echo "Dopo kernel: neuron splash kiosk (non in GRUB)"
+  echo "Install SSD: deploy-disk.sh (digitare WIPE) o Debian netinst"
+  echo "Gate: docs/MODE-B-SSD2-GATE.md — nessun wipe automatico"
+  sleep 10
 }
 menuentry "Boot from next disk" {
   exit
