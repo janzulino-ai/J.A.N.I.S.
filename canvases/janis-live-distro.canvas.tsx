@@ -63,13 +63,13 @@ export default function JanisLiveDistroCanvas() {
       <H2>1 · Media kit</H2>
       <Grid columns={2} gap={12}>
         <Card>
-          <CardHeader>GRUB (statico)</CardHeader>
+          <CardHeader>GRUB = master background</CardHeader>
           <CardBody>
             <Stack gap={6}>
-              <Text>background.png 1920×1080 HUD dark cyan</Text>
-              <Text>selected_*.png highlight menu</Text>
-              <Text>theme.txt già in infra/grub/theme/</Text>
-              <Text tone="secondary">Vedi infra/grub/README.md — checklist asset</Text>
+              <Text>background.png 1920×1080 = base di TUTTO il sistema</Text>
+              <Text>Stesso asset: GRUB → splash → wizard → HUD</Text>
+              <Text>selected_*.png + theme.txt in infra/grub/theme/</Text>
+              <Text tone="secondary">Solo layer sopra (neuroni, risorse) — non un altro mood</Text>
             </Stack>
           </CardBody>
         </Card>

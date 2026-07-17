@@ -6,6 +6,9 @@ Portale di boot **grafico e statico** (HUD dark).
 L’animazione neuroni **non** gira in GRUB — parte dopo il kernel in kiosk (`/server?phase=boot`).  
 Spec prodotto: [`docs/LIVE-DISTRO.md`](../../docs/LIVE-DISTRO.md) · canvas: `canvases/janis-live-distro.canvas.tsx`.
 
+**`theme/background.png` = master background del sistema Live Distro**  
+(GRUB → splash neuroni → wizard → HUD). Stessa base ovunque; solo layer sopra, non un altro tema.
+
 ## Requisiti server / build ISO
 
 ```bash
@@ -19,8 +22,8 @@ Usato da [`TESTER/build-iso.sh`](../../TESTER/build-iso.sh) (copia `theme/` nell
 | File | Stato | Spec |
 |------|-------|------|
 | `theme/theme.txt` | presente | title JANIS, menu 15%/30%, Unifont |
-| `theme/background.png` | **da produrre** | 1920×1080 · `#050B12` void · accent `#3DE0FF` · griglia HUD · wordmark J.A.N.I.S. · no testo menu nel PNG (il menu è GRUB) |
-| `theme/selected_c.png` / `selected_*.png` | **da produrre** | barra selezione cyan sottile (altezza ~28px item) |
+| `theme/background.png` | **placeholder presente** (griglia HUD) — sostituibile con asset artistico | 1920×1080 · `#050B12` · accent `#3DE0FF` · no testo menu nel PNG |
+| `theme/selected_c.png` | **placeholder presente** | barra selezione ~800×28 |
 | `backgrounds/janis.png` | opzionale | variante brand |
 | `backgrounds/linux.png` | opzionale | HyperFluent focus voce menu |
 
