@@ -10,7 +10,20 @@ Installer / rescue bootabile per macchina destinazione (Mode B).
 | RAM consigliati | **32 GB** |
 | USB | **32 GB** per profilo (fino a 4 ISO: Safe / Chat-ready / NVIDIA / Media) |
 
-## Flusso build (Linux o WSL2 con sudo)
+## Flusso build (locale — non GitHub)
+
+L’ISO **non** viene creata dal push git: va generata sul PC.
+
+### Windows (consigliato) — uno script
+
+```powershell
+cd "C:\APP IA\JANIS\TESTER"
+powershell -ExecutionPolicy Bypass -File .\build-iso-wsl.ps1
+```
+
+Output: `C:\APP IA\JANIS\TESTER\out\janis-tester.iso`
+
+### WSL / Linux — manuale
 
 ```bash
 sudo apt install -y debootstrap xorriso squashfs-tools grub-pc-bin grub-efi-amd64-bin \
@@ -21,6 +34,8 @@ sudo bash verify-rootfs.sh
 sudo bash build-iso.sh                  # out/janis-tester.iso
 sudo bash write-usb.sh /dev/sdX         # digita WRITE — distruttivo per la chiavetta
 ```
+
+Se `out/janis-tester.iso` manca: la build non è stata eseguita o è fallita a metà (guarda errori `debootstrap` / `sudo`).
 
 ## Script
 
