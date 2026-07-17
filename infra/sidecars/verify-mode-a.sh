@@ -5,7 +5,14 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 BRAIN_URL="${BRAIN_URL:-http://127.0.0.1:8001}"
 VENV="${JANIS_VENV:-$HOME/janis-venv}"
-PY="${PYTHON:-$VENV/bin/python}"
+PY="${PYTHON:-}"
+if [ -z "$PY" ] || [ ! -x "$PY" ]; then
+  if [ -x "$VENV/bin/python" ]; then
+    PY="$VENV/bin/python"
+  elif command -v python3 >/dev/null 2>&1; then
+    PY="python3"
+  fi
+fi
 
 echo "=== Mode A verify ==="
 echo "Repo: $ROOT"
@@ -42,7 +49,7 @@ echo ""
 echo "--- tool smoke (Python) ---"
 export BRAIN_URL
 export PYTHONPATH="$ROOT/packages/brain"
-if [ -x "$PY" ]; then
+if [ -n "$PY" ]; then
   "$PY" "$ROOT/packages/brain/scripts/verify_mode_a.py" || {
     code=$?
     [ "$code" -eq 2 ] && echo "Doctor rosso — vedi SIDECARS-INSTALL.md" && exit 2
