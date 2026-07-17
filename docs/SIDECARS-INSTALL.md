@@ -49,16 +49,34 @@ Manifest MCP: `packages/brain/data/mcp/servers.json`.
 
 ## Verify
 
+Target: **verde** (nessun required fail e &lt;3 optional fail). Smoke completo:
+
 ```bash
-# WSL
+# WSL — script unico (doctor + capabilities + tool smoke)
+bash infra/sidecars/verify-mode-a.sh
+
+# oppure solo HTTP doctor
 curl -s http://127.0.0.1:8001/api/doctor | jq .summary,.required_fail,.optional_fail
-# oppure chat: janis doctor
+
+# oppure da packages/brain
+cd packages/brain && PYTHONPATH=. python scripts/verify_mode_a.py
 ```
 
-Target: **verde** (nessun required fail e &lt;3 optional fail). Smoke:
+Smoke tool (inclusi in verify-mode-a):
 
 - tool `mcp_status`
-- tool `research` query corta
+- tool `research_status` + `research` (query corta)
 - tool `media_status`
+- `GET /api/capabilities?wave=1`
+- `GET /api/media/images`
+
+Ordine install consigliato prima del verify:
+
+1. Ollama Windows `:11434`
+2. Brain WSL `:8001`
+3. `bash infra/sidecars/install-mcp-clis.sh`
+4. ComfyUI Windows `:8188` · SearXNG Docker `:8080`
+5. `bash infra/wsl/configure-sidecar-urls.sh` → riavvia brain
+6. `bash infra/sidecars/verify-mode-a.sh`
 
 Glances / LiteLLM / Qdrant restano su `infra/sidecars/install-sidecars.sh` + `start-all.sh` (separati da Comfy/SearXNG).

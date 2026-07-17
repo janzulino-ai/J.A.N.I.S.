@@ -61,6 +61,7 @@ bash ~/projects/J.A.N.I.S./infra/wsl/configure-brain.sh
 curl -s http://127.0.0.1:8001/api/status
 bash ~/projects/J.A.N.I.S./infra/wsl/smoke-chat.sh
 bash ~/projects/J.A.N.I.S./infra/wsl/smoke-w2.sh
+bash ~/projects/J.A.N.I.S./infra/sidecars/verify-mode-a.sh   # Mode A sidecar (plan A3)
 ```
 
 ## LLM Lab — AI Auditor (W5)

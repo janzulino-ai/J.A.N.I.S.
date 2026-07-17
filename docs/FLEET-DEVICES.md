@@ -64,7 +64,7 @@ Setup: `infra/wsl/setup-wireguard.sh` · `infra/windows/install-wireguard-bridge
 | **W1** | Brain `:8001` · disabilita `cursor_code` · smoke chat Ollama | **done** |
 | **W2** | Tool operativi: terminal · file · memoria · reflect · HUD chat/term · autofix | **done** |
 | **W3** | HUD live hudcli08 · App Windows WPF · Cursor bridge `/api/cursor` | **done** |
-| **W4** | Autostart WSL · tray Windows · smoke W2 · Pocket LAN | **in progress** |
+| **W4** | Autostart WSL · tray Windows · smoke W2 · verify Mode A (`verify-mode-a.sh`) | **done** |
 | **W5** | **LLM Auditor** · `POST /api/lab/audit` · judge · prompt/Modelfile output · `smoke-audit.sh` | **done** |
 | **W5+** | Judge cloud · auto-fetch student · eval auto in promote cycle | **planned** |
 
