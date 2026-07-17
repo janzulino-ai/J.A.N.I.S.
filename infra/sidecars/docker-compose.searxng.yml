@@ -1,0 +1,16 @@
+# SearXNG meta-search per tool research (Mode A) — no iscrizione
+# Uso:
+#   docker compose -f infra/sidecars/docker-compose.searxng.yml up -d
+# JSON API abilitata via searxng/settings.yml
+services:
+  searxng:
+    image: searxng/searxng:latest
+    container_name: janis-searxng
+    ports:
+      - "8080:8080"
+    environment:
+      - SEARXNG_BASE_URL=http://127.0.0.1:8080/
+      - SEARXNG_SECRET=janis-local-change-me
+    volumes:
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
+    restart: unless-stopped

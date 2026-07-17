@@ -49,6 +49,7 @@ public partial class MainWindow : Window
 
     void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (ContentHost == null) return;
         if (NavList.SelectedItem is not ListBoxItem item || item.Tag is not string tag)
             return;
 

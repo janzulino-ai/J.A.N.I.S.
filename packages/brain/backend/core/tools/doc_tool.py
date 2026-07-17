@@ -18,7 +18,7 @@ async def _list_tools(server: str) -> list[dict]:
 
 @register("doc_read")
 async def doc_read(args: dict) -> str:
-    """Legge PDF/Office con Docling MCP. args: path"""
+    """Legge PDF/Office con Docling MCP; fallback nativo testo/PDF. args: path"""
     path = (args.get("path") or args.get("file") or "").strip()
     if not path:
         return "path obbligatorio"
@@ -41,11 +41,9 @@ async def doc_read(args: dict) -> str:
         if out:
             return out[:12000]
 
-    # fallback: testo grezzo per txt/md
-    if p.suffix.lower() in (".txt", ".md", ".csv", ".json", ".log"):
-        return p.read_text(encoding="utf-8", errors="replace")[:12000]
+    from backend.core.native_fallbacks import native_doc_read
 
-    return missing_sidecar("docling", "pip install docling-mcp  (o docling-mcp server)")
+    return await native_doc_read(path)
 
 
 @register("office_edit")

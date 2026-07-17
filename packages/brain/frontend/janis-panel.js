@@ -27,7 +27,7 @@
     const MIN_PANEL_H = 140;
     const RESIZE_DIRS = ["n", "s", "e", "w", "ne", "nw", "se", "sw"];
 
-    const ICONS = { chat: "💬", "chat-ui": "💬", terminal: "⌨", web: "🌐", app: "◆", log: "📋", brain: "🧠", cursor: "◆", whatsapp: "📱", mac: "🍎" };
+    const ICONS = { chat: "💬", "chat-ui": "💬", terminal: "⌨", web: "🌐", app: "◆", log: "📋", brain: "🧠", cursor: "◆", whatsapp: "📱", mac: "🍎", image: "🖼" };
     const STORAGE_KEY = "janis_panel_layout_v2";
     let saveTimer = null;
 
@@ -632,6 +632,33 @@
                     <div class="wa-status">Non connesso</div>
                     <ul class="wa-msgs"><li class="page-muted">Nessun messaggio</li></ul>
                 </div>`;
+        } else if (t === "image") {
+            const wrap = document.createElement("div");
+            wrap.className = "panel-image";
+            wrap.style.padding = "8px";
+            wrap.style.overflow = "auto";
+            wrap.style.height = "100%";
+            if (spec.url) {
+                const link = document.createElement("a");
+                link.href = spec.url;
+                link.target = "_blank";
+                link.rel = "noopener";
+                link.textContent = spec.url;
+                link.style.display = "block";
+                link.style.fontSize = "11px";
+                link.style.marginBottom = "8px";
+                link.style.wordBreak = "break-all";
+                wrap.appendChild(link);
+                const img = document.createElement("img");
+                img.src = spec.url;
+                img.alt = spec.content || "immagine";
+                img.style.maxWidth = "100%";
+                img.style.display = "block";
+                wrap.appendChild(img);
+            } else {
+                wrap.textContent = spec.content || "Nessuna immagine";
+            }
+            body.appendChild(wrap);
         } else {
             const pre = document.createElement("pre");
             pre.className = "panel-content";
@@ -1408,6 +1435,61 @@
         return s;
     }
 
+    function extractMediaUrls(text) {
+        if (!text) return [];
+        const urls = [];
+        const re = /https?:\/\/[^\s)\]"']+\/api\/media\/images\/[A-Za-z0-9._\-]+/g;
+        let m;
+        while ((m = re.exec(String(text))) !== null) {
+            if (!urls.includes(m[0])) urls.push(m[0]);
+        }
+        const md = /!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/g;
+        while ((m = md.exec(String(text))) !== null) {
+            if (!urls.includes(m[1])) urls.push(m[1]);
+        }
+        return urls;
+    }
+
+    function appendChatImage(url, caption) {
+        if (!url) return;
+        const mount = (parent) => {
+            const wrap = document.createElement("div");
+            wrap.className = "chat-line chat-media";
+            const link = document.createElement("a");
+            link.href = url;
+            link.target = "_blank";
+            link.rel = "noopener";
+            link.textContent = caption ? String(caption).slice(0, 80) : url;
+            link.style.display = "block";
+            link.style.fontSize = "11px";
+            link.style.marginBottom = "4px";
+            link.style.color = "var(--accent, #2ec4ff)";
+            const img = document.createElement("img");
+            img.src = url;
+            img.alt = caption || "immagine generata";
+            img.style.maxWidth = "100%";
+            img.style.maxHeight = "320px";
+            img.style.display = "block";
+            img.style.border = "1px solid rgba(46,196,255,0.25)";
+            wrap.appendChild(link);
+            wrap.appendChild(img);
+            parent.appendChild(wrap);
+            parent.scrollTop = parent.scrollHeight;
+        };
+        const log = document.getElementById("chat-messages");
+        if (log) {
+            mount(log);
+            return;
+        }
+        let p = panels.get(chatPanelId);
+        if (!p) {
+            open({ id: chatPanelId, panel_type: "chat", title: "Chat JANIS", width: 440, height: 360 });
+            p = panels.get(chatPanelId);
+        }
+        const panelLog = p?.body.querySelector(".panel-chat-log");
+        if (panelLog) mount(panelLog);
+    }
+
     function appendChat(text, who = "janis") {
         const log = document.getElementById("chat-messages");
         const display = formatChatDisplay(text);
@@ -1416,6 +1498,7 @@
             line.className = "chat-line chat-" + who;
             line.textContent = (who === "user" ? "Tu: " : "JANIS: ") + display;
             log.appendChild(line);
+            for (const url of extractMediaUrls(text)) appendChatImage(url);
             log.scrollTop = log.scrollHeight;
             return;
         }
@@ -1430,6 +1513,7 @@
             line.className = "chat-line chat-" + who;
             line.textContent = (who === "user" ? "Tu: " : "JANIS: ") + display;
             panelLog.appendChild(line);
+            for (const url of extractMediaUrls(text)) appendChatImage(url);
             panelLog.scrollTop = panelLog.scrollHeight;
         }
     }
@@ -1688,7 +1772,7 @@
 
     global.JanisPanel = {
         open, openBrain, openWeb, openSystemBrowser, openWhatsApp, openMac, close, update, append, focus, list, handleEvent,
-        formatChatDisplay, appendChat, appendCursorStream, logDock, logVerbose, appendTerminal, initDefaults, initFloatShell, initChatDockUi,
+        formatChatDisplay, appendChat, appendChatImage, extractMediaUrls, appendCursorStream, logDock, logVerbose, appendTerminal, initDefaults, initFloatShell, initChatDockUi,
         relayoutAll, relayoutAllDebounced, openNavPage, layoutFloatShell,
         detachChat, attachChat, toggleChatDock, enableFloatLayout, disableFloatLayout, toggleFloatLayout, isFloatLayout,
         syncDockHeight, scheduleSave, syncAgentTabs, syncAgentCards,

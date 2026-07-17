@@ -601,6 +601,33 @@ async def _emit_tool_side_effects(
             "panel_type": "terminal",
             "content": f"$ {cmd}\n{result}\n",
         })
+    elif tool_name == "image_gen":
+        import re
+
+        urls = re.findall(r"https?://\S+/api/media/images/\S+\.(?:png|jpg|jpeg|webp)", result or "")
+        if not urls:
+            urls = re.findall(r"!\[.*?\]\((https?://[^)]+)\)", result or "")
+        caption = (tool_args.get("prompt") or tool_args.get("text") or "")[:200]
+        for i, raw in enumerate(urls[:4]):
+            url = raw.rstrip(").,]")
+            await emit({
+                "type": "media_image",
+                "url": url,
+                "tool": "image_gen",
+                "caption": caption,
+            })
+            # Pannello dedicato nell'HUD / Anteprima
+            await emit({
+                "type": "panel",
+                "action": "open",
+                "id": f"media-image-{i}",
+                "panel_type": "image",
+                "title": "Immagine generata",
+                "url": url,
+                "content": caption,
+                "width": 520,
+                "height": 420,
+            })
     elif tool_name == "mac_ssh":
         pass  # streaming già emesso da mac_ssh via on_event
 

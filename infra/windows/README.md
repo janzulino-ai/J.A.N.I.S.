@@ -22,11 +22,14 @@ Cosa fa:
 
 | Voce | Azione |
 |------|--------|
+| **Apri app Agent** | Avvia `JANIS.exe` (WPF) — sezione **⚡ Agent** in sidebar |
 | **Apri HUD** | Browser → dashboard JANIS |
 | **Avvia tutto** | Ollama + brain WSL |
 | **Riavvia brain** | Stop/start brain in WSL |
 | **Avvio con Windows** | Toggle autostart |
 | **Esci tray** | Chiude solo l’icona (servizi restano attivi) |
+
+Doppio click sull’icona tray → apre l’**app Agent** (non più solo l’HUD).
 
 ## Avvio manuale (senza install)
 

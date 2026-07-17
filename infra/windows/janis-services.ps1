@@ -49,7 +49,7 @@ function Get-JanisStatus {
         Ollama = $ollama
         Brain  = $brain
         Label  = $label
-        HudUrl = "http://127.0.0.1:8001/server?v=hudcli08"
+        HudUrl = "http://127.0.0.1:8001/server?v=hudcli09"
     }
 }
 
@@ -73,7 +73,7 @@ function Start-JanisBrainWsl {
     $null = Start-Process -FilePath "wsl.exe" -ArgumentList @(
         "-d", "Ubuntu",
         "--", "bash", "-lc",
-        "cd ~/projects/J.A.N.I.S./packages/brain && exec ~/janis-venv/bin/python run.py"
+        "export PATH=`$HOME/.local/bin:`$HOME/janis-venv/bin:`$PATH; cd ~/projects/J.A.N.I.S./packages/brain && exec ~/janis-venv/bin/python run.py"
     ) -WindowStyle Hidden -PassThru
     $deadline = (Get-Date).AddSeconds(25)
     while ((Get-Date) -lt $deadline) {

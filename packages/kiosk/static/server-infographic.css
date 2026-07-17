@@ -1666,6 +1666,37 @@ body.hud-islands .pulse-ring {
   box-shadow: 0 0 8px rgba(61, 255, 154, 0.5);
 }
 
+/* Capability Fabric rail (hudcli10) */
+.cap-rail {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--line);
+  background: var(--glass);
+  font-family: Consolas, "Cascadia Mono", monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  max-width: min(42vw, 28rem);
+  overflow: hidden;
+}
+.cap-rail-label {
+  color: var(--term-cyan);
+  margin-right: 0.25rem;
+  opacity: 0.85;
+}
+.cap-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 1px;
+  display: inline-block;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+.cap-dot.green { background: var(--term-bright-green); }
+.cap-dot.amber { background: var(--term-yellow); }
+.cap-dot.red { background: var(--term-red); opacity: 0.85; }
+
 /* Live neural overlay + ribbon (hudcli07) */
 .hud-grid-wrap {
   position: relative;
@@ -1771,3 +1802,34 @@ body[data-brain-state="speaking"] .hud-bg-grid { opacity: 0.38; }
   50% { opacity: 0.55; transform: scale(0.85); }
 }
 
+
+/* Capability Fabric rail (hudcli10) */
+.cap-rail {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--line);
+  background: var(--glass);
+  font-family: Consolas, "Cascadia Mono", monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  max-width: min(42vw, 28rem);
+  overflow: hidden;
+}
+.cap-rail-label {
+  color: var(--term-cyan);
+  margin-right: 0.25rem;
+  opacity: 0.85;
+}
+.cap-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 1px;
+  display: inline-block;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+.cap-dot.green { background: var(--term-bright-green); }
+.cap-dot.amber { background: var(--term-yellow); }
+.cap-dot.red { background: var(--term-red); opacity: 0.85; }

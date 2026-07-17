@@ -14,10 +14,10 @@
   },
   {
     "name": "docling",
-    "command": "docling-mcp",
+    "command": "docling-mcp-server",
     "args": [],
     "enabled": true,
-    "note": "W6f read"
+    "note": "W6f read (PyPI docling-mcp)"
   },
   {
     "name": "officecli",

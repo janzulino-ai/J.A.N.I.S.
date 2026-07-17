@@ -19,7 +19,7 @@
     { id: "brain", page: 0, col: 2, row: 2, colSpan: 1, rowSpan: 2, island: "pair-v", title: "CERVELLO · TOOL", accent: "magenta" },
     { id: "sidecars", page: 0, col: 3, row: 2, colSpan: 1, rowSpan: 1, island: "tri", title: "SIDECAR · STACK", accent: "lime" },
     { id: "providers", page: 0, col: 1, row: 3, colSpan: 1, rowSpan: 1, island: "tri", title: "ROUTING · COSTI", accent: "gold" },
-    { id: "disks", page: 0, col: 3, row: 3, colSpan: 1, rowSpan: 1, island: "tri", title: "DISCHI · BLOCK", accent: "gold" },
+    { id: "capabilities", page: 0, col: 3, row: 3, colSpan: 1, rowSpan: 1, island: "tri", title: "CAPABILITY FABRIC", accent: "cyan" },
     /* Pagina 1 — 3×3: dual brain + ragionamento animato */
     { id: "janis-brain", page: 1, col: 1, row: 1, colSpan: 1, rowSpan: 2, island: "pair-v", title: "JANIS BRAIN", accent: "magenta" },
     { id: "cognition", page: 1, col: 2, row: 1, colSpan: 1, rowSpan: 2, island: "pair-v", title: "RAGIONAMENTO · FLUSSO", accent: "cyan" },
@@ -62,6 +62,7 @@
   let tools = [];
   let toolsActive = [];
   let mcp = {};
+  let capabilities = {};
   let reasoning = {};
   let liveReasoningStep = null;
 
@@ -170,12 +171,14 @@
     tools = d.tools || [];
     toolsActive = d.tools_active || tools;
     mcp = d.mcp || {};
+    capabilities = d.capabilities || {};
     reasoning = d.reasoning || {};
     perception = d.perception || {};
     peripherals = d.peripherals || inventory.peripherals || {};
     llmModels = d.llm_models || {};
     evolve = d.evolve || {};
     pushMetricHistory();
+    renderCapRail();
   }
 
   function pushMetricHistory() {
@@ -265,6 +268,46 @@
         <div class="disk-sub">${esc(d.mount || "")} ${esc(d.fstype || "")} · ${d.total_gb ?? "?"} GB · free ${d.free_gb ?? "?"} GB</div>
       </div>`;
     }).join("")}</div>`;
+  }
+
+  function renderCapabilities() {
+    const caps = capabilities.capabilities || [];
+    const counts = capabilities.counts || {};
+    const sum = (capabilities.summary || "red").toUpperCase();
+    return `<div class="block-body scroll-y">
+      <div class="provider-hero tone-cyan">
+        <span class="ph-main">${esc(sum)}</span>
+        <span class="ph-sub">E2E ${counts.e2e ?? 0}/${counts.total ?? caps.length} · Wave ${capabilities.wave || 1}</span>
+      </div>
+      <div class="mini-head">FABRIC · verde solo se E2E</div>
+      <div class="process-list">
+        ${caps.map((c) => {
+          const on = c.status === "green" && c.e2e;
+          return `<div class="proc-row">
+            <span class="proc-name">${esc((c.label || c.id || "?").toUpperCase())}</span>
+            ${badge((c.status || "red").toUpperCase(), on, on ? "on" : "exe")}
+            <span class="proc-detail">${esc(c.backend || "")}</span>
+          </div>`;
+        }).join("") || statRow("CAPS", "—", "warn")}
+      </div>
+      ${statRow("OWNED", "fabric · local_research · /api/media", "cyan")}
+      ${statRow("SIDECAR", "Ollama · Comfy · SearXNG", "lime")}
+    </div>`;
+  }
+
+  function renderCapRail() {
+    const rail = document.getElementById("cap-rail");
+    if (!rail) return;
+    const caps = capabilities.capabilities || [];
+    if (!caps.length) {
+      rail.innerHTML = `<span class="cap-rail-label">CAPS</span><span class="cap-dot red" title="offline"></span>`;
+      return;
+    }
+    rail.innerHTML = `<span class="cap-rail-label">CAPS</span>` + caps.map((c) => {
+      const st = c.status || "red";
+      const tip = `${c.label || c.id}: ${st} · ${c.backend || ""} · ${c.detail || ""}`;
+      return `<span class="cap-dot ${st}" title="${esc(tip)}" data-cap="${esc(c.id || "")}"></span>`;
+    }).join("");
   }
 
   function renderSidecars() {
@@ -651,6 +694,7 @@
     disks: renderDisks,
     sidecars: renderSidecars,
     providers: renderProviders,
+    capabilities: renderCapabilities,
     services: renderServices,
     fleet: renderFleet,
     brain: renderBrain,

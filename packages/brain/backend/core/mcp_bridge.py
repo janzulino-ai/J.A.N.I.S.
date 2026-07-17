@@ -27,10 +27,10 @@ DEFAULT_MCP_SERVERS: list[dict] = [
     },
     {
         "name": "docling",
-        "command": "docling-mcp",
+        "command": "docling-mcp-server",
         "args": [],
         "enabled": True,
-        "note": "Docling — PDF/Office read (W6f)",
+        "note": "Docling — PDF/Office read (W6f); alias docling-mcp",
     },
     {
         "name": "officecli",

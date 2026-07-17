@@ -1,0 +1,14 @@
+{
+  "prompt_id": "5c79e2a1-b8fe-49a0-813c-5819c47fc488",
+  "prompt": "Un faro drammatico e imponente posizionato in mezzo al mare agitato durante una tempesta notturna. Luce gialla che emana dal faro, onde giganti e scure, cielo tempestoso, stile cinematografico, alta risoluzione, realistico.",
+  "checkpoint": "v1-5-pruned-emaonly.safetensors",
+  "comfy": "http://192.168.128.1:8188",
+  "width": 512,
+  "height": 512,
+  "images": [
+    "/home/agenz/projects/J.A.N.I.S./packages/brain/data/media/images/janis_00004_.png"
+  ],
+  "urls": [
+    "http://127.0.0.1:8001/api/media/images/janis_00004_.png"
+  ]
+}

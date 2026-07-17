@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# TESTER — debootstrap rootfs minimale Debian
+# TESTER — debootstrap rootfs + packages.list + chroot-config
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 BUILD="$ROOT/build"
@@ -18,14 +18,25 @@ if [ -d "$ROOTFS" ]; then
   rm -rf "$ROOTFS"
 fi
 
-debootstrap --include=systemd,openssh-server,curl,ca-certificates,python3,python3-venv,sudo \
+echo "=== debootstrap $RELEASE ==="
+debootstrap --include=systemd,openssh-server,curl,ca-certificates,python3,python3-venv,sudo,apt-transport-https \
   "$RELEASE" "$ROOTFS" http://deb.debian.org/debian
 
-# Utente janis
-chroot "$ROOTFS" useradd -m -s /bin/bash janis || true
-echo "janis:janis" | chroot "$ROOTFS" chpasswd
+# Mount essenziali per chroot apt
+mount --bind /dev "$ROOTFS/dev"
+mount --bind /dev/pts "$ROOTFS/dev/pts"
+mount -t proc proc "$ROOTFS/proc"
+mount -t sysfs sys "$ROOTFS/sys"
+cleanup() {
+  umount -l "$ROOTFS/dev/pts" 2>/dev/null || true
+  umount -l "$ROOTFS/dev" 2>/dev/null || true
+  umount -l "$ROOTFS/proc" 2>/dev/null || true
+  umount -l "$ROOTFS/sys" 2>/dev/null || true
+}
+trap cleanup EXIT
 
-# Hostname
-echo janis-tester > "$ROOTFS/etc/hostname"
+export ROOTFS
+bash "$ROOT/install-packages.sh"
+bash "$ROOT/chroot-config.sh"
 
-echo "OK: $ROOTFS"
+echo "OK: $ROOTFS — esegui verify-rootfs.sh"

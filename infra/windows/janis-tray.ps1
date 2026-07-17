@@ -44,6 +44,7 @@ $notify.Visible = $true
 
 $menu = New-Object System.Windows.Forms.ContextMenuStrip
 
+$miApp = New-Object System.Windows.Forms.ToolStripMenuItem "Apri app Agent"
 $miHud = New-Object System.Windows.Forms.ToolStripMenuItem "Apri HUD"
 $miStatus = New-Object System.Windows.Forms.ToolStripMenuItem "Stato: $($status.Label)"
 $miStart = New-Object System.Windows.Forms.ToolStripMenuItem "Avvia tutto"
@@ -51,6 +52,43 @@ $miRestart = New-Object System.Windows.Forms.ToolStripMenuItem "Riavvia brain"
 $miAuto = New-Object System.Windows.Forms.ToolStripMenuItem "Avvio con Windows"
 $miAuto.Checked = $autostart
 $miQuit = New-Object System.Windows.Forms.ToolStripMenuItem "Esci tray"
+
+function Get-JanisDesktopExe {
+    $root = Get-JanisRoot
+    $candidates = @(
+        (Join-Path $root "apps\janis-windows\JANIS.Desktop\bin\Release\net8.0-windows\JANIS.exe"),
+        (Join-Path $root "apps\janis-windows\JANIS.Desktop\bin\Debug\net8.0-windows\JANIS.exe")
+    )
+    foreach ($p in $candidates) {
+        if (Test-Path $p) { return $p }
+    }
+    return $null
+}
+
+$miApp.Add_Click({
+    $exe = Get-JanisDesktopExe
+    if (-not $exe) {
+        [System.Windows.Forms.MessageBox]::Show(
+            "JANIS.exe non trovato. Build: cd apps\janis-windows ; dotnet build JANIS.Desktop\JANIS.Desktop.csproj -c Release",
+            "JANIS", [System.Windows.Forms.MessageBoxButtons]::OK,
+            [System.Windows.Forms.MessageBoxIcon]::Warning) | Out-Null
+        return
+    }
+    $running = Get-Process -Name JANIS -ErrorAction SilentlyContinue
+    if ($running) {
+        # già aperta — porta in primo piano se possibile
+        try {
+            Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class JanisWin { [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd); [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow); }' -ErrorAction SilentlyContinue
+            $h = $running[0].MainWindowHandle
+            if ($h -ne [IntPtr]::Zero) {
+                [JanisWin]::ShowWindow($h, 9) | Out-Null
+                [JanisWin]::SetForegroundWindow($h) | Out-Null
+            }
+        } catch {}
+        return
+    }
+    Start-Process $exe
+})
 
 $miHud.Add_Click({
     $s = Get-JanisStatus
@@ -94,10 +132,10 @@ $miQuit.Add_Click({
     [System.Windows.Forms.Application]::Exit()
 })
 
-$menu.Items.AddRange(@($miHud, $miStatus, (New-Object System.Windows.Forms.ToolStripSeparator), $miStart, $miRestart, $miAuto, (New-Object System.Windows.Forms.ToolStripSeparator), $miQuit))
+$menu.Items.AddRange(@($miApp, $miHud, $miStatus, (New-Object System.Windows.Forms.ToolStripSeparator), $miStart, $miRestart, $miAuto, (New-Object System.Windows.Forms.ToolStripSeparator), $miQuit))
 $notify.ContextMenuStrip = $menu
 
-$notify.Add_DoubleClick({ $miHud.PerformClick() })
+$notify.Add_DoubleClick({ $miApp.PerformClick() })
 
 Write-JanisTrayLog "Tray avviato - $($status.Label)"
 

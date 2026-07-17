@@ -1,0 +1,25 @@
+# JANIS — SearXNG locale (JSON API abilitata per tool research)
+use_default_settings: true
+
+general:
+  instance_name: "JANIS SearXNG"
+  enable_metrics: false
+
+server:
+  secret_key: "janis-local-change-me"
+  limiter: false
+  image_proxy: false
+  port: 8080
+  bind_address: "0.0.0.0"
+  base_url: true
+
+search:
+  safe_search: 0
+  autocomplete: ""
+  default_lang: "it"
+  formats:
+    - html
+    - json
+
+ui:
+  static_use_hash: true

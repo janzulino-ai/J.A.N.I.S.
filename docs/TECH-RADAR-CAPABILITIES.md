@@ -56,7 +56,8 @@ Prerequisito comune: **W6a MCP client reale** in [`INTEGRATION-MULTI-SOURCE.md`]
 | **deep-research-agent** | [deepakj111/deep-research-agent](https://github.com/deepakj111/deep-research-agent) | Web+arXiv+GitHub parallelo | Multi-key OpenAI/Anthropic | **P2** |
 | **gigaxity-deep-research** | [yoloshii/gigaxity-deep-research](https://github.com/yoloshii/gigaxity-deep-research) | MCP + RRF + citazioni | Dipende OpenRouter | **P2** |
 
-**Raccomandazione:** SearXNG self-host + ii-researcher (o GPT Researcher) come tool `research` JANIS; salvare report in LTM con tag `research` + citazioni.
+**Raccomandazione JANIS (no iscrizione):** pipeline nativa **SearXNG + fetch + Ollama** (`local_research.py` / tool `research`).  
+ii-researcher / GPT-Researcher restano opzionali solo se accetti API search esterne (Tavily/SerpAPI).
 
 ### Internet / social (fetch piattaforme)
 

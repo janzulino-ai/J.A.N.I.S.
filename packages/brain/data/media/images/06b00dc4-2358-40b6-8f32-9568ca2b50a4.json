@@ -1,0 +1,11 @@
+{
+  "prompt_id": "06b00dc4-2358-40b6-8f32-9568ca2b50a4",
+  "prompt": "a blue ceramic cup on wood table, simple photo",
+  "checkpoint": "v1-5-pruned-emaonly.safetensors",
+  "comfy": "http://192.168.128.1:8188",
+  "width": 512,
+  "height": 512,
+  "images": [
+    "/home/agenz/projects/J.A.N.I.S./packages/brain/data/media/images/janis_00002_.png"
+  ]
+}

@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     # Server
     HOST: str = Field(default="0.0.0.0")
     PORT: int = Field(default=8001)
+    # URL pubblico per link media (client Windows/HUD)
+    PUBLIC_BASE_URL: str = Field(default="http://127.0.0.1:8001")
 
     # Workspace
     JANIS_WORKSPACE: str = Field(default=os.path.expanduser("~"))
