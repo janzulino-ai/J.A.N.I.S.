@@ -22,3 +22,5 @@ infra/vpn/peers/**/*.key
 infra/vpn/peers/**/client.conf
 TESTER/build/
 TESTER/out/
+janis-tester.iso
+*.iso
