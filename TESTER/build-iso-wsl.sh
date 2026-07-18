@@ -22,6 +22,25 @@ echo "Repo (sorgenti): $REPO"
 echo "Build (Linux FS): $BUILD"
 echo "ISO out:          $OUT_DIR"
 
+# File richiesti (spesso mancanti se git checkout parziale)
+missing=0
+for req in \
+  build-base.sh install-packages.sh chroot-config.sh verify-rootfs.sh build-iso.sh \
+  config/packages.list; do
+  if [ ! -f "$SCRIPT_DIR/$req" ]; then
+    echo "ERRORE: manca TESTER/$req"
+    missing=1
+  fi
+done
+if [ "$missing" -eq 1 ]; then
+  echo ""
+  echo "Scarica tutta la cartella TESTER dal branch cloud:"
+  echo "  cd \"$REPO\""
+  echo "  git fetch origin"
+  echo "  git checkout origin/cursor/cloud-agent-1784293795270-xoork -- TESTER/"
+  exit 1
+fi
+
 case "$BUILD" in
   /mnt/*)
     echo "ERRORE: BUILD è su DrvFs ($BUILD)."

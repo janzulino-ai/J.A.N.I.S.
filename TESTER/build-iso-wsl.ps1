@@ -21,6 +21,12 @@ Write-Host ("WSL:  " + $Distro)
 Write-Host "Build FS: ~/janis-iso-build (Linux ext4, not C: drive)"
 Write-Host ""
 
+# Ensure full TESTER tree (install-packages.sh, config/packages.list, ...)
+Push-Location $RepoWin
+git fetch origin 2>$null
+git checkout origin/cursor/cloud-agent-1784293795270-xoork -- TESTER/ 2>$null
+Pop-Location
+
 # Use --cd so paths with spaces (e.g. APP IA) are not split by bash.
 Write-Host "Run in WSL: bash TESTER/build-iso-wsl.sh (from repo root)"
 & wsl.exe -d $Distro --cd $RepoWin bash TESTER/build-iso-wsl.sh

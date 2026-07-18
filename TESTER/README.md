@@ -23,8 +23,13 @@ In PowerShell, **solo** queste righe (non incollare messaggi di errore):
 
 ```powershell
 cd "C:\APP IA\JANIS"
+git fetch origin
+git checkout origin/cursor/cloud-agent-1784293795270-xoork -- TESTER/
 powershell -ExecutionPolicy Bypass -File .\TESTER\build-iso-wsl.ps1
 ```
+
+`git checkout ... -- TESTER/` serve tutti gli script (`install-packages.sh`, `config/packages.list`, ecc.).  
+Non fare checkout solo di singoli file `.sh`.
 
 Oppure da WSL (se sei gia' nel terminale Ubuntu, prompt `user@host:~$`):
 
