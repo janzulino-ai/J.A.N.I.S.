@@ -26,10 +26,18 @@ cd "C:\APP IA\JANIS"
 powershell -ExecutionPolicy Bypass -File .\TESTER\build-iso-wsl.ps1
 ```
 
-Oppure da WSL:
+Oppure da WSL (se sei gia' nel terminale Ubuntu, prompt `user@host:~$`):
 
 ```bash
 bash "/mnt/c/APP IA/JANIS/TESTER/build-iso-wsl.sh"
+```
+
+**Non** digitare `wsl` dentro Ubuntu — quel comando esiste solo in PowerShell Windows.
+
+Da PowerShell Windows:
+
+```powershell
+wsl -d Ubuntu --cd "C:\APP IA\JANIS" bash TESTER/build-iso-wsl.sh
 ```
 
 Output:

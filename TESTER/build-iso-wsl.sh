@@ -2,7 +2,10 @@
 # Build ISO da WSL. debootstrap NON può stare su /mnt/c (NTFS/DrvFs) — tar fallisce.
 # Build su filesystem Linux (~/janis-iso-build), ISO finale copiata in cartella JANIS.
 #
-# Uso (da PowerShell, UNA riga alla volta — non incollare errori):
+# SEI GIA' IN UBUNTU WSL (prompt agenz@...:~$) — NON usare "wsl ...":
+#   bash "/mnt/c/APP IA/JANIS/TESTER/build-iso-wsl.sh"
+#
+# DA POWERSHELL WINDOWS (prompt PS C:\...>) — usa build-iso-wsl.ps1 oppure:
 #   wsl -d Ubuntu --cd "C:\APP IA\JANIS" bash TESTER/build-iso-wsl.sh
 set -euo pipefail
 
