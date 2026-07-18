@@ -102,6 +102,10 @@ else
   xorriso -as mkisofs -r -V "JANIS_TESTER" -o "$OUT_ISO" -J "$ISO_DIR"
 fi
 
-ls -lh "$OUT_ISO" "$OUT_DIR/janis-tester.rootfs.tgz"
+# Copia anche in root repo JANIS per trovarla facilmente
+ROOT_ISO="$ROOT/../janis-tester.iso"
+cp -f "$OUT_ISO" "$ROOT_ISO"
+ls -lh "$OUT_ISO" "$ROOT_ISO" "$OUT_DIR/janis-tester.rootfs.tgz"
 echo "OK: $OUT_ISO"
+echo "OK (root JANIS): $ROOT_ISO"
 echo "Scrivi USB: sudo bash $ROOT/write-usb.sh /dev/sdX"
