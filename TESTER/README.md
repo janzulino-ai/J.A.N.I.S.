@@ -14,28 +14,46 @@ Installer / rescue bootabile per macchina destinazione (Mode B).
 
 L’ISO **non** viene creata dal push git: va generata sul PC.
 
+**Importante (WSL):** `debootstrap` **non** può scrivere su `C:\` / `/mnt/c` (NTFS) — compare `tar failed`.  
+La build usa `~/janis-iso-build` (ext4 Linux); l’ISO finale viene copiata in `C:\APP IA\JANIS\`.
+
 ### Windows (consigliato) — uno script
 
+In PowerShell, **solo** queste righe (non incollare messaggi di errore):
+
 ```powershell
-cd "C:\APP IA\JANIS\TESTER"
-powershell -ExecutionPolicy Bypass -File .\build-iso-wsl.ps1
+cd "C:\APP IA\JANIS"
+powershell -ExecutionPolicy Bypass -File .\TESTER\build-iso-wsl.ps1
 ```
 
-Output: `C:\APP IA\JANIS\TESTER\out\janis-tester.iso`
-
-### WSL / Linux — manuale
+Oppure da WSL:
 
 ```bash
-sudo apt install -y debootstrap xorriso squashfs-tools grub-pc-bin grub-efi-amd64-bin \
-  mtools dosfstools
-cd TESTER
-sudo BUILD_FORCE=1 bash build-base.sh   # debootstrap + packages.list + chroot-config
-sudo bash verify-rootfs.sh
-sudo bash build-iso.sh                  # out/janis-tester.iso
-sudo bash write-usb.sh /dev/sdX         # digita WRITE — distruttivo per la chiavetta
+bash "/mnt/c/APP IA/JANIS/TESTER/build-iso-wsl.sh"
 ```
 
-Se `out/janis-tester.iso` manca: la build non è stata eseguita o è fallita a metà (guarda errori `debootstrap` / `sudo`).
+Output:
+- `C:\APP IA\JANIS\janis-tester.iso`
+- `C:\APP IA\JANIS\TESTER\out\janis-tester.iso`
+
+Se chiede password: digita quella dell’utente Ubuntu WSL. Prima: `wsl -d Ubuntu` → `sudo -v`.
+
+### WSL / Linux — manuale (filesystem nativo)
+
+```bash
+export BUILD="$HOME/janis-iso-build/TESTER/build"
+export ROOTFS="$BUILD/rootfs"
+export OUT_DIR="$HOME/janis-iso-build/TESTER/out"
+sudo apt install -y debootstrap debian-archive-keyring xorriso squashfs-tools \
+  grub-pc-bin grub-efi-amd64-bin mtools dosfstools
+cd "/mnt/c/APP IA/JANIS/TESTER"   # o path Linux del repo
+sudo env BUILD="$BUILD" ROOTFS="$ROOTFS" BUILD_FORCE=1 bash build-base.sh
+sudo env ROOTFS="$ROOTFS" bash verify-rootfs.sh
+sudo env BUILD="$BUILD" ROOTFS="$ROOTFS" OUT_DIR="$OUT_DIR" bash build-iso.sh
+cp -f "$OUT_DIR/janis-tester.iso" "../janis-tester.iso"
+```
+
+Se vedi `E: Tried to extract package, but tar failed`: stavi buildando su `/mnt/c` — usa `build-iso-wsl.sh`.
 
 ## Script
 

@@ -1,15 +1,26 @@
 #!/usr/bin/env bash
 # TESTER — debootstrap rootfs + packages.list + chroot-config
+# BUILD/ROOTFS possono essere override via env (consigliato su WSL: ~/janis-iso-build).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-BUILD="$ROOT/build"
-ROOTFS="$BUILD/rootfs"
+BUILD="${BUILD:-$ROOT/build}"
+ROOTFS="${ROOTFS:-$BUILD/rootfs}"
 RELEASE="${DEBIAN_RELEASE:-bookworm}"
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "Esegui con sudo"
   exit 1
 fi
+
+# debootstrap + tar falliscono su DrvFs (/mnt/c, NTFS)
+case "$ROOTFS" in
+  /mnt/*)
+    echo "ERRORE: rootfs su DrvFs ($ROOTFS) — tar extract fallisce."
+    echo "Esegui: bash TESTER/build-iso-wsl.sh  (usa ~/janis-iso-build)"
+    echo "Oppure: export BUILD=\$HOME/janis-iso-build/TESTER/build ROOTFS=\$BUILD/rootfs"
+    exit 1
+    ;;
+esac
 
 mkdir -p "$BUILD"
 if [ -d "$ROOTFS" ]; then
@@ -18,7 +29,7 @@ if [ -d "$ROOTFS" ]; then
   rm -rf "$ROOTFS"
 fi
 
-echo "=== debootstrap $RELEASE ==="
+echo "=== debootstrap $RELEASE → $ROOTFS ==="
 debootstrap --include=systemd,openssh-server,curl,ca-certificates,python3,python3-venv,sudo,apt-transport-https \
   "$RELEASE" "$ROOTFS" http://deb.debian.org/debian
 

@@ -1,12 +1,14 @@
 # Build JANIS Tester ISO on Windows via WSL2 (local).
+# debootstrap gira su filesystem Linux (~/janis-iso-build), non su C:\ (NTFS).
+# L'ISO finale viene copiata in C:\APP IA\JANIS\janis-tester.iso
+#
 # Esegui SOLO queste due righe in PowerShell (non incollare errori):
 #
 #   cd "C:\APP IA\JANIS"
 #   powershell -ExecutionPolicy Bypass -File .\TESTER\build-iso-wsl.ps1
 #
-# Output:
-#   C:\APP IA\JANIS\janis-tester.iso
-#   C:\APP IA\JANIS\TESTER\out\janis-tester.iso
+# Prima volta: in WSL digita la password sudo quando richiesto.
+# Oppure apri WSL e fai: sudo -v   poi rilancia questo script.
 
 $ErrorActionPreference = "Stop"
 $RepoWin = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -16,36 +18,19 @@ if ($env:JANIS_WSL_DISTRO) { $Distro = $env:JANIS_WSL_DISTRO }
 Write-Host "=== JANIS ISO build (locale WSL) ==="
 Write-Host "Repo: $RepoWin"
 Write-Host "WSL:  $Distro"
+Write-Host "Build FS: ~/janis-iso-build (Linux ext4 — non C:\)"
 Write-Host ""
 
-$tmpSh = Join-Path $env:TEMP "janis-build-iso.sh"
-$lines = @(
-    "#!/usr/bin/env bash"
-    "set -euo pipefail"
-    "REPO=`$(wslpath -a '$RepoWin')"
-    "echo WSL path: `$REPO"
-    "cd `"`$REPO`""
-    "sudo apt-get update -qq"
-    "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq debootstrap xorriso squashfs-tools grub-pc-bin grub-efi-amd64-bin mtools dosfstools"
-    "cd `"`$REPO/TESTER`""
-    "sudo BUILD_FORCE=1 bash build-base.sh"
-    "sudo bash verify-rootfs.sh"
-    "sudo bash build-iso.sh"
-    "ls -lh out/janis-tester.iso `"../janis-tester.iso`""
-    "echo OK ISO ready"
-)
-
-# Scrivi senza Set-Content (compatibilita Windows PowerShell 5.1)
-[System.IO.File]::WriteAllLines($tmpSh, $lines)
-
-$tmpShWsl = (& wsl.exe -d $Distro -e wslpath -a $tmpSh 2>$null)
-if (-not $tmpShWsl) {
+$repoWsl = (& wsl.exe -d $Distro -e wslpath -a $RepoWin 2>$null)
+if (-not $repoWsl) {
     throw "wslpath fallito. Controlla: wsl -d $Distro -e echo ok"
 }
-$tmpShWsl = $tmpShWsl.Trim()
+$repoWsl = $repoWsl.Trim()
 
-Write-Host "Eseguo in WSL: $tmpShWsl"
-& wsl.exe -d $Distro -e bash $tmpShWsl
+# Chiama lo script bash nel repo (gestisce BUILD su ~/janis-iso-build)
+$shPath = "$repoWsl/TESTER/build-iso-wsl.sh"
+Write-Host "Eseguo in WSL: bash `"$shPath`""
+& wsl.exe -d $Distro -e bash $shPath
 $code = $LASTEXITCODE
 
 $isoRoot = Join-Path $RepoWin "janis-tester.iso"
@@ -66,4 +51,4 @@ if (Test-Path $isoOut) {
 }
 
 Write-Host "Build exit: $code"
-throw "ISO non trovata. Apri WSL e guarda errori sudo/debootstrap."
+throw "ISO non trovata. Apri WSL e rilancia: bash `"$shPath`""

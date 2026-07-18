@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # TESTER — ISO ibrida BIOS/UEFI da rootfs (live/rescue minimale)
+# BUILD/ROOTFS/OUT_DIR override via env (WSL: ~/janis-iso-build).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-BUILD="$ROOT/build"
-ROOTFS="$BUILD/rootfs"
+BUILD="${BUILD:-$ROOT/build}"
+ROOTFS="${ROOTFS:-$BUILD/rootfs}"
 ISO_DIR="$BUILD/iso"
-OUT_DIR="$ROOT/out"
+OUT_DIR="${OUT_DIR:-$ROOT/out}"
 OUT_ISO="$OUT_DIR/janis-tester.iso"
 THEME_SRC="$ROOT/../infra/grub/theme"
 
