@@ -3,8 +3,7 @@
 # Build su filesystem Linux (~/janis-iso-build), ISO finale copiata in cartella JANIS.
 #
 # Uso (da PowerShell, UNA riga alla volta — non incollare errori):
-#   wsl -d Ubuntu
-#   bash "/mnt/c/APP IA/JANIS/TESTER/build-iso-wsl.sh"
+#   wsl -d Ubuntu --cd "C:\APP IA\JANIS" bash TESTER/build-iso-wsl.sh
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

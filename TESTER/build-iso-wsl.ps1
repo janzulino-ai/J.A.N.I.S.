@@ -1,6 +1,6 @@
 # Build JANIS Tester ISO on Windows via WSL2 (local).
-# Debootstrap runs on Linux FS (~/janis-iso-build), not on C:\ (NTFS).
-# Final ISO is copied to C:\APP IA\JANIS\janis-tester.iso
+# Debootstrap runs on Linux FS (~/janis-iso-build), not on C: drive (NTFS).
+# Final ISO is copied to janis-tester.iso in the JANIS repo folder.
 #
 # Run ONLY these two lines in PowerShell (do not paste error output):
 #
@@ -21,15 +21,9 @@ Write-Host ("WSL:  " + $Distro)
 Write-Host "Build FS: ~/janis-iso-build (Linux ext4, not C: drive)"
 Write-Host ""
 
-$repoWsl = (& wsl.exe -d $Distro -e wslpath -a $RepoWin 2>$null)
-if (-not $repoWsl) {
-    throw "wslpath failed. Check: wsl -d $Distro -e echo ok"
-}
-$repoWsl = $repoWsl.Trim()
-
-$shPath = $repoWsl + "/TESTER/build-iso-wsl.sh"
-Write-Host ("Run in WSL: bash " + $shPath)
-& wsl.exe -d $Distro -e bash $shPath
+# Use --cd so paths with spaces (e.g. APP IA) are not split by bash.
+Write-Host "Run in WSL: bash TESTER/build-iso-wsl.sh (from repo root)"
+& wsl.exe -d $Distro --cd $RepoWin bash TESTER/build-iso-wsl.sh
 $code = $LASTEXITCODE
 
 $isoRoot = Join-Path $RepoWin "janis-tester.iso"
@@ -50,4 +44,5 @@ if (Test-Path $isoOut) {
 }
 
 Write-Host ("Build exit: " + $code)
-throw ("ISO not found. Open WSL and run: bash " + $shPath)
+$hint = 'wsl -d ' + $Distro + ' --cd "' + $RepoWin + '" bash TESTER/build-iso-wsl.sh'
+throw ("ISO not found. Open WSL and run: " + $hint)
